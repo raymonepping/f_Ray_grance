@@ -57,6 +57,16 @@
       "sha256": "589ba368470f1035d17b6affde29b3cb4786cfab4ae1eed1e1689e04a817f93a"
     },
     {
+      "path": "docs/adr/ADR-011-phase12-perfume-images.md",
+      "bytes": 1132,
+      "sha256": "d9434c6d2dc9ed4950a9923a9e054980d3e905052b3bf0fb1cc4db76e85808d3"
+    },
+    {
+      "path": "docs/adr/ADR-012-scent-spectrometer-visual-world.md",
+      "bytes": 2709,
+      "sha256": "cc570707f2edc0dea5c704c9c0df7c720e94c63d15473de46714acc054e877e3"
+    },
+    {
       "path": "prompts/Claude/00_preflight_and_state.md",
       "bytes": 9960,
       "sha256": "531818921778e52bfaa9da6d4a4bedd922539c79488744f8b12449337ad947f8"
@@ -117,6 +127,11 @@
       "sha256": "7858c3f15a09a0e3a058e02efe52a9003d4bd79c1f062582c50f9487b60d26fc"
     },
     {
+      "path": "prompts/Claude/12_perfume_images.md",
+      "bytes": 9091,
+      "sha256": "625fc1545638e9be00dbee093f4899e39ad0e03ec7dc66aba77e8602f00a167b"
+    },
+    {
       "path": "prompts/Codex/00_preflight_and_state.md",
       "bytes": 9889,
       "sha256": "8f7560c10787350bb5f1372825431ffaccde422494ebdde169d6aa008d2a1e72"
@@ -175,6 +190,11 @@
       "path": "prompts/Codex/11_scent_academy_and_tutor.md",
       "bytes": 16325,
       "sha256": "3719900044645e953bb84f5472b6f3eee1e8823226b08bc460f85568c35f03f6"
+    },
+    {
+      "path": "prompts/Codex/12_perfume_images.md",
+      "bytes": 9103,
+      "sha256": "95f104c0facdae95252719d9abb3ebd83958c136e1b9704a7e06c159c9e7a842"
     },
     {
       "path": "prompts/IBM_Bob/00_preflight_and_state.md",
@@ -297,14 +317,19 @@
       "sha256": "f727c104e76d5502af25044a86393717b03fdc09a4a0507fb021bc94ae234edc"
     },
     {
+      "path": "spec/PERFUME_IMAGE_SPEC.md",
+      "bytes": 4834,
+      "sha256": "1d8623fbcce21819e1bb3356cdea5cafe2368c2008da516f4f77b84ad691a558"
+    },
+    {
       "path": "spec/PHASE_00.md",
       "bytes": 3649,
       "sha256": "31039397e49c79a2b15eee9b97b2c2852a361bfddd1777f0d8e74e1a5d64bee4"
     },
     {
       "path": "spec/PHASE_MANIFEST.md",
-      "bytes": 3980,
-      "sha256": "f8e03df08a7b1f5996fa3bdc509ec8732ac22b528e07791bd371434488f5e64d"
+      "bytes": 4463,
+      "sha256": "1ecf9f0a90e9c250e4929661f5704ee82fc8312e3aa7e191bc93f1db157de89f"
     },
     {
       "path": "spec/PRODUCT_SPEC.md",
@@ -320,6 +345,11 @@
       "path": "spec/REFERENCES.md",
       "bytes": 3051,
       "sha256": "f6a2b2ce061ae321ff2387e80dc653c50be5c1d1bc909a193a1a4c287f989636"
+    },
+    {
+      "path": "spec/RELEASE_NOTES.md",
+      "bytes": 3083,
+      "sha256": "fff0bb327b2843062299f8e4961738fcdda093f55e6169dd4968968c8639c34f"
     },
     {
       "path": "spec/SCENT_ACADEMY_SPEC.md",

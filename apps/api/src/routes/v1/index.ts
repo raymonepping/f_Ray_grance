@@ -14,6 +14,7 @@ import { compareRoutes } from './compare.js';
 import { discoveryRoutes } from './discovery.js';
 import type { OllamaClient } from '../../providers/ollama.js';
 import { seasonRoutes } from './seasons.js';
+import { academyRoutes } from './academy.js';
 import { portabilityRoutes } from './portability.js';
 
 const Uuid = Type.String({ format: 'uuid' });
@@ -29,6 +30,7 @@ export async function v1Routes(base: FastifyInstance, deps: { pool: RotatingPool
   await app.register(compareRoutes, { pool: deps.pool });
   await app.register(discoveryRoutes, { pool: deps.pool, ollama: deps.ollama });
   await app.register(seasonRoutes, { pool: deps.pool });
+  await app.register(academyRoutes, { pool: deps.pool, scento: deps.scento, ollama: deps.ollama });
   await app.register(portabilityRoutes, { pool: deps.pool, importEnabled: deps.importEnabled });
   const db = () => deps.pool.get();
 

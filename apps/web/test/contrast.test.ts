@@ -1,6 +1,6 @@
 // @vitest-environment node
-// WCAG 2.2 contrast audit of the design tokens, including glass COMPOSITED over the
-// canvas (DESIGN §2.1: never assume a pairing passes because its opaque equivalent does).
+// WCAG 2.2 contrast audit of the Spectrometer tokens in both themes, including the
+// translucent header chrome COMPOSITED over the canvas (never assume an opaque equivalent).
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 
@@ -36,31 +36,27 @@ const ratio = (a: RGBA, b: RGBA) => {
 };
 
 describe.each(Object.entries(themes))('%s theme contrast', (_name, t) => {
-  const canvas = parse(t['bg-canvas']!);
+  const canvas = parse(t['canvas']!);
   const surfaces = {
     canvas,
-    elevated: parse(t['bg-elevated']!),
-    solid: parse(t['bg-solid']!),
-    sunken: parse(t['bg-sunken']!),
-    'glass over canvas': over(parse(t['glass-fill']!), canvas),
-    'strong glass over canvas': over(parse(t['glass-fill-strong']!), canvas),
+    panel: parse(t['panel']!),
+    raised: parse(t['raised']!),
+    sunken: parse(t['sunken']!),
+    'header chrome over canvas': over(parse(t['chrome']!), canvas),
   };
   it.each(Object.entries(surfaces))('body text tokens ≥ 4.5:1 on %s', (_s, bg) => {
-    for (const tok of ['text-primary', 'text-secondary', 'text-muted']) {
+    for (const tok of ['ink', 'ink-2', 'ink-3']) {
       expect(ratio(parse(t[tok]!), bg), `${tok}`).toBeGreaterThanOrEqual(4.5);
     }
   });
-  it('accent, status and focus colours ≥ 3:1 on canvas and solid surfaces (non-text / large)', () => {
-    for (const tok of ['accent-gold', 'accent-blue', 'focus-ring', 'status-success', 'status-warning', 'status-error']) {
-      for (const bg of [surfaces.canvas, surfaces.solid, surfaces['glass over canvas']]) expect(ratio(parse(t[tok]!), bg), tok).toBeGreaterThanOrEqual(3);
-    }
+  it.each(Object.entries(surfaces))('signal, status and focus colours used as text ≥ 4.5:1 on %s', (_s, bg) => {
+    for (const tok of ['signal-text', 'warn', 'bad', 'focus']) expect(ratio(parse(t[tok]!), bg), tok).toBeGreaterThanOrEqual(4.5);
   });
-  it('status colours used as text ≥ 4.5:1 on solid surfaces', () => {
-    for (const tok of ['status-success', 'status-warning', 'status-error', 'accent-blue']) {
-      expect(ratio(parse(t[tok]!), surfaces.solid), tok).toBeGreaterThanOrEqual(4.5);
-    }
+  it('chromatogram tiers and strong hairlines are distinguishable (≥ 3:1 for peaks on panels)', () => {
+    for (const tok of ['tier-top', 'tier-heart']) for (const bg of [surfaces.panel, surfaces.canvas]) expect(ratio(parse(t[tok]!), bg), tok).toBeGreaterThanOrEqual(3);
   });
-  it('text on gold buttons ≥ 4.5:1', () => {
-    expect(ratio(parse(t['accent-gold-ink']!), parse(t['accent-gold']!))).toBeGreaterThanOrEqual(4.5);
+  it('text on the primary action and on a signal fill ≥ 4.5:1', () => {
+    expect(ratio(parse(t['action-ink']!), parse(t['action']!))).toBeGreaterThanOrEqual(4.5);
+    expect(ratio(parse(t['signal-ink']!), parse(t['signal']!))).toBeGreaterThanOrEqual(4.5);
   });
 });

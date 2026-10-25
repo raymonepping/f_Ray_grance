@@ -18,7 +18,7 @@ test('four seasonal choices survive reload; portable export previews safely and 
  await noPageOverflow(page);await axe(page,'My DNA mobile');
  await page.goto('/settings');const pending=page.waitForEvent('download');await page.getByRole('button',{name:'Export my collection'}).click();const download=await pending;
  const stream=await download.createReadStream();const chunks:Buffer[]=[];for await(const chunk of stream!)chunks.push(Buffer.from(chunk));const data=Buffer.concat(chunks);
- const bundle=JSON.parse(data.toString('utf8'));expect(bundle.version).toBe(1);expect(bundle.seasons).toHaveLength(4);expect(bundle.events.length).toBeGreaterThan(0);expect(bundle).not.toHaveProperty('sessions');
+ const bundle=JSON.parse(data.toString('utf8'));expect(bundle.version).toBe(2);expect(bundle.academy).toBeTruthy();expect(bundle.seasons).toHaveLength(4);expect(bundle.events.length).toBeGreaterThan(0);expect(bundle).not.toHaveProperty('sessions');
  await page.getByLabel('Preview a JSON export').setInputFiles({name:'synthetic-export.json',mimeType:'application/json',buffer:data});
  await page.getByRole('button',{name:'Preview import',exact:true}).click();await expect(page.getByRole('heading',{name:'Import preview'})).toBeVisible();
  await page.getByLabel('I reviewed this file and the current-owner target.').check();

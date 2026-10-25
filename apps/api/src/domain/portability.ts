@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { ChoicesSchema, SeasonSchema } from './seasons.js';
 import { COLLECTION_STATES } from './identity.js';
 import { normalizeGtin } from './gtin.js';
+import { AcademyDataSchema, validateAcademy } from './academy.js';
 const Obj = <T extends Parameters<typeof Type.Object>[0]>(props:T) => Type.Object(props,{additionalProperties:false});
 const Id=Type.String({format:'uuid'}); const Text=Type.String({maxLength:4000}); const Short=Type.String({maxLength:120});
 const Null=<T extends Parameters<typeof Type.Union>[0][number]>(t:T)=>Type.Union([t,Type.Null()]);
@@ -11,7 +12,7 @@ const Time=Type.String({format:'date-time'}); const State=Type.Enum(COLLECTION_S
 const NoteList=Null(Type.Array(Type.String({minLength:1,maxLength:80}),{maxItems:30}));
 const Pyramid=Obj({top:NoteList,heart:NoteList,base:NoteList});
 export const BundleSchema=Obj({
-  format:Type.Literal('f-ray-grance'),version:Type.Literal(1),exportedAt:Time,
+  format:Type.Literal('f-ray-grance'),version:Type.Union([Type.Literal(1),Type.Literal(2)]),exportedAt:Time,
   fragrances:Type.Array(Obj({id:Id,brand:Short,canonical_name:Short,flanker:Null(Short),concentration:Null(Short),formulation_revision:Null(Short),launch_year:Null(Type.Integer({minimum:1700,maximum:2100})),identity_status:Type.Union([Type.Literal('verified'),Type.Literal('draft'),Type.Literal('needs_review')])}),{maxItems:1000}),
   variants:Type.Array(Obj({id:Id,fragrance_id:Id,gtin14:Null(Type.String({pattern:'^[0-9]{14}$'})),raw_barcode:Null(Short),bottle_ml:Null(Type.Number({exclusiveMinimum:0,maximum:5000})),packaging_type:Null(Short),verification_state:Type.Union([Type.Literal('verified'),Type.Literal('unverified'),Type.Literal('rejected')]),verified_source:Null(Text),created_at:Time}),{maxItems:3000}),
   sources:Type.Array(Obj({id:Id,provider:Type.Enum(['scento','manufacturer','manual','derived'] as const),external_id:Null(Short),source_url:Null(Type.String({pattern:'^https://',maxLength:2000})),attribution:Null(Text),checked_at:Time,response_hash:Null(Type.String({pattern:'^[0-9a-f]{64}$'})),permitted_cache_class:Type.Enum(['user_lookup','reference','none'] as const),mapped:Type.Record(Type.String(),Type.Unknown())}),{maxItems:5000}),
@@ -20,6 +21,8 @@ export const BundleSchema=Obj({
   events:Type.Array(Obj({portable_id:Id,entry_id:Id,from_state:Null(State),to_state:State,occurred_at:Time,user_reason:Null(Type.String({maxLength:1000}))}),{maxItems:20000}),
   seasons:Type.Array(Obj({season:SeasonSchema,liked_notes:Type.Array(Short,{maxItems:100}),avoided_notes:Type.Array(Short,{maxItems:100}),liked_traits:Type.Record(Type.String(),Type.Unknown()),free_text:Null(Text),choices:ChoicesSchema}),{maxItems:4}),
   seasonFragrances:Type.Array(Obj({fragrance_id:Id,season:SeasonSchema,affinity:Null(Type.Enum(['love','like','neutral','avoid','unsure'] as const)),affinity_origin:Type.Union([Type.Literal('user'),Type.Literal('provider_editorial')])}),{maxItems:4000}),
+  // Version 2 (Phase 11): Scent Academy progress and private practice. Version 1 files have none.
+  academy:Type.Optional(AcademyDataSchema),
 });
 export type Bundle=Static<typeof BundleSchema>;
 export function stable(value:unknown):string {
@@ -58,4 +61,6 @@ export function checkBundle(value:unknown): asserts value is Bundle {
   }
   for(const e of b.events)if(!entries.has(e.entry_id))throw new Error('Orphan history');
   for(const s of b.seasonFragrances)if(!fragrances.has(s.fragrance_id))throw new Error('Unknown seasonal fragrance');
+  if(b.version===1&&b.academy)throw new Error('Version 1 files cannot carry Academy data');
+  if(b.academy)validateAcademy(b.academy,entries);
 }

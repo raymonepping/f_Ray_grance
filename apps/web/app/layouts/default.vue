@@ -28,8 +28,8 @@ watch(() => route.fullPath, () => nextTick(() => (announce.value = `${header.val
 
 <template>
   <div class="flex min-h-dvh">
-    <a href="#main" class="sr-only-focusable fixed left-1/2 top-2 z-[60] -translate-x-1/2 rounded-control bg-gold px-4 py-2 font-semibold text-gold-ink">Skip to content</a>
-    <ShellAppSidebar :collapsed="prefs.sidebarCollapsed" :force-rail="rail" @toggle="set('sidebarCollapsed', !prefs.sidebarCollapsed)" @search="search = true" />
+    <a href="#main" class="sr-only-focusable fixed left-1/2 top-2 z-[60] -translate-x-1/2 rounded-control bg-action px-4 py-2 font-semibold text-action-ink">Skip to content</a>
+    <ShellAppSidebar :collapsed="prefs.sidebarCollapsed" :force-rail="rail" @toggle="set('sidebarCollapsed', !prefs.sidebarCollapsed)" />
     <div class="flex min-w-0 flex-1 flex-col">
       <ShellAppHeader :title="header.title" :crumbs="header.crumbs" :action="header.action" @search="search = true" @menu="drawer = true" />
       <div class="px-4 pt-4 md:px-6 xl:px-8">

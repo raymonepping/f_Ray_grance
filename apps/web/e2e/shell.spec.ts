@@ -138,7 +138,7 @@ test('⌘K search → Discover → verified local identity → detail page with 
   await page.getByLabel('Fragrance name').fill('Phantom in Red');
   await page.getByRole('button', { name: 'Search', exact: true }).click();
   await expect(page.getByText(/Already in your library|Exact match verified/)).toBeVisible();
-  await page.getByRole('link', { name: /Open details|Saved — open details/ }).click();
+  await page.getByRole('link', { name: /Open details|Saved: open details/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Phantom in Red' })).toBeVisible();
   await expect(page.getByRole('list', { name: 'Top notes' })).toContainText('Plum');
   await expect(page.getByText('Sources & provenance')).toBeVisible();
@@ -159,7 +159,7 @@ test('Invictus Elixir is shown for review, never substituted', async ({ page }) 
   await page.getByLabel('Brand').fill('Rabanne');
   await page.getByLabel('Fragrance name').fill('Invictus Elixir');
   await page.getByRole('button', { name: 'Search', exact: true }).click();
-  await expect(page.getByText(/No exact match — review similar names|Not found|Partly unavailable/)).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText(/No exact match: review similar names|Not found|Partly unavailable/)).toBeVisible({ timeout: 15_000 });
   await expect(page.getByRole('button', { name: 'Confirm and save to library' })).toHaveCount(0);
 });
 

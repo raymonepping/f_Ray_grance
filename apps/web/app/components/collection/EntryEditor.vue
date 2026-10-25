@@ -31,7 +31,7 @@ async function save() {
     message.value = 'Saved.';
   } catch (e) {
     status.value = 'error';
-    message.value = e instanceof ApiFailure ? `Not saved — ${e.message}. Your text is kept; try again.` : 'Not saved. Your text is kept; try again.';
+    message.value = e instanceof ApiFailure ? `Not saved: ${e.message}. Your text is kept; try again.` : 'Not saved. Your text is kept; try again.';
   }
 }
 </script>
@@ -39,22 +39,22 @@ async function save() {
 <template>
   <form class="flex flex-col gap-3" @submit.prevent="save">
     <fieldset class="m-0 border-0 p-0">
-      <legend class="mb-2 text-sm font-semibold">Your rating <span class="font-normal text-ink-3">(independent of ownership)</span></legend>
-      <div class="flex flex-wrap gap-2">
-        <label v-for="n in [1, 2, 3, 4, 5]" :key="n" class="tap motion flex cursor-pointer items-center justify-center rounded-control border px-3 has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-[var(--focus-ring)]" :class="rating === n ? 'border-gold bg-sunken font-semibold' : 'border-line text-ink-2'">
+      <legend class="mb-2 text-[13px] font-medium text-ink-2">Your rating <span class="font-normal text-ink-3">(independent of ownership)</span></legend>
+      <div class="flex w-fit max-w-full flex-wrap gap-1 rounded-control border border-line bg-sunken p-1">
+        <label v-for="n in [1, 2, 3, 4, 5]" :key="n" class="motion flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-[6px] px-3 text-[14px] pointer-coarse:h-11 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-[var(--focus)]" :class="[rating === n ? 'bg-raised font-medium text-ink shadow-[inset_0_0_0_1px_var(--line-strong)]' : 'text-ink-2 hover:text-ink', 'readout w-10']">
           <input v-model="rating" class="sr-only" type="radio" :name="`rating-${entry.id}`" :value="n" />
           {{ n }}<span class="sr-only"> out of 5</span>
         </label>
-        <label class="tap motion flex cursor-pointer items-center rounded-control border px-3 text-sm has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-[var(--focus-ring)]" :class="rating === null ? 'border-gold bg-sunken font-semibold' : 'border-line text-ink-2'">
+        <label class="motion flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-[6px] px-3 text-[14px] pointer-coarse:h-11 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-[var(--focus)]" :class="rating === null ? 'bg-raised font-medium text-ink shadow-[inset_0_0_0_1px_var(--line-strong)]' : 'text-ink-2 hover:text-ink'">
           <input v-model="rating" class="sr-only" type="radio" :name="`rating-${entry.id}`" :value="null" /> No rating
         </label>
       </div>
     </fieldset>
-    <label :for="`note-${entry.id}`" class="text-sm font-semibold">Private note <span class="font-normal text-ink-3">(stays on your Mac; never sent to Scento)</span></label>
-    <textarea :id="`note-${entry.id}`" v-model="note" rows="3" maxlength="4000" class="rounded-control border border-line bg-sunken p-3 text-ink" />
+    <label :for="`note-${entry.id}`" class="text-[13px] font-medium text-ink-2">Private note <span class="font-normal text-ink-3">(stays on your Mac; never sent to Scento)</span></label>
+    <textarea :id="`note-${entry.id}`" v-model="note" rows="3" maxlength="4000" class="field" />
     <div class="flex items-center gap-3">
-      <button type="submit" :disabled="!dirty || status === 'saving'" class="tap rounded-control bg-gold px-4 font-semibold text-gold-ink disabled:opacity-50">{{ status === 'saving' ? 'Saving…' : 'Save' }}</button>
-      <p v-if="message" role="status" class="m-0 text-sm" :class="status === 'error' ? 'text-bad' : 'text-ok'">{{ message }}</p>
+      <button type="submit" :disabled="!dirty || status === 'saving'" class="btn btn-quiet">{{ status === 'saving' ? 'Saving…' : 'Save' }}</button>
+      <p v-if="message" role="status" class="m-0 text-[14px]" :class="status === 'error' ? 'text-bad' : 'text-ink-2'">{{ message }}</p>
     </div>
   </form>
 </template>

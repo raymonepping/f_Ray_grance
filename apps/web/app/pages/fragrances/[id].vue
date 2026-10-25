@@ -1,7 +1,7 @@
 <script setup lang="ts">
-// Fragrance detail (DESIGN §6.2): identity → pyramid → character → provenance.
+// Fragrance detail (DESIGN §6.2): identity, note profile, character, provenance.
 // Trait DNA, seasons and compare arrive in later phases and are not faked here.
-import { CONCENTRATION_LABEL, type CollectionEntry, type EffectiveField, type Fragrance, type Pyramid, type Variant } from '~~/shared/types';
+import { CONCENTRATION_LABEL, ORIGIN_LABEL, type CollectionEntry, type EffectiveField, type Fragrance, type Pyramid, type Variant } from '~~/shared/types';
 import type { DnaProfile } from '~~/shared/dna';
 
 const route = useRoute();
@@ -49,7 +49,7 @@ const subfamily = computed(() => data.value?.fields.subfamily?.value as string |
 </script>
 
 <template>
-  <div class="flex flex-col gap-6">
+  <div class="flex flex-col gap-5">
     <EmptyState
       v-if="error?.code === 'NOT_FOUND' || error?.code === 'VALIDATION_FAILED'"
       icon="search"
@@ -60,50 +60,85 @@ const subfamily = computed(() => data.value?.fields.subfamily?.value as string |
     />
     <StatusBanner v-else-if="error" tone="error" title="Could not load this fragrance">{{ error.message }} <button type="button" class="underline" @click="load">Retry</button></StatusBanner>
     <template v-else-if="data">
-      <GlassPanel variant="solid" class="flex flex-col gap-2 p-5 md:p-6">
-        <p class="m-0 text-xs font-semibold uppercase tracking-[0.12em] text-ink-3">{{ data.fragrance.brand }}</p>
-        <h1 class="[overflow-wrap:anywhere]">{{ data.fragrance.canonical_name }}</h1>
-        <p class="m-0 text-ink-2">
-          {{ data.fragrance.concentration ? CONCENTRATION_LABEL[data.fragrance.concentration] : 'Concentration not recorded' }}
-          <template v-if="data.fragrance.launch_year"> · {{ data.fragrance.launch_year }}</template>
-        </p>
-        <p v-if="data.fragrance.identity_status !== 'verified'" class="m-0 text-sm text-warn">Unverified draft — facts below are only what you entered.</p>
-        <NuxtLink v-else :to="`/compare?a=${data.fragrance.id}`" class="tap inline-flex w-fit items-center" @click="compareSelection.set([data.fragrance.id])">Compare with another fragrance</NuxtLink>
-      </GlassPanel>
-      <GlassPanel id="relationship" variant="solid" as="section" class="flex scroll-mt-24 flex-col gap-5 p-5" aria-labelledby="rel-h">
-        <h2 id="rel-h">Your collection</h2>
-        <p v-if="!entries.length" class="m-0 text-ink-2">Not in your collection yet.</p>
-        <article v-for="(e, i) in entries" :key="e.id" class="flex flex-col gap-4 border-t border-line pt-4 first:border-0 first:pt-0" :aria-label="`Collection entry ${i + 1}`">
-          <div class="flex flex-wrap items-center gap-2">
-            <FragranceCollectionStatusBadge :state="e.state" />
-            <span v-if="entries.length > 1" class="text-xs text-ink-3">Bottle {{ i + 1 }} of {{ entries.length }}</span>
+      <section class="bay overflow-hidden" aria-labelledby="frag-title">
+        <div class="flex flex-col gap-5 p-5 md:flex-row md:items-start md:justify-between md:p-7">
+          <div class="min-w-0">
+            <h1 id="frag-title" class="text-[28px] md:text-[36px] [overflow-wrap:anywhere]">{{ data.fragrance.canonical_name }}</h1>
+            <p class="m-0 mt-2 flex flex-wrap items-center gap-x-2 text-[15px] text-ink-2">
+              <span class="text-ink">{{ data.fragrance.brand }}</span>
+              <span aria-hidden="true" class="text-ink-3">/</span>
+              <span>{{ data.fragrance.concentration ? CONCENTRATION_LABEL[data.fragrance.concentration] : 'Concentration not recorded' }}</span>
+              <template v-if="data.fragrance.launch_year"><span aria-hidden="true" class="text-ink-3">/</span><span class="readout">{{ data.fragrance.launch_year }}</span></template>
+            </p>
+            <p v-if="data.fragrance.identity_status !== 'verified'" class="m-0 mt-3 text-[13px] text-warn">Unverified draft. Facts below are only what you entered.</p>
           </div>
-          <CollectionStatusPicker :entry="e" @updated="onUpdated" />
-          <CollectionEntryEditor :entry="e" @updated="onUpdated" />
-          <details v-if="e.history?.length">
-            <summary class="tap flex cursor-pointer items-center text-sm font-semibold">History ({{ e.history.length }})</summary>
-            <div class="mt-2"><CollectionHistoryTimeline :events="e.history" /></div>
-          </details>
-        </article>
-        <div class="border-t border-line pt-4">
-          <CollectionAddToCollection :fragrance-id="data.fragrance.id" :label="entries.length ? 'Add another bottle or sample as' : 'Add to collection as'" @added="onAdded" />
+          <div class="flex shrink-0 flex-wrap items-center gap-3 md:flex-col md:items-end">
+            <FragranceIdentityMark :status="data.fragrance.identity_status" />
+            <NuxtLink v-if="data.fragrance.identity_status === 'verified'" :to="`/compare?a=${data.fragrance.id}`" class="btn btn-quiet" @click="compareSelection.set([data.fragrance.id])">
+              <AppIcon name="columns" :size="16" /> Compare with another fragrance
+            </NuxtLink>
+          </div>
         </div>
-      </GlassPanel>
-      <div>
-        <h2 class="mb-3">Scent pyramid</h2>
-        <FragranceNotePyramid :pyramid="pyramid" />
+        <div class="border-t border-line bg-sunken/40 px-5 pb-5 pt-4 md:px-7 md:pb-7">
+          <div class="mb-3 flex items-center justify-between gap-3">
+            <h2 class="text-[15px]">Note profile</h2>
+            <AcademyExplainLink concept="pyramid" />
+          </div>
+          <FragranceChromatogram :pyramid="pyramid" label="Scent pyramid" />
+          <p class="m-0 mt-4 text-[12px] text-ink-3">
+            <template v-if="!pyramid">No pyramid has been sourced or entered for this fragrance.</template>
+            <template v-else>One peak per listed note. Height follows listed order, not concentration.<template v-if="data.fields.pyramid"> Source: {{ ORIGIN_LABEL[data.fields.pyramid.origin] }}.</template></template>
+          </p>
+        </div>
+      </section>
+
+      <div class="grid gap-5 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+        <div class="flex min-w-0 flex-col gap-5">
+          <GlassPanel variant="solid" as="section" class="flex flex-col gap-3 p-5" aria-labelledby="char-h">
+            <div class="flex items-center justify-between gap-3">
+              <h2 id="char-h">Character</h2>
+              <AcademyExplainLink concept="family" />
+            </div>
+            <dl v-if="family" class="m-0 grid grid-cols-[max-content_1fr] gap-x-6 gap-y-1 text-[14px]">
+              <dt class="etch self-center">Family</dt><dd class="m-0">{{ family }}<template v-if="subfamily"><span class="text-ink-3"> / </span>{{ subfamily }}</template></dd>
+            </dl>
+            <p v-if="character" class="m-0 max-w-[68ch] text-ink-2">{{ character }}</p>
+            <p v-else class="m-0 text-ink-3">Not available.</p>
+          </GlassPanel>
+          <div v-if="dna" class="flex flex-col gap-2">
+            <div class="flex items-center justify-between gap-3 px-1">
+              <h2>Scent traits</h2>
+              <AcademyExplainLink concept="traits" />
+            </div>
+            <FragranceScentTraitBars :rows="dna.traits.map(t => ({ code: t.code, label: t.label, values: [t.score] }))" :series="[data.fragrance.canonical_name]" :method="dna.method" />
+          </div>
+          <CollectionVariantList :fragrance-id="data.fragrance.id" :variants="variants" @changed="loadRelationship" />
+        </div>
+        <div class="order-first flex min-w-0 flex-col gap-5 xl:order-none">
+          <GlassPanel id="relationship" variant="solid" as="section" class="flex scroll-mt-24 flex-col gap-5 p-5" aria-labelledby="rel-h">
+            <h2 id="rel-h">Your collection</h2>
+            <p v-if="!entries.length" class="m-0 text-ink-2">Not in your collection yet.</p>
+            <article v-for="(e, i) in entries" :key="e.id" class="flex flex-col gap-4 border-t border-line pt-4 first:border-0 first:pt-0" :aria-label="`Collection entry ${i + 1}`">
+              <div class="flex flex-wrap items-center gap-3">
+                <FragranceCollectionStatusBadge :state="e.state" />
+                <span v-if="entries.length > 1" class="readout text-[12px] text-ink-3">Bottle {{ i + 1 }} of {{ entries.length }}</span>
+              </div>
+              <CollectionStatusPicker :entry="e" @updated="onUpdated" />
+              <CollectionEntryEditor :entry="e" @updated="onUpdated" />
+              <details v-if="e.history?.length">
+                <summary class="tap flex cursor-pointer items-center text-[13px] font-medium">History ({{ e.history.length }})</summary>
+                <div class="mt-2"><CollectionHistoryTimeline :events="e.history" /></div>
+              </details>
+            </article>
+            <div class="border-t border-line pt-4">
+              <CollectionAddToCollection :fragrance-id="data.fragrance.id" :label="entries.length ? 'Add another bottle or sample as' : 'Add to collection as'" @added="onAdded" />
+            </div>
+          </GlassPanel>
+          <FragranceSourceAttribution v-if="Object.keys(data.fields).length" :fields="data.fields" />
+          <FragranceLocalIndex v-if="data.fragrance.identity_status === 'verified'" :fragrance-id="data.fragrance.id" />
+        </div>
       </div>
-      <GlassPanel variant="solid" class="flex flex-col gap-2 p-5">
-        <h2>Character</h2>
-        <p v-if="family" class="m-0 text-ink-2">Family: {{ family }}<template v-if="subfamily"> / {{ subfamily }}</template></p>
-        <p v-if="character" class="m-0">{{ character }}</p>
-        <p v-else class="m-0 text-ink-3">Not available.</p>
-      </GlassPanel>
-      <FragranceSourceAttribution v-if="Object.keys(data.fields).length" :fields="data.fields" />
-      <FragranceScentTraitBars v-if="dna" :rows="dna.traits.map(t => ({ code: t.code, label: t.label, values: [t.score] }))" :series="[data.fragrance.canonical_name]" :method="dna.method" />
-      <CollectionVariantList :fragrance-id="data.fragrance.id" :variants="variants" @changed="loadRelationship" />
-      <FragranceLocalIndex v-if="data.fragrance.identity_status === 'verified'" :fragrance-id="data.fragrance.id" />
     </template>
-    <div v-else class="surface-solid h-64 rounded-card opacity-60" aria-busy="true" aria-label="Loading fragrance" />
+    <div v-else class="bay h-72 animate-pulse" aria-busy="true" aria-label="Loading fragrance" />
   </div>
 </template>

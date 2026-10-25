@@ -10,6 +10,7 @@ export interface Config {
   lockout: { maxFailures: number; windowMinutes: number };
   loginRatePerMinute: number;
   logLevel: string;
+  tutorModel: string | null;
   importEnabled: boolean;
 }
 
@@ -68,6 +69,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     },
     loginRatePerMinute: int(env, 'FRAY_LOGIN_RATE_PER_MINUTE', 10, 1, 1000),
     logLevel: str(env, 'FRAY_LOG_LEVEL', 'info'),
+    // Optional local generative model for the Academy tutor; unset = curated lessons only.
+    tutorModel: env.FRAY_TUTOR_MODEL && /^[a-z0-9._:/-]{1,80}$/i.test(env.FRAY_TUTOR_MODEL) ? env.FRAY_TUTOR_MODEL : null,
     importEnabled: env.FRAY_IMPORT_ENABLED === 'true',
   };
 }

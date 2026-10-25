@@ -7,20 +7,20 @@ async function inspect(){busy.value=true;message.value='';try{preview.value=awai
 async function apply(){if(!preview.value||!confirmation.value||preview.value.conflicts.length)return;busy.value=true;try{const r=await apiFetch<Preview>('/api/v1/import',{method:'POST',body:{bundle:bundle.value,previewHash:preview.value.previewHash,confirm:'IMPORT INTO CURRENT OWNER'}});message.value=r.applied?'Import applied. Existing history was preserved.':'Nothing was changed.';preview.value=null;}catch(e){message.value=e instanceof ApiFailure?e.message:'Import failed. Nothing was changed.';}finally{busy.value=false;}}
 </script>
 <template>
-  <section class="surface-solid flex min-w-0 flex-col gap-4 rounded-card p-5" aria-labelledby="portability-title">
+  <section class="bay flex min-w-0 flex-col gap-4 rounded-card p-5" aria-labelledby="portability-title">
     <h2 id="portability-title">Export &amp; import</h2>
-    <p class="m-0 text-sm text-ink-2">Your versioned JSON export includes collection history, private notes, four-season choices and source-backed manual corrections. It is separate from a PostgreSQL recovery backup.</p>
-    <button type="button" :disabled="busy" class="tap w-fit rounded-control border border-line px-4 disabled:opacity-60" @click="exportData">Export my collection</button>
-    <label for="import-file">Preview a JSON export</label><input id="import-file" type="file" accept="application/json,.json" :disabled="busy" class="max-w-full text-sm" @change="open" />
-    <button type="button" :disabled="!bundle||busy" class="tap w-fit rounded-control border border-line px-4 disabled:opacity-60" @click="inspect">Preview import</button>
+    <p class="m-0 text-[14px] text-ink-2">Your versioned JSON export includes collection history, private notes, four-season choices and source-backed manual corrections. It is separate from a PostgreSQL recovery backup.</p>
+    <button type="button" :disabled="busy" class="btn btn-quiet w-fit" @click="exportData">Export my collection</button>
+    <label for="import-file">Preview a JSON export</label><input id="import-file" type="file" accept="application/json,.json" :disabled="busy" class="max-w-full text-[14px]" @change="open" />
+    <button type="button" :disabled="!bundle||busy" class="btn btn-quiet w-fit" @click="inspect">Preview import</button>
     <div v-if="preview" class="flex flex-col gap-3 rounded-control border border-line p-3">
       <h3>Import preview</h3><p class="m-0">Target: {{ preview.target }}. Existing records are never overwritten.</p>
       <dl class="m-0 grid grid-cols-2 gap-2"><template v-for="(n,k) in preview.counts" :key="k"><dt class="[overflow-wrap:anywhere]">{{ String(k).replaceAll(/([A-Z])/g,' $1').toLowerCase() }}</dt><dd class="m-0">{{ n }}</dd></template></dl>
       <ul v-if="preview.conflicts.length" class="pl-5 text-warn"><li v-for="c in preview.conflicts" :key="c" class="[overflow-wrap:anywhere]">{{ c }}</li></ul>
-      <p class="m-0 text-sm text-ink-2">Applying imports remains disabled until independent recovery has been verified by the operator. Preview is read-only.</p>
+      <p class="m-0 text-[14px] text-ink-2">Applying imports remains disabled until independent recovery has been verified by the operator. Preview is read-only.</p>
       <label class="tap flex items-center gap-2"><input v-model="confirmation" type="checkbox" :disabled="busy||preview.conflicts.length>0" /> I reviewed this file and the current-owner target.</label>
-      <button type="button" :disabled="busy||!confirmation||preview.conflicts.length>0" class="tap w-fit rounded-control border border-line px-4 disabled:opacity-60" @click="apply">Apply reviewed import</button>
+      <button type="button" :disabled="busy||!confirmation||preview.conflicts.length>0" class="btn btn-quiet w-fit" @click="apply">Apply reviewed import</button>
     </div>
-    <p v-if="message" role="status" class="m-0 text-sm">{{ message }}</p>
+    <p v-if="message" role="status" class="m-0 text-[14px]">{{ message }}</p>
   </section>
 </template>

@@ -6,6 +6,9 @@
 import { createHash } from 'node:crypto';
 import { Type, type Static } from 'typebox';
 import { Value } from 'typebox/value';
+import { educationalSlug, normalizeFolio, type EducationalFolio, type EducationalKind } from './scento-folio.js';
+
+export type { EducationalFolio, EducationalKind } from './scento-folio.js';
 
 export type SourceErrorCode =
   | 'SOURCE_UNAVAILABLE'
@@ -108,6 +111,9 @@ export interface ScentoOptions {
   sleep?: (ms: number) => Promise<void>;
 }
 
+const MAX_BODY_CHARS = 256 * 1024;
+const MAX_CACHE_ENTRIES = 300;
+
 const SLUG_RE = /^https:\/\/www\.scento\.com\/perfumes\/([a-z0-9-]{1,120})$/;
 
 export class ScentoClient {
@@ -174,6 +180,8 @@ export class ScentoClient {
           continue; // 5xx: retry
         }
         const text = await res.text();
+        // Bounded bodies: a folio is a few KB; anything huge is not a documented answer.
+        if (text.length > MAX_BODY_CHARS) throw new SourceError('SOURCE_SCHEMA_CHANGED', 'Scento response exceeds the size bound');
         let body: unknown;
         try {
           body = JSON.parse(text);
@@ -181,6 +189,7 @@ export class ScentoClient {
           throw new SourceError('SOURCE_SCHEMA_CHANGED', 'Scento returned non-JSON');
         }
         const entry = { at: this.now(), body, hash: createHash('sha256').update(text).digest('hex') };
+        if (this.cache.size >= MAX_CACHE_ENTRIES) this.cache.delete(this.cache.keys().next().value!); // oldest first
         this.cache.set(path, entry);
         return entry;
       } catch (err) {
@@ -191,6 +200,27 @@ export class ScentoClient {
       }
     }
     throw lastErr ?? new SourceError('SOURCE_UNAVAILABLE', 'Scento unavailable');
+  }
+
+  /**
+   * On-demand educational folio (Phase 11): one documented read-only route per call,
+   * only a public concept term is sent. Returns plain-text, attributed, link-allowlisted data.
+   */
+  async educational(kind: EducationalKind, term: string): Promise<EducationalFolio> {
+    const slug = educationalSlug(term);
+    if (kind !== 'families' && !slug) throw new SourceError('NOT_FOUND', 'invalid educational term');
+    const path =
+      kind === 'material'
+        ? `/materials/${slug}`
+        : kind === 'term'
+          ? `/lexicon/${slug}`
+          : kind === 'family'
+            ? `/families/${slug}`
+            : kind === 'families'
+              ? '/families'
+              : `/journal?q=${encodeURIComponent(term.trim().slice(0, 80))}`;
+    const { body } = await this.get(path);
+    return normalizeFolio(kind, body, new Date(this.now()));
   }
 
   async search(query: string): Promise<SearchCandidate[]> {

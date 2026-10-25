@@ -21,10 +21,11 @@ export default defineNuxtConfig({
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
         { name: 'description', content: 'Your Fragrance DNA. Your Collection. Your Seasons.' },
-        { name: 'theme-color', content: '#101C2B' },
+        { name: 'theme-color', content: '#0b0e12' },
         { name: 'color-scheme', content: 'dark light' },
         { name: 'referrer', content: 'no-referrer' },
       ],
+      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
       // Applies saved theme/transparency before first paint (externalised for CSP at build).
       script: [{ src: '/prefs.js' }],
     },

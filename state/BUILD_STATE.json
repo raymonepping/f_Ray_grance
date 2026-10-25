@@ -461,8 +461,8 @@
       "implementation_commit": "5d6bee138de9c0319f4c6d440f868cfb0f669782"
     },
     "11": {
-      "status": "in_progress",
-      "agent": "codex",
+      "status": "completed",
+      "agent": "claude-opus-5-5",
       "prompt_id": "FRAY-CODEX-11",
       "started_at_utc": "2026-10-25T09:58:12Z",
       "baseline_head": "a46000b336b389b84d065b43c47163e15bb0dae6",
@@ -474,7 +474,47 @@
         "Private resumable training exercise and portable owner data",
         "Accessible Academy navigation, contextual explanation and optional local tutor",
         "Synthetic API/browser/recovery verification and commit_gh handoff"
-      ]
+      ],
+      "handover": {
+        "from": "codex",
+        "reason": "operator instructed Claude to take over; lock idle since 11:00:44 local (no writes for ~50 min)",
+        "codex_wip_files": [
+          "apps/api/src/domain/academy.ts",
+          "apps/api/src/routes/v1/academy.ts",
+          "apps/api/src/routes/v1/index.ts",
+          "db/migrations/0004_scent_academy.sql"
+        ],
+        "verified_before_takeover": {
+          "head": "7c64e94",
+          "pushed": true,
+          "ci": "all pushed commits Gitleaks success",
+          "make_test_clean_worktree": "PASS (api 136, web 24)",
+          "e2e": "27/28 first run (owner CLI transient), failing test passes on rerun",
+          "live_security_probe": "39/39",
+          "health": "PASS",
+          "drift": "NO_DRIFT"
+        }
+      },
+      "completed_at_utc": "2026-10-25T12:37:13Z",
+      "evidence": {
+        "make_test": "PASS",
+        "make_test_e2e": "36/36 PASS",
+        "web_unit": "33/33",
+        "validate_docs": "PASS (71 frozen docs)",
+        "health": "PASS",
+        "drift": "NO_DRIFT data+app",
+        "live_security_probe": "39/39",
+        "migration": "0004_scent_academy applied once",
+        "live_educational_lookup": "material Lavender available, reports/evidence/11/live-lookup.json",
+        "impeccable_detect": "[]",
+        "finish_review": "fix -> 6 resolved, 2 partial, 3 regressions fixed after verdict pass (not re-scored; skill caps one confirm round)"
+      },
+      "residual": [
+        "Tutor unavailable until FRAY_TUTOR_MODEL names an installed local generative model",
+        "Discover suggestions lack micro-chromatograms; My DNA choices still stacked form",
+        "Phase 10 remains blocked; import disabled; Tailscale deferred"
+      ],
+      "next_phase": "12"
     }
   },
   "accepted_adrs": [
@@ -487,7 +527,9 @@
     "ADR-007",
     "ADR-008",
     "ADR-009",
-    "ADR-010"
+    "ADR-010",
+    "ADR-011",
+    "ADR-012"
   ],
   "unresolved_blockers": [
     {
@@ -512,5 +554,5 @@
       "detail": "No approved separate environment supplied for a full recovery drill outside the original Podman VM."
     }
   ],
-  "updated_at_utc": "2026-10-25T09:58:12Z"
+  "updated_at_utc": "2026-10-25T12:37:13Z"
 }

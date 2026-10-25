@@ -19,7 +19,12 @@ export async function exportBundle(db:Db,owner:string):Promise<Bundle> {
   const seasons=await rows<Bundle['seasons'][number]>(db,"SELECT to_jsonb(s)-'owner_id'-'updated_at' AS record FROM app.seasonal_preferences s WHERE owner_id=$1 ORDER BY season",[owner]);
   for(const s of seasons)if(!Object.keys(s.choices).length){s.choices=emptyChoices();for(const n of s.liked_notes)s.choices.notes[n]='love';for(const n of s.avoided_notes)s.choices.notes[n]='avoid';}
   const seasonFragrances=await rows<Bundle['seasonFragrances'][number]>(db,"SELECT to_jsonb(s)-'owner_id'-'updated_at' AS record FROM app.season_fragrances s WHERE owner_id=$1 ORDER BY fragrance_id,season,affinity_origin",[owner]);
-  return {format:'f-ray-grance',version:1,exportedAt:new Date().toISOString(),fragrances,variants,sources,claims,entries,events,seasons,seasonFragrances};
+  const academy={
+    progress:await rows<NonNullable<Bundle['academy']>['progress'][number]>(db,"SELECT jsonb_build_object('lesson_slug',lesson_slug,'content_version',content_version,'status',status,'position',position) AS record FROM app.academy_progress WHERE owner_id=$1 ORDER BY lesson_slug,content_version",[owner]),
+    exercises:await rows<NonNullable<Bundle['academy']>['exercises'][number]>(db,"SELECT to_jsonb(x)-'owner_id' AS record FROM app.training_exercises x WHERE owner_id=$1 ORDER BY created_at,id",[owner]),
+    observations:await rows<NonNullable<Bundle['academy']>['observations'][number]>(db,"SELECT to_jsonb(o) AS record FROM app.training_observations o JOIN app.training_exercises x ON x.id=o.exercise_id WHERE x.owner_id=$1 ORDER BY o.exercise_id,o.stage",[owner]),
+  };
+  return {format:'f-ray-grance',version:2,exportedAt:new Date().toISOString(),fragrances,variants,sources,claims,entries,events,seasons,seasonFragrances,academy};
 }
 function withoutTimestamp(bundle:Bundle){const {exportedAt,...data}=bundle;return data;}
 export async function transfer(pool:pg.Pool,owner:string,value:unknown,previewHash?:string) {
@@ -67,8 +72,17 @@ export async function transfer(pool:pg.Pool,owner:string,value:unknown,previewHa
     for(const h of b.events){const existing=(await c.query('SELECT entry_id FROM app.collection_events WHERE portable_id=$1',[h.portable_id])).rows[0];if(existing&&existing.entry_id!==h.entry_id)conflicts.push(`History identity collision (${h.portable_id})`);}
     for(const s of b.seasons){const old=target.seasons.find(x=>x.season===s.season);if(old&&stable(old)!==stable(s))conflicts.push(`Existing ${s.season} preferences differ`);}
     for(const s of b.seasonFragrances){const old=target.seasonFragrances.find(x=>x.fragrance_id===s.fragrance_id&&x.season===s.season&&x.affinity_origin===s.affinity_origin);if(old&&stable(old)!==stable(s))conflicts.push(`Existing seasonal association differs (${s.fragrance_id})`);}
+    // Academy (version 2): differing existing records are conflicts; another owner's exercise id is never touched.
+    const academy=b.academy, mine=target.academy!;
+    if(academy){
+      for(const p of academy.progress){const old=mine.progress.find(x=>x.lesson_slug===p.lesson_slug&&x.content_version===p.content_version);if(old&&stable(old)!==stable(p))conflicts.push(`Existing lesson progress differs (${p.lesson_slug})`);}
+      for(const x of academy.exercises){const old=mine.exercises.find(e=>e.id===x.id);if(old&&stable(old)!==stable(x))conflicts.push(`Existing practice exercise differs (${x.id})`);}
+      for(const o of academy.observations){const old=mine.observations.find(e=>e.id===o.id||(e.exercise_id===o.exercise_id&&e.stage===o.stage));if(old&&stable(old)!==stable(o))conflicts.push(`Existing practice observation differs (${o.exercise_id}/${o.stage})`);}
+      if(academy.exercises.length){const foreign=await c.query('SELECT 1 FROM app.training_exercises WHERE id=ANY($1::uuid[]) AND owner_id<>$2 LIMIT 1',[academy.exercises.map(x=>x.id),owner]);if(foreign.rowCount)conflicts.push('Practice record identity conflicts with an existing record');}
+      if(academy.observations.length){const foreign=await c.query('SELECT 1 FROM app.training_observations o JOIN app.training_exercises x ON x.id=o.exercise_id WHERE o.id=ANY($1::uuid[]) AND x.owner_id<>$2 LIMIT 1',[academy.observations.map(o=>o.id),owner]);if(foreign.rowCount)conflicts.push('Practice observation identity conflicts with an existing record');}
+    }
     const hash=digest({owner,bundle:b,target:withoutTimestamp(target)});
-    const preview={previewHash:hash,conflicts:[...new Set(conflicts)],counts:{newEntries:b.entries.filter(e=>!target.entries.some(x=>x.id===e.id)).length,existingEntries:b.entries.filter(e=>target.entries.some(x=>x.id===e.id)).length,historyEvents:b.events.length,seasons:b.seasons.length,manualCorrections:b.claims.filter(x=>x.origin==='user').length},target:'Current signed-in owner on this Mac',destructive:false};
+    const preview={previewHash:hash,conflicts:[...new Set(conflicts)],counts:{newEntries:b.entries.filter(e=>!target.entries.some(x=>x.id===e.id)).length,existingEntries:b.entries.filter(e=>target.entries.some(x=>x.id===e.id)).length,historyEvents:b.events.length,seasons:b.seasons.length,manualCorrections:b.claims.filter(x=>x.origin==='user').length,lessonProgress:b.academy?.progress.length??0,practiceExercises:b.academy?.exercises.length??0,practiceObservations:b.academy?.observations.length??0},formatVersion:b.version,target:'Current signed-in owner on this Mac',destructive:false};
     if(previewHash===undefined){await c.query('ROLLBACK');return {...preview,applied:false};}
     if(previewHash!==hash)throw new ApiError('CONFLICT','File or target changed after preview; preview again');
     if(conflicts.length)throw new ApiError('CONFLICT','Import conflicts require review; nothing was changed',{conflicts:preview.conflicts});
@@ -100,6 +114,11 @@ export async function transfer(pool:pg.Pool,owner:string,value:unknown,previewHa
     }
     for(const s of b.seasons)await insert('seasonal_preferences',{...s,owner_id:owner},['liked_notes','avoided_notes','liked_traits','choices']);
     for(const s of b.seasonFragrances)await insert('season_fragrances',{...s,owner_id:owner});
+    if(b.academy){
+      for(const p of b.academy.progress)await insert('academy_progress',{...p,owner_id:owner});
+      for(const x of b.academy.exercises)await insert('training_exercises',{...x,owner_id:owner});
+      for(const o of b.academy.observations)await insert('training_observations',o,['descriptors']);
+    }
     await c.query('COMMIT');return {...preview,applied:true};
   }catch(err){await c.query('ROLLBACK').catch(()=>undefined);if((err as {code?:string}).code==='40001')throw new ApiError('CONFLICT','Target changed during import; preview again');throw err;}
   finally{c.release();}

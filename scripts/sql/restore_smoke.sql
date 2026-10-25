@@ -22,5 +22,13 @@ BEGIN
     RAISE EXCEPTION 'Restored collection read/write failed';
   END IF;
   INSERT INTO app.seasonal_preferences(owner_id,season,free_text) VALUES(owner_key,'winter','Synthetic seasonal note');
+  -- Phase 11: Academy progress and private practice remain writable after restore.
+  INSERT INTO app.academy_progress(owner_id,lesson_slug,content_version,status,position) VALUES(owner_key,'blotter-testing',1,'in_progress',1);
+  INSERT INTO app.training_exercises(owner_id,entry_id,title) VALUES(owner_key,entry_key,'Synthetic restore practice');
+  INSERT INTO app.training_observations(exercise_id,stage,elapsed_minutes,descriptors,free_text)
+    SELECT id,'initial',0,'["synthetic"]'::jsonb,'Synthetic observation' FROM app.training_exercises WHERE owner_id=owner_key;
+  IF (SELECT count(*) FROM app.training_observations o JOIN app.training_exercises x ON x.id=o.exercise_id WHERE x.owner_id=owner_key)<>1 THEN
+    RAISE EXCEPTION 'Restored Academy practice read/write failed';
+  END IF;
 END $$;
 ROLLBACK;

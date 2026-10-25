@@ -16,7 +16,7 @@ async function openPhantom(page: Page): Promise<void> {
   await page.getByLabel('Brand').fill('Rabanne');
   await page.getByLabel('Fragrance name').fill('Phantom in Red');
   await page.getByRole('button', { name: 'Search', exact: true }).click();
-  await page.getByRole('link', { name: /Open details|Saved — open details/ }).click();
+  await page.getByRole('link', { name: /Open details|Saved: open details/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Phantom in Red' })).toBeVisible();
 }
 
@@ -64,7 +64,7 @@ test.describe.serial('sample → owned → history, with server-acknowledged edi
     await page.reload();
     const after = page.getByRole('article', { name: 'Collection entry 1' });
     await expect(after.getByLabel(/Private note/)).toHaveValue('Evening scent; better in autumn.');
-    await expect(after.locator('label', { hasText: /^\s*4\s*out of 5\s*$/ })).toHaveClass(/border-gold/);
+    await expect(after.locator('label', { hasText: /^\s*4\s*out of 5\s*$/ })).toHaveClass(/bg-raised/);
   });
 
   test('a failed save never claims success and keeps the typed draft', async ({ page }) => {

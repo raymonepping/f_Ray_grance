@@ -34,7 +34,7 @@ export function usePreferences() {
     else delete d.dataset.transparency;
     if (prefs.value.reduceMotion) d.dataset.motion = 'reduce';
     else delete d.dataset.motion;
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', resolved === 'light' ? '#F6F5F1' : '#101C2B');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', resolved === 'light' ? '#eef1f4' : '#0b0e12');
   }
 
   function set<K extends keyof Prefs>(key: K, value: Prefs[K]): void {

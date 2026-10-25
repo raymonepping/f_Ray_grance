@@ -1,75 +1,78 @@
-/* F-Ray-grance design tokens (spec/DESIGN.md §2-3). Semantic tokens only; components
-   never use raw hex values. Dark navy + warm gold is the default; light is fully designed. */
+/* F-Ray-grance "Scent Spectrometer" tokens. Anodised graphite bays, etched hairlines,
+   ice-white ink and one phosphor-lime SIGNAL reserved for live, verified state only.
+   Components use these semantic tokens; no raw hex values in components.
+   Contrast for every text pairing is verified in test/contrast.test.ts. */
 :root,
 [data-theme='dark'] {
-  --bg-canvas: #101c2b;
-  --bg-elevated: #203246;
-  --bg-solid: #172638; /* opaque data surfaces (pyramids, tables, long text) */
-  --bg-sunken: #0c1622;
-  --text-primary: #f3f0e9;
-  --text-secondary: #b9c8d8;
-  --text-muted: #9fb0c3;
-  --accent-gold: #e3b458;
-  --accent-gold-ink: #101c2b; /* text on gold */
-  --accent-blue: #78a7d2;
-  --border-subtle: rgba(226, 239, 247, 0.16);
-  --border-strong: rgba(226, 239, 247, 0.32);
-  --focus-ring: #e3b458;
-  --status-success: #7bc9aa;
-  --status-warning: #ffd28a;
-  --status-error: #ff9b99;
-  --glass-fill: rgba(25, 43, 63, 0.82);
-  --glass-fill-strong: rgba(25, 43, 63, 0.94);
-  --glass-edge: rgba(226, 239, 247, 0.16);
-  --shadow-1: 0 8px 24px rgba(4, 10, 18, 0.35);
-  --shadow-2: 0 24px 64px rgba(4, 10, 18, 0.55);
-  --atmosphere-a: rgba(227, 180, 88, 0.1);
-  --atmosphere-b: rgba(120, 167, 210, 0.12);
+  --canvas: #0b0e12; /* instrument bay */
+  --panel: #11151b; /* opaque reading surface: tables, pyramids, prose */
+  --raised: #171c24; /* controls, selected rows */
+  --sunken: #080a0d; /* wells, tracks, inputs */
+  --ink: #e8edf2;
+  --ink-2: #a9b2bd;
+  --ink-3: #8a94a1;
+  --line: rgba(232, 237, 242, 0.09); /* etched hairline */
+  --line-strong: rgba(232, 237, 242, 0.2);
+  --action: #e8edf2; /* primary action fill: ink on graphite */
+  --action-ink: #0b0e12;
+  --signal: #d4ff4f; /* verified / live state ONLY */
+  --signal-ink: #0b0e12; /* text on a signal fill */
+  --signal-text: #d4ff4f; /* signal used as text */
+  --warn: #ffc14d;
+  --bad: #ff7a6b;
+  --tier-top: #e8edf2; /* chromatogram peaks: luminance ramp, labelled, never colour-only */
+  --tier-heart: #a9b2bd;
+  --tier-base: #6f7b89;
+  --focus: #e8edf2;
+  --chrome: rgba(11, 14, 18, 0.86); /* sticky header only */
+  --glow: rgba(212, 255, 79, 0.14); /* scan line wash */
+  --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 12px 32px -18px rgba(0, 0, 0, 0.8);
+  --shadow-2: 0 32px 80px -24px rgba(0, 0, 0, 0.85);
   color-scheme: dark;
 }
 
+/* Calibrated lab paper: the same instrument grammar under daylight. */
 [data-theme='light'] {
-  --bg-canvas: #f6f5f1;
-  --bg-elevated: #ffffff;
-  --bg-solid: #ffffff;
-  --bg-sunken: #ecebe5;
-  --text-primary: #101c2b;
-  --text-secondary: #495668;
-  --text-muted: #5a6677;
-  --accent-gold: #9c641d;
-  --accent-gold-ink: #ffffff;
-  --accent-blue: #315e89;
-  --border-subtle: rgba(16, 28, 43, 0.12);
-  --border-strong: rgba(16, 28, 43, 0.28);
-  --focus-ring: #315e89;
-  --status-success: #146b4c;
-  --status-warning: #945600;
-  --status-error: #a92f2d;
-  --glass-fill: rgba(255, 255, 255, 0.84);
-  --glass-fill-strong: rgba(255, 255, 255, 0.95);
-  --glass-edge: rgba(16, 28, 43, 0.12);
-  --shadow-1: 0 8px 24px rgba(16, 28, 43, 0.08);
-  --shadow-2: 0 24px 64px rgba(16, 28, 43, 0.18);
-  --atmosphere-a: rgba(156, 100, 29, 0.07);
-  --atmosphere-b: rgba(49, 94, 137, 0.07);
+  --canvas: #eef1f4;
+  --panel: #ffffff;
+  --raised: #f7f9fb;
+  --sunken: #e4e8ec;
+  --ink: #0c1016;
+  --ink-2: #3f4a57;
+  --ink-3: #56616e;
+  --line: rgba(12, 16, 22, 0.1);
+  --line-strong: rgba(12, 16, 22, 0.24);
+  --action: #0c1016;
+  --action-ink: #ffffff;
+  --signal: #c6f135;
+  --signal-ink: #0c1016;
+  --signal-text: #3e5a00;
+  --warn: #8a5a00;
+  --bad: #b42318;
+  --tier-top: #0c1016;
+  --tier-heart: #56616e;
+  --tier-base: #98a3af;
+  --focus: #0c1016;
+  --chrome: rgba(238, 241, 244, 0.88);
+  --glow: rgba(62, 90, 0, 0.1);
+  --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 12px 28px -20px rgba(12, 16, 22, 0.35);
+  --shadow-2: 0 30px 70px -28px rgba(12, 16, 22, 0.4);
   color-scheme: light;
 }
 
 :root {
-  --glass-blur: 12px;
-  --radius-card: 20px;
-  --radius-control: 12px;
-  --radius-hero: 24px;
-  --sidebar-w: 260px;
+  --radius: 10px; /* one corner language: 10px panels, 8px controls, pills only for tiny chips */
+  --radius-control: 8px;
   --rail-w: 76px;
-  --header-h: 72px;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --dur: 160ms;
-  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-@media (max-width: 1199px) {
-  :root { --header-h: 64px; }
+  --sidebar-w: 260px;
+  --header-h: 64px;
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+  --dur: 180ms;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 @media (max-width: 767px) {
-  :root { --header-h: 60px; }
+  :root {
+    --header-h: 56px;
+  }
 }

@@ -34,30 +34,30 @@ async function add() {
 </script>
 
 <template>
-  <details class="surface-solid rounded-card p-4 md:p-5">
-    <summary class="tap flex cursor-pointer items-center gap-2 font-semibold">Sizes &amp; barcodes ({{ variants.length }})</summary>
-    <ul v-if="variants.length" class="m-0 mt-3 flex list-none flex-col gap-1 p-0 text-sm">
+  <details class="bay p-5">
+    <summary class="tap flex cursor-pointer items-center gap-2 font-medium">Sizes &amp; barcodes ({{ variants.length }})</summary>
+    <ul v-if="variants.length" class="m-0 mt-3 flex list-none flex-col gap-1 p-0 text-[14px]">
       <li v-for="v in variants" :key="v.id">
         {{ v.bottle_ml ? `${Number(v.bottle_ml)} ml` : 'Size not recorded' }}
         <template v-if="v.gtin14"> · <span class="tabular-nums">{{ v.gtin14 }}</span></template>
-        · <span :class="v.verification_state === 'verified' ? 'text-ok' : 'text-ink-3'">{{ v.verification_state === 'verified' ? 'confirmed' : 'unconfirmed' }}</span>
+        · <span :class="v.verification_state === 'verified' ? 'text-signal-text' : 'text-ink-3'">{{ v.verification_state === 'verified' ? 'confirmed' : 'unconfirmed' }}</span>
       </li>
     </ul>
     <form class="mt-4 grid gap-3 sm:grid-cols-[2fr_1fr_auto] sm:items-end" @submit.prevent="add">
       <div class="flex flex-col gap-1">
-        <label :for="`gtin-${fragranceId}`" class="text-sm font-semibold">Barcode (EAN/GTIN)</label>
-        <input :id="`gtin-${fragranceId}`" v-model="gtin" inputmode="numeric" autocomplete="off" class="tap rounded-control border border-line bg-sunken px-3 text-ink" />
+        <label :for="`gtin-${fragranceId}`" class="text-[13px] font-medium text-ink-2">Barcode (EAN/GTIN)</label>
+        <input :id="`gtin-${fragranceId}`" v-model="gtin" inputmode="numeric" autocomplete="off" class="field" />
       </div>
       <div class="flex flex-col gap-1">
-        <label :for="`ml-${fragranceId}`" class="text-sm font-semibold">Size (ml)</label>
-        <input :id="`ml-${fragranceId}`" v-model.number="ml" type="number" min="1" max="5000" class="tap rounded-control border border-line bg-sunken px-3 text-ink" />
+        <label :for="`ml-${fragranceId}`" class="text-[13px] font-medium text-ink-2">Size (ml)</label>
+        <input :id="`ml-${fragranceId}`" v-model.number="ml" type="number" min="1" max="5000" class="field" />
       </div>
-      <button type="submit" :disabled="!gtin.trim() && !ml" class="tap rounded-control border border-line px-4 disabled:opacity-50">Add size</button>
-      <label class="tap flex items-center gap-2 text-sm sm:col-span-3">
-        <input v-model="confirmed" type="checkbox" class="size-5 accent-[var(--accent-gold)]" :disabled="!gtin.trim()" />
+      <button type="submit" :disabled="!gtin.trim() && !ml" class="btn btn-quiet">Add size</button>
+      <label class="tap flex items-center gap-2 text-[14px] sm:col-span-3">
+        <input v-model="confirmed" type="checkbox" class="size-5 accent-[var(--action)]" :disabled="!gtin.trim()" />
         I checked this barcode on the box of this exact fragrance
       </label>
     </form>
-    <p v-if="message" role="status" class="m-0 mt-2 text-sm" :class="error ? 'text-bad' : 'text-ok'">{{ message }}</p>
+    <p v-if="message" role="status" class="m-0 mt-2 text-[14px]" :class="error ? 'text-bad' : 'text-ink-2'">{{ message }}</p>
   </details>
 </template>

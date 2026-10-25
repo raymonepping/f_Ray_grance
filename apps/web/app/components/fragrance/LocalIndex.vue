@@ -9,10 +9,10 @@ async function index() {
 }
 </script>
 <template>
-  <details class="surface-solid rounded-card p-4">
-    <summary class="tap cursor-pointer font-semibold">Local semantic search</summary>
-    <p class="text-sm text-ink-2">Optional text embeddings can enrich discovery. This uses public source descriptors on your Mac, with no private annotations. Rebuild after source changes.</p>
-    <button type="button" :disabled="busy" class="tap rounded-control border border-line px-3 disabled:opacity-60" @click="index">{{ busy ? 'Updating local text index…' : 'Update local text index' }}</button>
+  <details class="bay p-5">
+    <summary class="tap cursor-pointer font-medium">Local semantic search</summary>
+    <p class="text-[14px] text-ink-2">Optional text embeddings can enrich discovery. This uses public source descriptors on your Mac, with no private annotations. Rebuild after source changes.</p>
+    <button type="button" :disabled="busy" class="btn btn-quiet" @click="index">{{ busy ? 'Updating local text index…' : 'Update local text index' }}</button>
     <p v-if="message" role="status">{{ message }}</p>
   </details>
 </template>

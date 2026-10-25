@@ -21,9 +21,15 @@ WITH o AS (SELECT id FROM app.owners WHERE username = :'u'),
      d4 AS (DELETE FROM app.season_fragrances WHERE owner_id IN (SELECT id FROM o) RETURNING 1),
      d5 AS (DELETE FROM app.sessions WHERE owner_id IN (SELECT id FROM o) RETURNING 1),
      d6 AS (DELETE FROM app.owner_credentials WHERE owner_id IN (SELECT id FROM o) RETURNING 1),
-     d7 AS (UPDATE app.source_claims SET corrected_by_owner=NULL WHERE corrected_by_owner IN (SELECT id FROM o) RETURNING 1)
+     d7 AS (UPDATE app.source_claims SET corrected_by_owner=NULL WHERE corrected_by_owner IN (SELECT id FROM o) RETURNING 1),
+     x AS (SELECT id FROM app.training_exercises WHERE owner_id IN (SELECT id FROM o)),
+     d8 AS (DELETE FROM app.training_observations WHERE exercise_id IN (SELECT id FROM x) RETURNING 1),
+     d9 AS (DELETE FROM app.academy_progress WHERE owner_id IN (SELECT id FROM o) RETURNING 1)
 SELECT (SELECT count(*) FROM d1) AS events, (SELECT count(*) FROM d2) AS entries,
-       (SELECT count(*) FROM d3) + (SELECT count(*) FROM d4) AS season_rows, (SELECT count(*) FROM d5) AS sessions;
+       (SELECT count(*) FROM d3) + (SELECT count(*) FROM d4) AS season_rows, (SELECT count(*) FROM d5) AS sessions,
+       (SELECT count(*) FROM d8) + (SELECT count(*) FROM d9) AS academy_rows;
+-- Exercises after their observations (data-modifying CTEs share one snapshot).
+DELETE FROM app.training_exercises WHERE owner_id IN (SELECT id FROM app.owners WHERE username = :'u');
 DELETE FROM app.login_attempts WHERE username = :'u';
 DELETE FROM app.owners WHERE username = :'u';
 COMMIT;

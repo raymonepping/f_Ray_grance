@@ -82,7 +82,7 @@ describe('versioned portability and additive restoration',()=>{
  });
  it('invalid identities/history/version and foreign-owner collisions cannot mutate the database',async()=>{
   const before=stable((await exportBundle(restored.get(),restoredOwner)).entries);
-  for(const bad of [{...bundle,version:2},{...bundle,events:[]},{...bundle,entries:[bundle.entries[0],bundle.entries[0]]}])await expect(transfer(restored.get(),restoredOwner,bad)).rejects.toThrow('Invalid portability');
+  for(const bad of [{...bundle,version:1},{...bundle,events:[]},{...bundle,entries:[bundle.entries[0],bundle.entries[0]]}])await expect(transfer(restored.get(),restoredOwner,bad)).rejects.toThrow('Invalid portability');
   expect(stable((await exportBundle(restored.get(),restoredOwner)).entries)).toBe(before);
   const preview=await call('POST','/api/v1/import',{bundle},otherHeaders);expect(preview.statusCode).toBe(200);expect(preview.json().conflicts).toContain('Collection record identity conflicts with an existing record');
   const invalid=await call('POST','/api/v1/import',{bundle:{...bundle,version:99}});expect(invalid.statusCode).toBe(400);

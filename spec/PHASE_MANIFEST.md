@@ -32,3 +32,7 @@ See accepted ADR-005, ADR-006 and ADR-007 for decision rationale and reversal cr
 ## Accepted Phase 11 addendum — ADR-010
 
 Phase 11: Scent Academy and optional local tutor, defined in [SCENT_ACADEMY_SPEC.md](SCENT_ACADEMY_SPEC.md). The operator explicitly authorized local development after reviewing Phase 10's outstanding recovery gates. This exception extends the execution plan to 11 for Codex/Claude while preserving Phase 10's blocked release status, import guard and ADR-009 remote-access deferral. Do not interpret development advancement as release acceptance. All other sequencing rules remain unchanged.
+
+## Accepted Phase 12 addendum — ADR-011
+
+Phase 12: source-attributed perfume images, defined in [PERFUME_IMAGE_SPEC.md](PERFUME_IMAGE_SPEC.md), for Codex and Claude, after Phase 11 is completed and pushed. Accepted by explicit operator instruction under [ADR-011](../docs/adr/ADR-011-phase12-perfume-images.md) on the same local-development terms as ADR-010: Phase 10 remains blocked, import remains disabled, remote access remains deferred, and no release acceptance is implied.

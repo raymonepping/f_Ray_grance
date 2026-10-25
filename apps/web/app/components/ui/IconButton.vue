@@ -6,11 +6,11 @@ defineProps<{ label: string; icon: 'search' | 'plus' | 'sun' | 'moon' | 'monitor
 <template>
   <button
     type="button"
-    class="tap motion inline-flex items-center justify-center rounded-control border border-transparent text-ink-2 hover:border-line hover:text-ink"
+    class="motion inline-flex size-9 items-center justify-center rounded-control border border-transparent text-ink-2 hover:border-line hover:bg-raised hover:text-ink pointer-coarse:size-11"
     :aria-label="label"
     :title="label"
     :aria-pressed="pressed === undefined ? undefined : pressed"
   >
-    <AppIcon :name="icon" />
+    <AppIcon :name="icon" :size="18" />
   </button>
 </template>

@@ -100,6 +100,6 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     lockout: deps.config.lockout,
     loginRatePerMinute: deps.config.loginRatePerMinute,
   });
-  await app.register(v1Routes, { prefix: '/api/v1', pool: deps.pool, scento: deps.scento ?? new ScentoClient(), ollama: deps.ollama ?? new OllamaClient(), importEnabled: deps.config.importEnabled });
+  await app.register(v1Routes, { prefix: '/api/v1', pool: deps.pool, scento: deps.scento ?? new ScentoClient(), ollama: deps.ollama ?? new OllamaClient(fetch, 'http://fray-ollama:11434', deps.config.tutorModel), importEnabled: deps.config.importEnabled });
   return app;
 }

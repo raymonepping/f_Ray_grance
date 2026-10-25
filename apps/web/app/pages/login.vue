@@ -32,26 +32,35 @@ async function submit() {
 </script>
 
 <template>
-  <div class="flex flex-col gap-6">
-    <div class="text-center">
-      <span class="mx-auto mb-3 grid size-12 place-items-center rounded-control bg-gold text-xl font-bold text-gold-ink" aria-hidden="true">F</span>
-      <h1>F-Ray-grance</h1>
-      <p class="m-0 mt-1 text-ink-2">Don't just track your fragrances. Understand your rotation.</p>
+  <div class="flex flex-col gap-8">
+    <div class="flex flex-col items-center gap-4 text-center">
+      <BrandSpectralMark :size="52" title="F-Ray-grance" class="text-ink" />
+      <div>
+        <h1 class="text-[28px]">F-Ray-grance</h1>
+        <p class="m-0 mt-2 text-[14px] text-ink-2">Don't just track your fragrances. Understand your rotation.</p>
+      </div>
     </div>
-    <GlassPanel variant="glass" as="section" class="p-6" aria-labelledby="signin-title">
-      <form class="flex flex-col gap-3" novalidate @submit.prevent="submit">
-        <h2 id="signin-title" class="text-xl">Sign in</h2>
+    <GlassPanel variant="overlay" as="section" class="p-6 sm:p-7" aria-labelledby="signin-title">
+      <form class="flex flex-col gap-4" novalidate @submit.prevent="submit">
+        <div class="flex items-center justify-between">
+          <h2 id="signin-title" class="text-[19px]">Sign in</h2>
+          <span class="flex items-center gap-2 text-[12px] text-ink-3"><AppIcon name="lock" :size="14" /> Local session</span>
+        </div>
         <StatusBanner v-if="expired" tone="warning" title="Your session expired">Sign in again to continue.</StatusBanner>
-        <label for="username" class="text-sm font-semibold">Username</label>
-        <input id="username" v-model="username" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required class="tap rounded-control border border-line bg-solid px-3 text-ink" />
-        <label for="password" class="text-sm font-semibold">Password</label>
-        <input id="password" v-model="password" name="password" type="password" autocomplete="current-password" required class="tap rounded-control border border-line bg-solid px-3 text-ink" />
-        <p v-if="error" role="alert" class="m-0 text-sm text-bad">{{ error }}</p>
-        <button type="submit" :disabled="busy || !username || !password" class="tap mt-2 rounded-control bg-gold font-semibold text-gold-ink motion hover:brightness-110 disabled:opacity-60">
+        <div class="flex flex-col gap-1.5">
+          <label for="username" class="text-[13px] font-medium text-ink-2">Username</label>
+          <input id="username" v-model="username" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required class="field" />
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label for="password" class="text-[13px] font-medium text-ink-2">Password</label>
+          <input id="password" v-model="password" name="password" type="password" autocomplete="current-password" required class="field" />
+        </div>
+        <p v-if="error" role="alert" class="m-0 text-[13px] text-bad">{{ error }}</p>
+        <button type="submit" :disabled="busy || !username || !password" class="btn btn-primary mt-1 w-full">
           {{ busy ? 'Signing in…' : 'Sign in' }}
         </button>
       </form>
     </GlassPanel>
-    <p class="m-0 text-center text-xs text-ink-3">Private app. The owner account is created on the Mac (<code>make owner-create</code>); there is no public sign-up.</p>
+    <p class="m-0 text-center text-[12px] text-ink-3">Private app. The owner account is created on the Mac (<code class="readout whitespace-nowrap">make owner-create</code>); there is no public sign-up.</p>
   </div>
 </template>

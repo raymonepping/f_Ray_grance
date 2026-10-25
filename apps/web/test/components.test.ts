@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import NotePyramid from '../app/components/fragrance/NotePyramid.vue';
 import ScentTraitBars from '../app/components/fragrance/ScentTraitBars.vue';
+import Chromatogram from '../app/components/fragrance/Chromatogram.vue';
 import { NAVIGATION, PRIMARY_NAV, SECONDARY_NAV, isActive } from '../shared/navigation';
 
 const stubs = { AppIcon: true };
@@ -32,7 +33,7 @@ describe('ScentTraitBars', () => {
     });
     expect(w.get('[data-testid="trait-sweet-0"]').text()).toBe('—');
     expect(w.get('[data-testid="trait-sweet-1"]').text()).toBe('0.0');
-    const sweetBars = w.findAll('tbody tr')[0]!.findAll('td div.absolute');
+    const sweetBars = w.findAll('tbody tr')[0]!.findAll('td [data-bar]');
     expect(sweetBars).toHaveLength(1); // only B (0) has a bar element; unknown A has none
     expect(w.get('caption').text()).toContain('method normalized-v1');
     expect(w.findAll('th[scope="row"]').map((t) => t.text())).toEqual(['Sweet', 'Fresh']);
@@ -42,7 +43,7 @@ describe('ScentTraitBars', () => {
 describe('navigation is defined once', () => {
   it('has the four primary journeys in DESIGN order plus secondary items', () => {
     expect(PRIMARY_NAV.map((n) => n.label)).toEqual(['Collection', 'Discover', 'Compare', 'My DNA']);
-    expect(SECONDARY_NAV.map((n) => n.label)).toEqual(['Samples', 'Settings']);
+    expect(SECONDARY_NAV.map((n) => n.label)).toEqual(['Samples', 'Academy', 'Settings']);
     expect(new Set(NAVIGATION.map((n) => n.to)).size).toBe(NAVIGATION.length);
   });
   it('marks Samples (not Collection) active for the sampled filter', () => {
@@ -52,5 +53,26 @@ describe('navigation is defined once', () => {
     expect(isActive(collection, '/collection', { state: 'sampled' })).toBe(false);
     expect(isActive(samples, '/collection', { state: 'sampled' })).toBe(true);
     expect(isActive(collection, '/discover', {})).toBe(false);
+  });
+});
+
+describe('Chromatogram', () => {
+  const pyramid = { top: ['Plum', 'Saffron', 'Bergamot'], heart: null, base: ['Oud'] };
+  it('summarises listed notes per tier for assistive tech and keeps unknown tiers unknown', () => {
+    const w = mount(Chromatogram, { props: { pyramid }, global: { stubs } });
+    expect(w.get('svg[role="img"]').attributes('aria-label')).toBe('Note profile: Top 3 notes, Heart not listed, Base 1 note');
+    expect(w.get('[aria-label="Top notes"]').text()).toContain('Saffron');
+    expect(w.find('[data-testid="tier-heart-unknown"]').text()).toBe('Not listed');
+  });
+  it('micro mode draws the trace without note labels', () => {
+    const w = mount(Chromatogram, { props: { pyramid, micro: true, label: 'Phantom' }, global: { stubs } });
+    expect(w.find('figcaption').exists()).toBe(false);
+    expect(w.findAll('path').length).toBeGreaterThan(0);
+    expect(w.get('svg').attributes('aria-label')).toContain('Phantom:');
+  });
+  it('draws no trace when no pyramid is known (never a fabricated curve)', () => {
+    const w = mount(Chromatogram, { props: { pyramid: null }, global: { stubs } });
+    expect(w.get('svg').attributes('aria-label')).toBe('Note profile: no notes listed');
+    expect(w.findAll('path')).toHaveLength(0);
   });
 });

@@ -10,6 +10,18 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Added
 
+- **Phase 11: Scent Academy.** Six original versioned lessons with resumable progress, a glossary and Explain-this links from fragrance detail and Compare. On-demand, attributed Scento reference lookups (material, lexicon, family map/detail, journal) with typed fallbacks, budgets and plain-text rendering. An optional local tutor that reports honestly when no generative model is configured. Private Train My Nose blotter practice (three stages, pause/resume, never scored). Migration `0004_scent_academy`, and export format v2 with academy data (v1 still imports).
+- **Console redesign: "Scent Spectrometer"** ([ADR-012](docs/adr/ADR-012-scent-spectrometer-visual-world.md)):
+  - graphite and ice-white tokens with lab-paper light theme;
+  - Geist and Geist Mono;
+  - phosphor-lime reserved for verified state;
+  - the Spectral F logo and favicon replace the written name top-left;
+  - Collection as a fixed-column sample table with micro-chromatograms and ratings;
+  - fragrance detail led by a labelled chromatogram with a one-time scan;
+  - Compare, Discover, My DNA, Settings and Login rebuilt in the same grammar;
+  - design-review Playwright captures in both themes.
+- ADR-011 accepts Phase 12 (perfume images) for local development; Phase 12 prompts and `spec/PERFUME_IMAGE_SPEC.md` registered.
+
 - **Phase 10 recovery tooling.** One shared snapshot for dump/manifest consistency, strict restore compatibility and runtime smoke checks, confirmed quarantine restore, reviewed app-only upgrade with saved-plan validation, and a synthetic persistence drill. Independent off-device recovery and release approval remain pending operator evidence.
 
 - **Phase 09 — Seasonal DNA and portability.** Four explicit seasonal profiles and fragrance affinities, season-aware collection/Compare/Discover, private versioned JSON export, validated read-only import preview and conflict-safe additive import with stable history identities. Live apply remains gated on independent recovery evidence.
@@ -33,6 +45,8 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Changed
 
+- Collection list API returns each entry's effective pyramid (same precedence as the profile) for the note-profile readout.
+- `spec/DESIGN.md` visual tokens superseded by ADR-012; its IA, behaviour and accessibility rules stay authoritative.
 - TypeScript pinned to 6.0.3 across workspaces (TypeScript 7's native compiler does not support `vue-tsc`).
 - Vault runtime database lease shortened from 15 to 5 minutes so the API recovers within minutes after a Mac sleep.
 - Spec documents live in `spec/`; validators, manifest hashing (frozen docs only) and 50 relative links adapted.

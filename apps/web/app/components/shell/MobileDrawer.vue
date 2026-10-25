@@ -57,37 +57,37 @@ onBeforeUnmount(() => {
 <template>
   <Teleport to="body">
     <div v-if="open" class="fixed inset-0 z-50 md:hidden">
-      <div class="absolute inset-0 bg-black/50" aria-hidden="true" data-testid="drawer-backdrop" @click="open = false" />
+      <div class="absolute inset-0 bg-black/60" aria-hidden="true" data-testid="drawer-backdrop" @click="open = false" />
       <div
         ref="panel"
         role="dialog"
         aria-modal="true"
         aria-label="Menu"
-        class="glass-strong absolute inset-y-0 left-0 flex w-[min(320px,86vw)] flex-col gap-2 overflow-y-auto rounded-none border-y-0 border-l-0 p-4 pt-[max(16px,env(safe-area-inset-top))]"
+        class="absolute inset-y-0 left-0 flex w-[min(320px,86vw)] flex-col gap-2 overflow-y-auto border-r border-line bg-panel p-4 pt-[max(16px,env(safe-area-inset-top))] shadow-[var(--shadow-2)]"
       >
         <div class="flex items-center justify-between">
-          <span class="font-semibold tracking-[0.12em]">F-RAY-GRANCE</span>
+          <BrandSpectralMark :size="30" title="F-Ray-grance" />
           <IconButton label="Close menu" icon="close" @click="open = false" />
         </div>
-        <nav aria-label="Menu" class="flex flex-col gap-1">
+        <nav aria-label="Menu" class="mt-3 flex flex-col gap-0.5">
           <NuxtLink
             v-for="item in NAVIGATION"
             :key="item.to"
             :to="item.to"
-            class="tap flex items-center gap-3 rounded-control px-3 no-underline"
-            :class="isActive(item, route.path, route.query) ? 'bg-sunken font-semibold text-ink' : 'text-ink-2'"
+            class="tap flex items-center gap-3 rounded-control px-3 py-2 no-underline"
+            :class="isActive(item, route.path, route.query) ? 'bg-raised font-medium text-ink' : 'text-ink-2'"
             :aria-current="isActive(item, route.path, route.query) ? 'page' : undefined"
           >
             <AppIcon :name="item.icon" />
-            <span class="flex flex-col"><span>{{ item.label }}</span><span class="text-xs text-ink-3">{{ item.description }}</span></span>
+            <span class="flex flex-col"><span>{{ item.label }}</span><span class="text-[12px] text-ink-3">{{ item.description }}</span></span>
           </NuxtLink>
         </nav>
         <div class="mt-auto flex items-center justify-between border-t border-line pt-3">
           <span class="text-sm text-ink-2">{{ owner?.displayName }}</span>
           <ShellThemeToggle />
         </div>
-        <button type="button" class="tap flex items-center gap-2 rounded-control border border-line px-3 text-ink-2" @click="signOut">
-          <AppIcon name="logout" /> Sign out
+        <button type="button" class="btn btn-quiet w-full" @click="signOut">
+          <AppIcon name="logout" :size="18" /> Sign out
         </button>
       </div>
     </div>

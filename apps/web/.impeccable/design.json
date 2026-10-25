@@ -1,0 +1,995 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-25T12:31:37+00:00",
+  "title": "Design System: F-Ray-grance",
+  "extensions": {
+    "colorMeta": {
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Instrument Bay Graphite",
+        "theme": "dark",
+        "canonical": "#0b0e12",
+        "oklch": "oklch(16.2% 0.010 255.7)",
+        "tonalRamp": [
+          "#090b0f",
+          "#22252a",
+          "#3f4247",
+          "#5e6267",
+          "#7e8388",
+          "#a1a5ab",
+          "#c5c9d0",
+          "#eaeff5"
+        ]
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "Anodised Panel",
+        "theme": "dark",
+        "canonical": "#11151b",
+        "oklch": "oklch(19.4% 0.014 258.4)",
+        "tonalRamp": [
+          "#080b11",
+          "#21252c",
+          "#3e4249",
+          "#5d6269",
+          "#7d838b",
+          "#a0a5ae",
+          "#c4cad2",
+          "#e9eff8"
+        ]
+      },
+      "raised": {
+        "role": "neutral",
+        "displayName": "Raised Graphite",
+        "theme": "dark",
+        "canonical": "#171c24",
+        "oklch": "oklch(22.5% 0.017 259.7)",
+        "tonalRamp": [
+          "#070b13",
+          "#20252e",
+          "#3d424b",
+          "#5b626b",
+          "#7c838d",
+          "#9fa5b0",
+          "#c3cad5",
+          "#e8effb"
+        ]
+      },
+      "sunken": {
+        "role": "neutral",
+        "displayName": "Well Black",
+        "theme": "dark",
+        "canonical": "#080a0d",
+        "oklch": "oklch(14.4% 0.007 256.9)",
+        "tonalRamp": [
+          "#090b0e",
+          "#232529",
+          "#3f4246",
+          "#5e6166",
+          "#7f8387",
+          "#a2a5aa",
+          "#c6c9ce",
+          "#ebeff4"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ice-White Ink",
+        "theme": "dark",
+        "canonical": "#e8edf2",
+        "oklch": "oklch(94.4% 0.009 247.9)",
+        "tonalRamp": [
+          "#080c0f",
+          "#222529",
+          "#3e4246",
+          "#5d6266",
+          "#7e8387",
+          "#a1a6aa",
+          "#c5cacf",
+          "#eaeff4"
+        ]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Steel Ink",
+        "theme": "dark",
+        "canonical": "#a9b2bd",
+        "oklch": "oklch(76.0% 0.019 253.4)",
+        "tonalRamp": [
+          "#060c13",
+          "#1f262e",
+          "#3b434c",
+          "#5a626c",
+          "#7b838e",
+          "#9da6b1",
+          "#c1cad5",
+          "#e6f0fb"
+        ]
+      },
+      "ink-3": {
+        "role": "neutral",
+        "displayName": "Etch Grey",
+        "theme": "dark",
+        "canonical": "#8a94a1",
+        "oklch": "oklch(66.3% 0.023 255.0)",
+        "tonalRamp": [
+          "#050c15",
+          "#1e2630",
+          "#3a434e",
+          "#59626e",
+          "#798390",
+          "#9ca6b3",
+          "#c0cad8",
+          "#e5f0fe"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Etched Hairline",
+        "theme": "dark",
+        "canonical": "rgba(232, 237, 242, 0.09)",
+        "note": "Alpha hairline or chrome fill; no tonal ramp."
+      },
+      "line-strong": {
+        "role": "neutral",
+        "displayName": "Scale Hairline",
+        "theme": "dark",
+        "canonical": "rgba(232, 237, 242, 0.2)",
+        "note": "Alpha hairline or chrome fill; no tonal ramp."
+      },
+      "action": {
+        "role": "neutral",
+        "displayName": "Ink Action",
+        "theme": "dark",
+        "canonical": "#e8edf2",
+        "oklch": "oklch(94.4% 0.009 247.9)",
+        "tonalRamp": [
+          "#080c0f",
+          "#222529",
+          "#3e4246",
+          "#5d6266",
+          "#7e8387",
+          "#a1a6aa",
+          "#c5cacf",
+          "#eaeff4"
+        ]
+      },
+      "action-ink": {
+        "role": "neutral",
+        "displayName": "Ink Action Text",
+        "theme": "dark",
+        "canonical": "#0b0e12",
+        "oklch": "oklch(16.2% 0.010 255.7)",
+        "tonalRamp": [
+          "#090b0f",
+          "#22252a",
+          "#3f4247",
+          "#5e6267",
+          "#7e8388",
+          "#a1a5ab",
+          "#c5c9d0",
+          "#eaeff5"
+        ]
+      },
+      "signal": {
+        "role": "primary",
+        "displayName": "Phosphor Lime",
+        "theme": "dark",
+        "canonical": "#d4ff4f",
+        "oklch": "oklch(93.9% 0.200 122.3)",
+        "tonalRamp": [
+          "#090d01",
+          "#202901",
+          "#3a4909",
+          "#566b05",
+          "#748f07",
+          "#94b429",
+          "#b3dc15",
+          "#ddfe8b"
+        ]
+      },
+      "signal-ink": {
+        "role": "primary",
+        "displayName": "Text On Lime",
+        "theme": "dark",
+        "canonical": "#0b0e12",
+        "oklch": "oklch(16.2% 0.010 255.7)",
+        "tonalRamp": [
+          "#090b0f",
+          "#22252a",
+          "#3f4247",
+          "#5e6267",
+          "#7e8388",
+          "#a1a5ab",
+          "#c5c9d0",
+          "#eaeff5"
+        ]
+      },
+      "signal-text": {
+        "role": "primary",
+        "displayName": "Lime Text",
+        "theme": "dark",
+        "canonical": "#d4ff4f",
+        "oklch": "oklch(93.9% 0.200 122.3)",
+        "tonalRamp": [
+          "#090d01",
+          "#202901",
+          "#3a4909",
+          "#566b05",
+          "#748f07",
+          "#94b429",
+          "#b3dc15",
+          "#ddfe8b"
+        ]
+      },
+      "warn": {
+        "role": "secondary",
+        "displayName": "Caution Amber",
+        "theme": "dark",
+        "canonical": "#ffc14d",
+        "oklch": "oklch(84.7% 0.147 79.8)",
+        "tonalRamp": [
+          "#110a01",
+          "#322203",
+          "#583c01",
+          "#7e5a0f",
+          "#a77917",
+          "#d5990f",
+          "#fbbd49",
+          "#feecd0"
+        ]
+      },
+      "bad": {
+        "role": "secondary",
+        "displayName": "Fault Coral",
+        "theme": "dark",
+        "canonical": "#ff7a6b",
+        "oklch": "oklch(73.2% 0.165 28.3)",
+        "tonalRamp": [
+          "#1e0101",
+          "#4a0705",
+          "#7f0909",
+          "#ab2c24",
+          "#d35246",
+          "#fb7768",
+          "#fdb4a9",
+          "#fde9e6"
+        ]
+      },
+      "tier-top": {
+        "role": "neutral",
+        "displayName": "Tier Ramp: Top",
+        "theme": "dark",
+        "canonical": "#e8edf2",
+        "oklch": "oklch(94.4% 0.009 247.9)",
+        "tonalRamp": [
+          "#080c0f",
+          "#222529",
+          "#3e4246",
+          "#5d6266",
+          "#7e8387",
+          "#a1a6aa",
+          "#c5cacf",
+          "#eaeff4"
+        ]
+      },
+      "tier-heart": {
+        "role": "neutral",
+        "displayName": "Tier Ramp: Heart",
+        "theme": "dark",
+        "canonical": "#a9b2bd",
+        "oklch": "oklch(76.0% 0.019 253.4)",
+        "tonalRamp": [
+          "#060c13",
+          "#1f262e",
+          "#3b434c",
+          "#5a626c",
+          "#7b838e",
+          "#9da6b1",
+          "#c1cad5",
+          "#e6f0fb"
+        ]
+      },
+      "tier-base": {
+        "role": "neutral",
+        "displayName": "Tier Ramp: Base",
+        "theme": "dark",
+        "canonical": "#6f7b89",
+        "oklch": "oklch(57.8% 0.026 252.3)",
+        "tonalRamp": [
+          "#040c16",
+          "#1c2631",
+          "#384350",
+          "#576270",
+          "#788492",
+          "#9aa6b5",
+          "#becbda",
+          "#e4f0fe"
+        ]
+      },
+      "focus": {
+        "role": "neutral",
+        "displayName": "Focus Ink",
+        "theme": "dark",
+        "canonical": "#e8edf2",
+        "oklch": "oklch(94.4% 0.009 247.9)",
+        "tonalRamp": [
+          "#080c0f",
+          "#222529",
+          "#3e4246",
+          "#5d6266",
+          "#7e8387",
+          "#a1a6aa",
+          "#c5cacf",
+          "#eaeff4"
+        ]
+      },
+      "chrome": {
+        "role": "neutral",
+        "displayName": "Header Chrome",
+        "theme": "dark",
+        "canonical": "rgba(11, 14, 18, 0.86)",
+        "note": "Alpha hairline or chrome fill; no tonal ramp."
+      },
+      "canvas-light": {
+        "role": "neutral",
+        "displayName": "Instrument Bay Graphite (lab paper)",
+        "theme": "light",
+        "canonical": "#eef1f4",
+        "oklch": "oklch(95.7% 0.005 247.9)",
+        "tonalRamp": [
+          "#090b0d",
+          "#232527",
+          "#404245",
+          "#5f6164",
+          "#808385",
+          "#a2a5a8",
+          "#c6c9cc",
+          "#eceff2"
+        ]
+      },
+      "panel-light": {
+        "role": "neutral",
+        "displayName": "Anodised Panel (lab paper)",
+        "theme": "light",
+        "canonical": "#ffffff",
+        "oklch": "oklch(100.0% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "raised-light": {
+        "role": "neutral",
+        "displayName": "Raised Graphite (lab paper)",
+        "theme": "light",
+        "canonical": "#f7f9fb",
+        "oklch": "oklch(98.1% 0.003 247.9)",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#242527",
+          "#414244",
+          "#606163",
+          "#818284",
+          "#a3a5a7",
+          "#c7c9cb",
+          "#edeff1"
+        ]
+      },
+      "sunken-light": {
+        "role": "neutral",
+        "displayName": "Well Black (lab paper)",
+        "theme": "light",
+        "canonical": "#e4e8ec",
+        "oklch": "oklch(92.9% 0.007 247.9)",
+        "tonalRamp": [
+          "#090b0e",
+          "#222528",
+          "#3f4246",
+          "#5e6265",
+          "#7f8386",
+          "#a2a5a9",
+          "#c6cacd",
+          "#ebeff3"
+        ]
+      },
+      "ink-light": {
+        "role": "neutral",
+        "displayName": "Ice-White Ink (lab paper)",
+        "theme": "light",
+        "canonical": "#0c1016",
+        "oklch": "oklch(17.2% 0.014 258.4)",
+        "tonalRamp": [
+          "#080b11",
+          "#21252c",
+          "#3d424a",
+          "#5c6269",
+          "#7d838b",
+          "#a0a5ae",
+          "#c4cad3",
+          "#e9eff8"
+        ]
+      },
+      "ink-2-light": {
+        "role": "neutral",
+        "displayName": "Steel Ink (lab paper)",
+        "theme": "light",
+        "canonical": "#3f4a57",
+        "oklch": "oklch(40.5% 0.026 252.8)",
+        "tonalRamp": [
+          "#040c16",
+          "#1c2632",
+          "#384350",
+          "#576270",
+          "#788492",
+          "#9aa6b5",
+          "#becbda",
+          "#e4f0fe"
+        ]
+      },
+      "ink-3-light": {
+        "role": "neutral",
+        "displayName": "Etch Grey (lab paper)",
+        "theme": "light",
+        "canonical": "#56616e",
+        "oklch": "oklch(48.8% 0.025 252.7)",
+        "tonalRamp": [
+          "#040c15",
+          "#1c2631",
+          "#39434f",
+          "#57626f",
+          "#788491",
+          "#9aa6b5",
+          "#becbd9",
+          "#e4f0fe"
+        ]
+      },
+      "line-light": {
+        "role": "neutral",
+        "displayName": "Etched Hairline (lab paper)",
+        "theme": "light",
+        "canonical": "rgba(12, 16, 22, 0.1)",
+        "note": "Alpha hairline or chrome fill; no tonal ramp."
+      },
+      "line-strong-light": {
+        "role": "neutral",
+        "displayName": "Scale Hairline (lab paper)",
+        "theme": "light",
+        "canonical": "rgba(12, 16, 22, 0.24)",
+        "note": "Alpha hairline or chrome fill; no tonal ramp."
+      },
+      "action-light": {
+        "role": "neutral",
+        "displayName": "Ink Action (lab paper)",
+        "theme": "light",
+        "canonical": "#0c1016",
+        "oklch": "oklch(17.2% 0.014 258.4)",
+        "tonalRamp": [
+          "#080b11",
+          "#21252c",
+          "#3d424a",
+          "#5c6269",
+          "#7d838b",
+          "#a0a5ae",
+          "#c4cad3",
+          "#e9eff8"
+        ]
+      },
+      "action-ink-light": {
+        "role": "neutral",
+        "displayName": "Ink Action Text (lab paper)",
+        "theme": "light",
+        "canonical": "#ffffff",
+        "oklch": "oklch(100.0% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "signal-light": {
+        "role": "primary",
+        "displayName": "Phosphor Lime (lab paper)",
+        "theme": "light",
+        "canonical": "#c6f135",
+        "oklch": "oklch(89.7% 0.204 122.4)",
+        "tonalRamp": [
+          "#090d01",
+          "#202905",
+          "#3a4906",
+          "#576a17",
+          "#758e22",
+          "#93b423",
+          "#b5db3b",
+          "#dffd95"
+        ]
+      },
+      "signal-ink-light": {
+        "role": "primary",
+        "displayName": "Text On Lime (lab paper)",
+        "theme": "light",
+        "canonical": "#0c1016",
+        "oklch": "oklch(17.2% 0.014 258.4)",
+        "tonalRamp": [
+          "#080b11",
+          "#21252c",
+          "#3d424a",
+          "#5c6269",
+          "#7d838b",
+          "#a0a5ae",
+          "#c4cad3",
+          "#e9eff8"
+        ]
+      },
+      "signal-text-light": {
+        "role": "primary",
+        "displayName": "Lime Text (lab paper)",
+        "theme": "light",
+        "canonical": "#3e5a00",
+        "oklch": "oklch(42.9% 0.111 127.6)",
+        "tonalRamp": [
+          "#070e01",
+          "#1c2b02",
+          "#344a0b",
+          "#4f6c1c",
+          "#6f8f41",
+          "#91b264",
+          "#b5d787",
+          "#d9fdab"
+        ]
+      },
+      "warn-light": {
+        "role": "secondary",
+        "displayName": "Caution Amber (lab paper)",
+        "theme": "light",
+        "canonical": "#8a5a00",
+        "oklch": "oklch(50.8% 0.108 73.3)",
+        "tonalRamp": [
+          "#120901",
+          "#342104",
+          "#5b3a03",
+          "#825712",
+          "#a9772e",
+          "#ce9a53",
+          "#f4be77",
+          "#feebd3"
+        ]
+      },
+      "bad-light": {
+        "role": "secondary",
+        "displayName": "Fault Coral (lab paper)",
+        "theme": "light",
+        "canonical": "#b42318",
+        "oklch": "oklch(50.0% 0.182 29.5)",
+        "tonalRamp": [
+          "#1c0201",
+          "#4a0804",
+          "#7e0b05",
+          "#b12015",
+          "#da4a3b",
+          "#fb7866",
+          "#fdb4a8",
+          "#fde9e6"
+        ]
+      },
+      "tier-top-light": {
+        "role": "neutral",
+        "displayName": "Tier Ramp: Top (lab paper)",
+        "theme": "light",
+        "canonical": "#0c1016",
+        "oklch": "oklch(17.2% 0.014 258.4)",
+        "tonalRamp": [
+          "#080b11",
+          "#21252c",
+          "#3d424a",
+          "#5c6269",
+          "#7d838b",
+          "#a0a5ae",
+          "#c4cad3",
+          "#e9eff8"
+        ]
+      },
+      "tier-heart-light": {
+        "role": "neutral",
+        "displayName": "Tier Ramp: Heart (lab paper)",
+        "theme": "light",
+        "canonical": "#56616e",
+        "oklch": "oklch(48.8% 0.025 252.7)",
+        "tonalRamp": [
+          "#040c15",
+          "#1c2631",
+          "#39434f",
+          "#57626f",
+          "#788491",
+          "#9aa6b5",
+          "#becbd9",
+          "#e4f0fe"
+        ]
+      },
+      "tier-base-light": {
+        "role": "neutral",
+        "displayName": "Tier Ramp: Base (lab paper)",
+        "theme": "light",
+        "canonical": "#98a3af",
+        "oklch": "oklch(71.1% 0.022 250.5)",
+        "tonalRamp": [
+          "#050c14",
+          "#1d262f",
+          "#3a434d",
+          "#58626d",
+          "#79848f",
+          "#9ba6b2",
+          "#bfcbd7",
+          "#e4f0fd"
+        ]
+      },
+      "focus-light": {
+        "role": "neutral",
+        "displayName": "Focus Ink (lab paper)",
+        "theme": "light",
+        "canonical": "#0c1016",
+        "oklch": "oklch(17.2% 0.014 258.4)",
+        "tonalRamp": [
+          "#080b11",
+          "#21252c",
+          "#3d424a",
+          "#5c6269",
+          "#7d838b",
+          "#a0a5ae",
+          "#c4cad3",
+          "#e9eff8"
+        ]
+      },
+      "chrome-light": {
+        "role": "neutral",
+        "displayName": "Header Chrome (lab paper)",
+        "theme": "light",
+        "canonical": "rgba(238, 241, 244, 0.88)",
+        "note": "Alpha hairline or chrome fill; no tonal ramp."
+      }
+    },
+    "themes": [
+      {
+        "name": "dark",
+        "selector": ":root, [data-theme='dark']",
+        "default": true,
+        "description": "Anodised graphite instrument bay."
+      },
+      {
+        "name": "light",
+        "selector": "[data-theme='light']",
+        "default": false,
+        "description": "Calibrated lab paper with the same grammar; frontmatter keys ending in -light."
+      }
+    ],
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Fragrance name on its detail page only; 30px under 768px."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "One page title per view; 24px under 768px."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Bay and section headings; 17px in bay headers with a toolbar."
+      },
+      "subtitle": {
+        "displayName": "Subtitle",
+        "purpose": "Sub-section headings inside a bay."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Prose and row names (500); measure capped at 60 to 68ch."
+      },
+      "body-small": {
+        "displayName": "Body Small",
+        "purpose": "Secondary row text, brand lines, form labels (500), status labels."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Explanatory footnotes such as the chromatogram height statement."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "All button labels."
+      },
+      "label": {
+        "displayName": "Etched Label",
+        "purpose": "Mono caps column, axis, tier and counter labels; uppercase; never above a heading."
+      },
+      "readout": {
+        "displayName": "Readout",
+        "purpose": "Values, ratings, years, identifiers in cells; 11px for chromatogram peak labels."
+      },
+      "readout-counter": {
+        "displayName": "Readout Counter",
+        "purpose": "Zero-padded page-level counters."
+      }
+    },
+    "shadows": [
+      {
+        "name": "float",
+        "value": "0 32px 80px -24px rgba(0, 0, 0, 0.85)",
+        "valueLight": "0 30px 70px -28px rgba(12, 16, 22, 0.4)",
+        "token": "--shadow-2",
+        "purpose": "Floating layers only: mobile drawer, search dialog, overlay panel, compare tray."
+      },
+      {
+        "name": "selected-inset",
+        "value": "inset 0 0 0 1px var(--line-strong)",
+        "purpose": "Selected segment in a segmented control."
+      },
+      {
+        "name": "signal-halo",
+        "value": "0 0 0 3px color-mix(in oklab, var(--signal) 18%, transparent)",
+        "purpose": "Halo on the verified and live signal dot."
+      }
+    ],
+    "materials": [
+      {
+        "name": "header-chrome",
+        "value": "background: var(--chrome); backdrop-filter: saturate(140%) blur(14px)",
+        "purpose": "Sticky header only; opaque canvas fallback for no backdrop-filter, reduced transparency (system or setting) and forced colours."
+      },
+      {
+        "name": "table-ruler",
+        "value": "repeating-linear-gradient(90deg, var(--line-strong) 0 1px, transparent 1px 8px); background-size: 100% 4px; background-position: left bottom; background-repeat: no-repeat",
+        "purpose": "Single tick layer on the column-label strip of a measurement table only."
+      },
+      {
+        "name": "focus-ring",
+        "value": "outline: 2px solid var(--focus); outline-offset: 2px",
+        "purpose": "Every interactive element; fields use a 1px offset."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "token": "--ease",
+        "purpose": "State transitions: colour, border, background, opacity, transform."
+      },
+      {
+        "name": "duration-state",
+        "value": "180ms",
+        "token": "--dur",
+        "purpose": "Default state transition; range 120 to 240ms."
+      },
+      {
+        "name": "press",
+        "value": "translateY(1px), 120ms",
+        "purpose": "Button pressed state."
+      },
+      {
+        "name": "the-scan",
+        "value": "1100ms cubic-bezier(0.65, 0, 0.35, 1); head fades over 260ms after; labels fade 400ms after 900ms",
+        "purpose": "Chromatogram read head sweep and reveal, once on mount; instant under reduced motion."
+      },
+      {
+        "name": "sidebar-collapse",
+        "value": "none (snap)",
+        "purpose": "Sidebar width never animates."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "0ms",
+        "purpose": "prefers-reduced-motion or the in-app motion setting zeroes all transitions and animations."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px",
+        "purpose": "Readout counters appear on Collection; header action label shows."
+      },
+      {
+        "name": "md",
+        "value": "768px",
+        "purpose": "Bottom nav and drawer give way to the icon rail; table switches to fixed columns; header 56px to 64px."
+      },
+      {
+        "name": "lg",
+        "value": "1024px",
+        "purpose": "Breadcrumbs replace the plain title; search trigger widens to 288px."
+      },
+      {
+        "name": "xl",
+        "value": "1280px",
+        "purpose": "32px gutters; detail and academy two-column grids."
+      },
+      {
+        "name": "sidebar",
+        "value": "1200px",
+        "purpose": "Full 260px sidebar; below this the 76px rail is forced."
+      }
+    ],
+    "layout": {
+      "contentMaxWidth": "1440px",
+      "sidebarWidth": "260px",
+      "railWidth": "76px",
+      "headerHeight": "64px (56px under 768px)",
+      "gutters": "16px / 24px / 32px",
+      "touchTarget": "44px"
+    },
+    "icons": {
+      "set": "Lucide line icons",
+      "stroke": 1.75,
+      "defaultSize": "20px (18px in nav and icon buttons, 16px in buttons)"
+    },
+    "logo": {
+      "name": "Spectral F",
+      "source": "app/components/brand/SpectralMark.vue, public/favicon.svg",
+      "accessibleName": "F-Ray-grance",
+      "placement": "Alone at top-left of sidebar, drawer and mobile header; the written name only in the footer and sign-in headline."
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one filled action per view, normally in the header. Ink on graphite, never lime.",
+      "html": "<div class=\"ds-root\"><button class=\"ds-btn ds-btn-primary\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"M12 5v14\"/></svg> Add fragrance</button></div>",
+      "css": ":host, .ds-root { --canvas:#0b0e12; --panel:#11151b; --raised:#171c24; --sunken:#080a0d; --ink:#e8edf2; --ink-2:#a9b2bd; --ink-3:#8a94a1; --line:rgba(232,237,242,0.09); --line-strong:rgba(232,237,242,0.2); --action:#e8edf2; --action-ink:#0b0e12; --signal:#d4ff4f; --signal-ink:#0b0e12; --signal-text:#d4ff4f; --warn:#ffc14d; --bad:#ff7a6b; --tier-top:#e8edf2; --tier-heart:#a9b2bd; --tier-base:#6f7b89; --focus:#e8edf2; --radius:10px; --radius-control:8px; --font-sans:'Geist Variable', ui-sans-serif, system-ui, sans-serif; --font-mono:'Geist Mono Variable', ui-monospace, Menlo, monospace; --dur:180ms; --ease:cubic-bezier(0.16,1,0.3,1); } .ds-btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:40px; padding:0 14px; border-radius:var(--radius-control,8px); font-family:var(--font-sans); font-weight:550; font-size:14px; white-space:nowrap; border:1px solid transparent; cursor:pointer; transition:background-color var(--dur,180ms) var(--ease), border-color var(--dur,180ms) var(--ease), color var(--dur,180ms) var(--ease), transform 120ms var(--ease); } .ds-btn:active:not(:disabled) { transform:translateY(1px); } .ds-btn:disabled { opacity:0.45; cursor:not-allowed; } .ds-btn:focus-visible { outline:2px solid var(--focus,#e8edf2); outline-offset:2px; } .ds-btn-primary { background:var(--action); color:var(--action-ink); } .ds-btn-primary:hover:not(:disabled) { background:color-mix(in oklab, var(--action) 88%, var(--canvas)); }"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Secondary actions: compare, the compare tray, sign out.",
+      "html": "<div class=\"ds-root\"><button class=\"ds-btn ds-btn-quiet\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M12 3v18\"/></svg> Compare with another fragrance</button></div>",
+      "css": ":host, .ds-root { --canvas:#0b0e12; --panel:#11151b; --raised:#171c24; --sunken:#080a0d; --ink:#e8edf2; --ink-2:#a9b2bd; --ink-3:#8a94a1; --line:rgba(232,237,242,0.09); --line-strong:rgba(232,237,242,0.2); --action:#e8edf2; --action-ink:#0b0e12; --signal:#d4ff4f; --signal-ink:#0b0e12; --signal-text:#d4ff4f; --warn:#ffc14d; --bad:#ff7a6b; --tier-top:#e8edf2; --tier-heart:#a9b2bd; --tier-base:#6f7b89; --focus:#e8edf2; --radius:10px; --radius-control:8px; --font-sans:'Geist Variable', ui-sans-serif, system-ui, sans-serif; --font-mono:'Geist Mono Variable', ui-monospace, Menlo, monospace; --dur:180ms; --ease:cubic-bezier(0.16,1,0.3,1); } .ds-btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:40px; padding:0 14px; border-radius:var(--radius-control,8px); font-family:var(--font-sans); font-weight:550; font-size:14px; white-space:nowrap; border:1px solid transparent; cursor:pointer; transition:background-color var(--dur,180ms) var(--ease), border-color var(--dur,180ms) var(--ease), color var(--dur,180ms) var(--ease), transform 120ms var(--ease); } .ds-btn:active:not(:disabled) { transform:translateY(1px); } .ds-btn:disabled { opacity:0.45; cursor:not-allowed; } .ds-btn:focus-visible { outline:2px solid var(--focus,#e8edf2); outline-offset:2px; } .ds-btn-quiet { background:var(--raised); color:var(--ink); border-color:var(--line); } .ds-btn-quiet:hover:not(:disabled) { border-color:var(--line-strong); }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Row actions and dismissals such as Add to compare and Clear.",
+      "html": "<div class=\"ds-root\"><button class=\"ds-btn ds-btn-ghost\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M12 3v18\"/></svg> Add</button></div>",
+      "css": ":host, .ds-root { --canvas:#0b0e12; --panel:#11151b; --raised:#171c24; --sunken:#080a0d; --ink:#e8edf2; --ink-2:#a9b2bd; --ink-3:#8a94a1; --line:rgba(232,237,242,0.09); --line-strong:rgba(232,237,242,0.2); --action:#e8edf2; --action-ink:#0b0e12; --signal:#d4ff4f; --signal-ink:#0b0e12; --signal-text:#d4ff4f; --warn:#ffc14d; --bad:#ff7a6b; --tier-top:#e8edf2; --tier-heart:#a9b2bd; --tier-base:#6f7b89; --focus:#e8edf2; --radius:10px; --radius-control:8px; --font-sans:'Geist Variable', ui-sans-serif, system-ui, sans-serif; --font-mono:'Geist Mono Variable', ui-monospace, Menlo, monospace; --dur:180ms; --ease:cubic-bezier(0.16,1,0.3,1); } .ds-btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:40px; padding:0 14px; border-radius:var(--radius-control,8px); font-family:var(--font-sans); font-weight:550; font-size:14px; white-space:nowrap; border:1px solid transparent; cursor:pointer; transition:background-color var(--dur,180ms) var(--ease), border-color var(--dur,180ms) var(--ease), color var(--dur,180ms) var(--ease), transform 120ms var(--ease); } .ds-btn:active:not(:disabled) { transform:translateY(1px); } .ds-btn:disabled { opacity:0.45; cursor:not-allowed; } .ds-btn:focus-visible { outline:2px solid var(--focus,#e8edf2); outline-offset:2px; } .ds-btn-ghost { background:transparent; color:var(--ink-2); } .ds-btn-ghost:hover:not(:disabled) { color:var(--ink); background:var(--raised); }"
+    },
+    {
+      "name": "Field and Select",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Sunken well with the label above; selects carry the drawn chevron.",
+      "html": "<div class=\"ds-root ds-form\"><label class=\"ds-label\" for=\"ds-q\">Search your collection</label><input id=\"ds-q\" class=\"ds-field\" type=\"search\" placeholder=\"Brand, name or barcode\"><label class=\"ds-label\" for=\"ds-s\">Sort</label><select id=\"ds-s\" class=\"ds-field ds-select\"><option>Recent</option><option>Name</option></select></div>",
+      "css": ":host, .ds-root { --canvas:#0b0e12; --panel:#11151b; --raised:#171c24; --sunken:#080a0d; --ink:#e8edf2; --ink-2:#a9b2bd; --ink-3:#8a94a1; --line:rgba(232,237,242,0.09); --line-strong:rgba(232,237,242,0.2); --action:#e8edf2; --action-ink:#0b0e12; --signal:#d4ff4f; --signal-ink:#0b0e12; --signal-text:#d4ff4f; --warn:#ffc14d; --bad:#ff7a6b; --tier-top:#e8edf2; --tier-heart:#a9b2bd; --tier-base:#6f7b89; --focus:#e8edf2; --radius:10px; --radius-control:8px; --font-sans:'Geist Variable', ui-sans-serif, system-ui, sans-serif; --font-mono:'Geist Mono Variable', ui-monospace, Menlo, monospace; --dur:180ms; --ease:cubic-bezier(0.16,1,0.3,1); } .ds-form { display:flex; flex-direction:column; gap:6px; max-width:320px; font-family:var(--font-sans); } .ds-label { font-size:13px; font-weight:500; color:var(--ink-2); } .ds-field { min-height:40px; width:100%; padding:0 12px; background:var(--sunken); border:1px solid var(--line); border-radius:var(--radius-control); color:var(--ink); font:inherit; font-size:15px; transition:border-color var(--dur) var(--ease); } .ds-field::placeholder { color:var(--ink-3); } .ds-field:hover { border-color:var(--line-strong); } .ds-field:focus-visible { outline:2px solid var(--focus); outline-offset:1px; border-color:transparent; } .ds-select { appearance:none; -webkit-appearance:none; padding-right:34px; background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a94a1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\"); background-repeat:no-repeat; background-position:right 12px center; }"
+    },
+    {
+      "name": "Channel Rail Navigation",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Sidebar with the Spectral F alone at top-left; the active row has a raised fill and a 2px ink bar, never lime.",
+      "html": "<div class=\"ds-root\"><aside class=\"ds-rail\"><div class=\"ds-rail-head\"><svg width=\"34\" height=\"34\" viewBox=\"0 0 32 32\" role=\"img\" aria-label=\"F-Ray-grance\"><rect x=\"7\" y=\"4\" width=\"4\" height=\"24\" rx=\"0.6\" fill=\"currentColor\"/><rect x=\"12.5\" y=\"4\" width=\"15.5\" height=\"3\" rx=\"0.4\" fill=\"currentColor\"/><rect x=\"12.5\" y=\"8.4\" width=\"11.5\" height=\"2\" rx=\"0.3\" fill=\"currentColor\" opacity=\"0.72\"/><rect x=\"12.5\" y=\"11.6\" width=\"7\" height=\"1.4\" rx=\"0.2\" fill=\"currentColor\" opacity=\"0.5\"/><rect x=\"12.5\" y=\"15\" width=\"11\" height=\"3\" rx=\"0.4\" fill=\"currentColor\"/><rect x=\"12.5\" y=\"19.4\" width=\"6\" height=\"2\" rx=\"0.3\" fill=\"currentColor\" opacity=\"0.6\"/></svg></div><nav class=\"ds-nav\" aria-label=\"Main\"><a class=\"ds-nav-item is-active\" aria-current=\"page\" href=\"#\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m16 6 4 14\"/><path d=\"M12 6v14\"/><path d=\"M8 8v12\"/><path d=\"M4 4v16\"/></svg><span>Collection</span></a><a class=\"ds-nav-item\" href=\"#\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12z\"/></svg><span>Discover</span></a></nav></aside></div>",
+      "css": ":host, .ds-root { --canvas:#0b0e12; --panel:#11151b; --raised:#171c24; --sunken:#080a0d; --ink:#e8edf2; --ink-2:#a9b2bd; --ink-3:#8a94a1; --line:rgba(232,237,242,0.09); --line-strong:rgba(232,237,242,0.2); --action:#e8edf2; --action-ink:#0b0e12; --signal:#d4ff4f; --signal-ink:#0b0e12; --signal-text:#d4ff4f; --warn:#ffc14d; --bad:#ff7a6b; --tier-top:#e8edf2; --tier-heart:#a9b2bd; --tier-base:#6f7b89; --focus:#e8edf2; --radius:10px; --radius-control:8px; --font-sans:'Geist Variable', ui-sans-serif, system-ui, sans-serif; --font-mono:'Geist Mono Variable', ui-monospace, Menlo, monospace; --dur:180ms; --ease:cubic-bezier(0.16,1,0.3,1); } .ds-rail { width:260px; background:var(--panel); border-right:1px solid var(--line); font-family:var(--font-sans); color:var(--ink); padding-bottom:12px; } .ds-rail-head { height:64px; display:flex; align-items:center; padding-left:20px; border-bottom:1px solid var(--line); } .ds-nav { display:flex; flex-direction:column; gap:2px; padding:20px 12px 0; } .ds-nav-item { position:relative; display:flex; align-items:center; gap:12px; height:40px; padding:0 12px; border-radius:var(--radius-control); font-size:14px; color:var(--ink-2); text-decoration:none; transition:background-color var(--dur) var(--ease), color var(--dur) var(--ease); } .ds-nav-item:hover { background:color-mix(in oklab, var(--raised) 60%, transparent); color:var(--ink); } .ds-nav-item:focus-visible { outline:2px solid var(--focus); outline-offset:2px; } .ds-nav-item.is-active { background:var(--raised); color:var(--ink); font-weight:500; } .ds-nav-item.is-active::before { content:''; position:absolute; left:0; top:10px; bottom:10px; width:2px; border-radius:999px; background:var(--ink); }"
+    },
+    {
+      "name": "Segmented Control",
+      "kind": "chip",
+      "refersTo": "segment-item-selected",
+      "description": "Status filters, status picker, ratings and seasons: a sunken track with a raised, inset-ringed selection.",
+      "html": "<div class=\"ds-root\"><ul class=\"ds-seg\"><li><a class=\"ds-seg-item is-on\" aria-current=\"true\" href=\"#\">All</a></li><li><a class=\"ds-seg-item\" href=\"#\">Owned</a></li><li><a class=\"ds-seg-item\" href=\"#\">Samples</a></li><li><a class=\"ds-seg-item\" href=\"#\">Wishlist</a></li></ul></div>",
+      "css": ":host, .ds-root { --canvas:#0b0e12; --panel:#11151b; --raised:#171c24; --sunken:#080a0d; --ink:#e8edf2; --ink-2:#a9b2bd; --ink-3:#8a94a1; --line:rgba(232,237,242,0.09); --line-strong:rgba(232,237,242,0.2); --action:#e8edf2; --action-ink:#0b0e12; --signal:#d4ff4f; --signal-ink:#0b0e12; --signal-text:#d4ff4f; --warn:#ffc14d; --bad:#ff7a6b; --tier-top:#e8edf2; --tier-heart:#a9b2bd; --tier-base:#6f7b89; --focus:#e8edf2; --radius:10px; --radius-control:8px; --font-sans:'Geist Variable', ui-sans-serif, system-ui, sans-serif; --font-mono:'Geist Mono Variable', ui-monospace, Menlo, monospace; --dur:180ms; --ease:cubic-bezier(0.16,1,0.3,1); } .ds-seg { display:flex; gap:4px; width:fit-content; margin:0; padding:4px; list-style:none; background:var(--sunken); border:1px solid var(--line); border-radius:var(--radius-control); font-family:var(--font-sans); } .ds-seg-item { display:inline-flex; align-items:center; height:32px; padding:0 12px; border-radius:6px; font-size:13px; color:var(--ink-2); text-decoration:none; transition:color var(--dur) var(--ease), background-color var(--dur) var(--ease); } .ds-seg-item:hover { color:var(--ink); } .ds-seg-item:focus-visible { outline:2px solid var(--focus); outline-offset:2px; } .ds-seg-item.is-on { background:var(--raised); color:var(--ink); font-weight:500; box-shadow:inset 0 0 0 1px var(--line-strong); }"
+    },
+    {
+      "name": "Sample Table Row",
+      "kind": "card",
+      "refersTo": "bay",
+      "description": "An opaque bay with an etched mono-caps column strip (one 8px ruler layer) and fixed-column rows; identity verified is the only lime.",
+      "html": "<div class=\"ds-root\"><section class=\"ds-bay\"><div class=\"ds-thead\"><span>Fragrance</span><span>Status</span><span>Rating</span><span>Identity</span></div><div class=\"ds-row\"><div><a class=\"ds-name\" href=\"#\">Phantom in Red</a><p class=\"ds-sub\">Rabanne · Parfum</p></div><span class=\"ds-status\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 10 10\" aria-hidden=\"true\"><circle cx=\"5\" cy=\"5\" r=\"4\" fill=\"currentColor\"/></svg>Owned</span><span class=\"ds-readout\">4/5</span><span class=\"ds-verified\"><span class=\"ds-dot\"></span>Verified</span></div><div class=\"ds-row\"><div><a class=\"ds-name\" href=\"#\">Layton</a><p class=\"ds-sub\">Parfums de Marly · Eau de parfum</p></div><span class=\"ds-status ds-muted\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 10 10\" aria-hidden=\"true\"><circle cx=\"5\" cy=\"5\" r=\"3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.2\" stroke-dasharray=\"2 1.6\"/></svg>Wishlist</span><span class=\"ds-readout ds-muted\">&#8212;</span><span class=\"ds-draft\"><span class=\"ds-odot\"></span>Unverified draft</span></div></section></div>",
+      "css": ":host, .ds-root { --canvas:#0b0e12; --panel:#11151b; --raised:#171c24; --sunken:#080a0d; --ink:#e8edf2; --ink-2:#a9b2bd; --ink-3:#8a94a1; --line:rgba(232,237,242,0.09); --line-strong:rgba(232,237,242,0.2); --action:#e8edf2; --action-ink:#0b0e12; --signal:#d4ff4f; --signal-ink:#0b0e12; --signal-text:#d4ff4f; --warn:#ffc14d; --bad:#ff7a6b; --tier-top:#e8edf2; --tier-heart:#a9b2bd; --tier-base:#6f7b89; --focus:#e8edf2; --radius:10px; --radius-control:8px; --font-sans:'Geist Variable', ui-sans-serif, system-ui, sans-serif; --font-mono:'Geist Mono Variable', ui-monospace, Menlo, monospace; --dur:180ms; --ease:cubic-bezier(0.16,1,0.3,1); } .ds-bay { background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; font-family:var(--font-sans); color:var(--ink); } .ds-thead, .ds-row { display:grid; grid-template-columns:minmax(0,1fr) 9rem 4rem 8rem; gap:24px; align-items:center; padding:0 16px; } .ds-thead { padding-top:10px; padding-bottom:10px; border-bottom:1px solid var(--line); background:color-mix(in oklab, var(--sunken) 60%, transparent); font-family:var(--font-mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-3); background-image:repeating-linear-gradient(90deg, var(--line-strong) 0 1px, transparent 1px 8px); background-size:100% 4px; background-position:left bottom; background-repeat:no-repeat; } .ds-row { padding-top:14px; padding-bottom:14px; border-bottom:1px solid var(--line); transition:background-color var(--dur) var(--ease); } .ds-row:last-child { border-bottom:0; } .ds-row:hover { background:color-mix(in oklab, var(--raised) 50%, transparent); } .ds-name { font-size:15px; font-weight:500; color:var(--ink); text-decoration:none; } .ds-name:focus-visible { outline:2px solid var(--focus); outline-offset:2px; } .ds-sub { margin:2px 0 0; font-size:13px; color:var(--ink-3); } .ds-status { display:inline-flex; align-items:center; gap:8px; font-size:13px; color:var(--ink); } .ds-muted { color:var(--ink-3); } .ds-readout { font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-size:13px; } .ds-verified, .ds-draft { display:inline-flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:12px; } .ds-verified { color:var(--signal-text); } .ds-draft { color:var(--warn); } .ds-dot { width:6px; height:6px; border-radius:999px; background:var(--signal); box-shadow:0 0 0 3px color-mix(in oklab, var(--signal) 18%, transparent); } .ds-odot { width:6px; height:6px; border-radius:999px; border:1px solid var(--warn); }"
+    },
+    {
+      "name": "Chromatogram",
+      "kind": "custom",
+      "refersTo": "bay",
+      "description": "Signature note profile: three tier zones on the luminance ramp, one labelled peak per listed note, a mono count caption and the height statement.",
+      "html": "<div class=\"ds-root\"><figure class=\"ds-chroma\"><svg viewBox=\"0 0 300 90\" preserveAspectRatio=\"none\" role=\"img\" aria-label=\"Note profile: Top 2 notes, Heart 2 notes, Base 1 note\"><g stroke=\"var(--line)\" stroke-dasharray=\"2 3\"><line x1=\"100\" x2=\"100\" y1=\"4\" y2=\"88\"/><line x1=\"200\" x2=\"200\" y1=\"4\" y2=\"88\"/></g><line x1=\"0\" x2=\"300\" y1=\"88\" y2=\"88\" stroke=\"var(--line-strong)\"/><path d=\"M0 88 C20 88 25 20 33 20 C42 20 45 60 50 60 C56 60 60 30 67 30 C75 30 80 88 100 88\" fill=\"none\" stroke=\"var(--tier-top)\" stroke-width=\"1.6\"/><path d=\"M100 88 C120 88 125 26 133 26 C142 26 145 62 150 62 C156 62 160 38 167 38 C175 38 180 88 200 88\" fill=\"none\" stroke=\"var(--tier-heart)\" stroke-width=\"1.6\"/><path d=\"M200 88 C230 88 240 34 250 34 C260 34 270 88 300 88\" fill=\"none\" stroke=\"var(--tier-base)\" stroke-width=\"1.6\"/><line class=\"ds-head\" x1=\"0\" x2=\"0\" y1=\"0\" y2=\"88\" stroke=\"var(--signal)\" stroke-width=\"1.5\"/></svg><figcaption class=\"ds-tiers\"><div><p class=\"ds-etch\"><span>Top</span><span>02</span></p><p class=\"ds-note\">Plum, Saffron</p></div><div><p class=\"ds-etch\"><span>Heart</span><span>02</span></p><p class=\"ds-note\">Lavender, Sage</p></div><div><p class=\"ds-etch\"><span>Base</span><span>01</span></p><p class=\"ds-note\">Amberwood</p></div></figcaption><p class=\"ds-cap\">One peak per listed note. Height follows listed order, not concentration.</p></figure></div>",
+      "css": ":host, .ds-root { --canvas:#0b0e12; --panel:#11151b; --raised:#171c24; --sunken:#080a0d; --ink:#e8edf2; --ink-2:#a9b2bd; --ink-3:#8a94a1; --line:rgba(232,237,242,0.09); --line-strong:rgba(232,237,242,0.2); --action:#e8edf2; --action-ink:#0b0e12; --signal:#d4ff4f; --signal-ink:#0b0e12; --signal-text:#d4ff4f; --warn:#ffc14d; --bad:#ff7a6b; --tier-top:#e8edf2; --tier-heart:#a9b2bd; --tier-base:#6f7b89; --focus:#e8edf2; --radius:10px; --radius-control:8px; --font-sans:'Geist Variable', ui-sans-serif, system-ui, sans-serif; --font-mono:'Geist Mono Variable', ui-monospace, Menlo, monospace; --dur:180ms; --ease:cubic-bezier(0.16,1,0.3,1); } .ds-chroma { margin:0; padding:16px; background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); font-family:var(--font-sans); color:var(--ink); } .ds-chroma svg { display:block; width:100%; height:120px; overflow:visible; } .ds-head { animation:ds-scan 1100ms cubic-bezier(0.65,0,0.35,1) forwards; } @keyframes ds-scan { from { transform:translateX(0); opacity:1; } 90% { opacity:1; } to { transform:translateX(300px); opacity:0; } } @media (prefers-reduced-motion: reduce) { .ds-head { animation:none; opacity:0; } } .ds-tiers { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:12px; } .ds-tiers > div { border-top:1px solid var(--line); padding-top:10px; } .ds-etch { display:flex; justify-content:space-between; margin:0; font-family:var(--font-mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-3); } .ds-note { margin:8px 0 0; font-size:13px; color:var(--ink-2); } .ds-cap { margin:16px 0 0; font-size:12px; color:var(--ink-3); }"
+    },
+    {
+      "name": "Status Banner",
+      "kind": "custom",
+      "refersTo": "bay",
+      "description": "Neutral, actionable status: a 3px leading tone rule plus icon and words, never colour alone.",
+      "html": "<div class=\"ds-root\"><div class=\"ds-banner\" role=\"status\"><span class=\"ds-rule\"></span><svg class=\"ds-icon\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><line x1=\"12\" x2=\"12\" y1=\"8\" y2=\"12\"/><line x1=\"12\" x2=\"12.01\" y1=\"16\" y2=\"16\"/></svg><div><p class=\"ds-title\">Mac unreachable</p><p class=\"ds-body\">F-Ray-grance runs on your Mac. Nothing you saved is lost.</p></div></div></div>",
+      "css": ":host, .ds-root { --canvas:#0b0e12; --panel:#11151b; --raised:#171c24; --sunken:#080a0d; --ink:#e8edf2; --ink-2:#a9b2bd; --ink-3:#8a94a1; --line:rgba(232,237,242,0.09); --line-strong:rgba(232,237,242,0.2); --action:#e8edf2; --action-ink:#0b0e12; --signal:#d4ff4f; --signal-ink:#0b0e12; --signal-text:#d4ff4f; --warn:#ffc14d; --bad:#ff7a6b; --tier-top:#e8edf2; --tier-heart:#a9b2bd; --tier-base:#6f7b89; --focus:#e8edf2; --radius:10px; --radius-control:8px; --font-sans:'Geist Variable', ui-sans-serif, system-ui, sans-serif; --font-mono:'Geist Mono Variable', ui-monospace, Menlo, monospace; --dur:180ms; --ease:cubic-bezier(0.16,1,0.3,1); } .ds-banner { position:relative; display:flex; align-items:flex-start; gap:12px; padding:12px 16px 12px 20px; overflow:hidden; background:var(--panel); border:1px solid var(--line); border-radius:var(--radius-control); font-family:var(--font-sans); color:var(--ink); } .ds-rule { position:absolute; top:0; bottom:0; left:0; width:3px; background:var(--bad); } .ds-icon { margin-top:2px; color:var(--bad); flex-shrink:0; } .ds-title { margin:0; font-size:14px; font-weight:500; } .ds-body { margin:0; font-size:13px; color:var(--ink-2); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Scent Spectrometer",
+    "overview": "Every fragrance is read like a sample on an instrument. The collection is a sample table, a note pyramid is a chromatogram of labelled peaks, and provenance is the calibration line etched beside each reading. The interface is anodised graphite bays with etched hairlines and ice-white ink; in daylight it becomes calibrated lab paper with the same grammar. Nothing decorates: every mark either carries a value, labels a value, or frames a value.\n\nDensity is that of a working console, not a showroom. Rows are fixed-column so only the values change between them; rank is carried by weight, case and reversal before size. Measurements, counts, identifiers and peak labels are set in Geist Mono with tabular figures; everything a person reads as language is set in Geist. One phosphor-lime signal exists in the whole system and it means one thing: this identity is verified, or this connection is live.\n\nThe system rejects the fragrance category default of bottle-card grids, star ratings and marketing heroes, and the detector rejected decorative grid backgrounds outright. Motion is reserved for state and for one signature moment, The Scan, when a read head sweeps a chromatogram and its peaks appear once.",
+    "keyCharacteristics": [
+      "Graphite bays (dark, default) and lab paper (light) share one token set and one grammar.",
+      "One accent, phosphor lime, reserved for verified identity and live connection.",
+      "Geist for language, Geist Mono for every measurement, count, identifier and peak label.",
+      "Flat, opaque, hairline-bordered panels; only the sticky header is translucent.",
+      "Fixed-column sample tables with etched mono-caps column labels.",
+      "The chromatogram is the signature visual and states what its peak height means.",
+      "Unknown values render as an em dash glyph (U+2014), never as zero or a guess."
+    ],
+    "rules": [
+      {
+        "name": "The One Signal Rule",
+        "body": "Phosphor lime appears only for verified identity and live connection state. Status, selection of a nav row, primary actions and decoration never use it; if a screen has no verified or live thing on it, it has no lime.",
+        "section": "colors"
+      },
+      {
+        "name": "The Ink Action Rule",
+        "body": "The filled primary action is ink on graphite (or graphite ink on paper), never a hue. Colour is for state, not for calls to action.",
+        "section": "colors"
+      },
+      {
+        "name": "The Glyph Plus Word Rule",
+        "body": "Status, tier and tone are always carried by a glyph shape and a label as well as colour: filled, half, dashed and struck circles for collection states; a leading rule plus icon for banners.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mono Means Measured Rule",
+        "body": "Geist Mono is used only for measurements, counts, identifiers and peak labels. Prose, headings, buttons and form labels are never mono.",
+        "section": "typography"
+      },
+      {
+        "name": "The Label Is Not A Kicker Rule",
+        "body": "Mono caps labels sit on data: column heads, axes, counters, definition terms. They never sit above a page or section heading as an eyebrow.",
+        "section": "typography"
+      },
+      {
+        "name": "The Fixed Column Rule",
+        "body": "In any list of comparable samples the column positions never move between rows; only the values change.",
+        "section": "layout"
+      },
+      {
+        "name": "The Opaque Bay Rule",
+        "body": "Every reading surface is opaque with a hairline border and no resting shadow.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Single Glass Rule",
+        "body": "Only the sticky header is translucent (header chrome with a 14px blur and 140% saturation). It falls back to the opaque canvas when backdrop-filter is unsupported, when reduced transparency is requested by the system or in settings, and under forced colours.",
+        "section": "elevation"
+      },
+      {
+        "name": "The One Primary Rule",
+        "body": "A view has one filled primary action, normally the header action. The compare tray is a secondary control and uses quiet and ghost buttons.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "**Do** use the semantic tokens (canvas, panel, raised, sunken, ink, ink-2, ink-3, line, line-strong) for every surface and text colour, in both themes.",
+      "**Do** keep phosphor lime for verified identity and live connection only, with `signal-text` when it is set as text.",
+      "**Do** set measurements, counts, identifiers and peak labels in Geist Mono with tabular figures, and zero-pad counts to two digits.",
+      "**Do** render unknown values as the em dash glyph (U+2014) in etch grey, and say \"Not listed\" for an unlisted tier.",
+      "**Do** state \"Height follows listed order, not concentration\" next to every chromatogram.",
+      "**Do** give each view one filled primary action and make everything else quiet or ghost.",
+      "**Do** use drawn chevrons for disclosures and selects.",
+      "**Do** put the etched ruler (1px ticks every 8px) only on the column-label strip of a measurement table.",
+      "**Do** honour reduced motion, reduced transparency and forced colours: The Scan renders finished, the header turns opaque, panels take system colours."
+    ],
+    "donts": [
+      "**Don't** use lime for primary actions, active navigation, success decoration or emphasis.",
+      "**Don't** set prose, headings, buttons or form labels in Geist Mono.",
+      "**Don't** show a zero, a bar or a guessed note where a value is unknown.",
+      "**Don't** add decorative grid, graticule or dot backgrounds to any surface; the light-theme graticule was removed for this reason.",
+      "**Don't** place a second filled primary button in a view, including inside the compare tray.",
+      "**Don't** write the product name beside the logo in the sidebar, drawer or header.",
+      "**Don't** animate the sidebar width; collapse and expand snap.",
+      "**Don't** add resting shadows to bays or make any surface other than the sticky header translucent.",
+      "**Don't** imply concentration with chromatogram peak height, or encode tier by colour alone."
+    ]
+  }
+}

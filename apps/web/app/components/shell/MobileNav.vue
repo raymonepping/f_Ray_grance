@@ -1,21 +1,22 @@
 <script setup lang="ts">
 import { PRIMARY_NAV, isActive } from '~~/shared/navigation';
 const route = useRoute();
+const active = (item: (typeof PRIMARY_NAV)[number]) => isActive(item, route.path, route.query);
 </script>
 
 <template>
-  <nav aria-label="Main" class="glass fixed inset-x-0 bottom-0 z-40 rounded-none border-x-0 border-b-0 pb-[env(safe-area-inset-bottom)] md:hidden">
+  <nav aria-label="Main" class="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-panel pb-[env(safe-area-inset-bottom)] md:hidden">
     <ul class="m-0 grid list-none grid-cols-4 p-0">
       <li v-for="item in PRIMARY_NAV" :key="item.to">
         <NuxtLink
           :to="item.to"
-          class="motion flex min-h-[60px] flex-col items-center justify-center gap-1 px-1 text-xs no-underline"
-          :class="isActive(item, route.path, route.query) ? 'font-semibold text-ink' : 'text-ink-2'"
-          :aria-current="isActive(item, route.path, route.query) ? 'page' : undefined"
+          class="motion relative flex min-h-[60px] flex-col items-center justify-center gap-1 px-1 text-[11px] no-underline"
+          :class="active(item) ? 'font-medium text-ink' : 'text-ink-3'"
+          :aria-current="active(item) ? 'page' : undefined"
         >
-          <AppIcon :name="item.icon" :class="isActive(item, route.path, route.query) ? 'text-gold' : ''" />
+          <span v-if="active(item)" class="absolute inset-x-6 top-0 h-[2px] rounded-full bg-ink" aria-hidden="true" />
+          <AppIcon :name="item.icon" :size="20" />
           <span>{{ item.label }}</span>
-          <span v-if="isActive(item, route.path, route.query)" class="h-0.5 w-6 rounded-full bg-gold" aria-hidden="true" />
         </NuxtLink>
       </li>
     </ul>
