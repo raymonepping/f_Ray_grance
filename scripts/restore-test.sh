@@ -83,4 +83,31 @@ mkdir -p "$DIR/restore-tests"
 python3 "$repo/scripts/backup_manifest.py" compare "$man" "$tmp/restored.json" \
   "$DIR/restore-tests/$ts.json" "$secs" "$vec" "$ts"
 
+# Perfume images (Phase 12): every image file the restored database references must be in the
+# archived asset volume, and the archive must match its checksum.
+irefs="$(P -d fray -At -c "SELECT CASE WHEN to_regclass('app.image_assets') IS NULL THEN '' ELSE (SELECT string_agg(DISTINCT storage_path, ' ') FROM app.image_assets WHERE storage_path IS NOT NULL) END")"
+itar="${dump%.dump}.images.tar"
+if [[ -f "$itar" ]]; then
+  iwant="$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["sha256"])' "${dump%.dump}.images.json")"
+  [[ "$(shasum -a 256 "$itar" | cut -d' ' -f1)" == "$iwant" ]] || {
+    echo 'RESTORE_TEST_FAIL: image archive checksum mismatch' >&2
+    exit 1
+  }
+  python3 - "$itar" $irefs <<'PYREFS'
+import sys,tarfile
+with tarfile.open(sys.argv[1]) as t:
+    have={m.name.removeprefix('./') for m in t.getmembers() if m.isfile()}
+refs=sys.argv[2:]
+missing=[r for r in refs if r not in have or f"{r}.display.webp" not in have]
+if missing:
+    sys.exit(f"RESTORE_TEST_FAIL: {len(missing)} referenced image file(s) missing from the archive")
+print(f"IMAGES_CHECK_PASS referenced={len(refs)} archived_files={len(have)}")
+PYREFS
+elif [[ -n "$irefs" ]]; then
+  echo 'RESTORE_TEST_FAIL: database references image files but no image archive accompanies this backup' >&2
+  exit 1
+else
+  echo 'IMAGES_CHECK_SKIP: no image archive and no referenced images'
+fi
+
 validated=yes

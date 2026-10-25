@@ -10,7 +10,7 @@ interface Resolution {
   errorCode?: string;
   reason: string;
   local?: { fragranceId?: string; fragrance_id?: string; identityStatus?: string };
-  profile?: { providerId: string; name: string; house: string; concentration: string | null; concentrationRaw: string | null; family: string | null; subfamily: string | null; pyramid: Pyramid; partial: boolean; sourceUrl: string; attribution: string; fetchedAt: string };
+  profile?: { providerId: string; name: string; house: string; concentration: string | null; concentrationRaw: string | null; family: string | null; subfamily: string | null; pyramid: Pyramid; listedNotes?: string[]; signatureMaterials?: string[]; character?: string | null; partial: boolean; sourceUrl: string; attribution: string; fetchedAt: string };
   candidates: Candidate[];
   checksumValid?: boolean;
   catalogConfirmed?: boolean;
@@ -125,7 +125,11 @@ const localId = computed(() => result.value?.local?.fragranceId ?? result.value?
             </div>
             <FragranceIdentityMark v-if="result.state === 'exact'" status="verified" class="shrink-0" />
           </div>
-          <div class="p-5"><FragranceChromatogram :pyramid="result.profile.pyramid" label="Scent pyramid" /></div>
+          <div class="flex flex-col gap-5 p-5">
+            <FragranceChromatogram :pyramid="result.profile.pyramid" label="Scent pyramid" />
+            <FragranceListedNotes :notes="result.profile.listedNotes ?? []" :materials="result.profile.signatureMaterials ?? []" source="Scento" />
+            <p v-if="result.profile.character" class="m-0 max-w-[68ch] text-[14px] text-ink-2">{{ result.profile.character }}</p>
+          </div>
         </article>
         <div class="flex flex-wrap gap-3">
           <button v-if="!saved" type="button" :disabled="phase === 'enriching'" class="btn btn-primary" @click="enrich">

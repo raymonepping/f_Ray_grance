@@ -163,6 +163,7 @@ export async function fragranceRoutes(base: FastifyInstance, deps: { pool: Rotat
   app.get('/fragrances/:id/profile', { schema: { params: Type.Object({ id: Uuid }, { additionalProperties: false }) } }, async (req) => {
     const f = await getFragrance(db(), req.params.id);
     if (!f) throw new ApiError('NOT_FOUND', 'Fragrance not found');
-    return { fragrance: f, fields: await effectiveProfile(db(), req.params.id) };
+    const image = (await db().query<{ id: string | null }>('SELECT app.primary_image($1, $2, NULL) AS id', [req.session!.owner.id, req.params.id])).rows[0]?.id ?? null;
+    return { fragrance: f, fields: await effectiveProfile(db(), req.params.id), primaryImageId: image };
   });
 }

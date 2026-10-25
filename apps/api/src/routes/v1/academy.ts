@@ -70,6 +70,7 @@ export async function academyRoutes(base: FastifyInstance, deps: { pool: Rotatin
     exercises: (
       await db().query(
         `SELECT x.id, x.entry_id, x.title, x.status, x.created_at, f.canonical_name AS fragrance, b.canonical_name AS brand,
+                CASE WHEN f.id IS NULL THEN NULL ELSE app.primary_image(x.owner_id, f.id, NULL) END AS primary_image_id,
                 (SELECT count(*)::int FROM app.training_observations o WHERE o.exercise_id = x.id) AS observations
            FROM app.training_exercises x
            LEFT JOIN app.collection_entries e ON e.id = x.entry_id

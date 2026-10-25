@@ -87,6 +87,12 @@ describe('versioned portability and additive restoration',()=>{
   const preview=await call('POST','/api/v1/import',{bundle},otherHeaders);expect(preview.statusCode).toBe(200);expect(preview.json().conflicts).toContain('Collection record identity conflicts with an existing record');
   const invalid=await call('POST','/api/v1/import',{bundle:{...bundle,version:99}});expect(invalid.statusCode).toBe(400);
  });
+ it('untiered note claims round-trip through strict validation; malformed lists are refused',async()=>{
+  const claim={...bundle.claims[0],id:'7a1b0c2d-3e4f-4a5b-8c6d-7e8f9a0b1c2d',field_name:'listed_notes' as const,value:['Incense','Vetiver'],source_record_id:null,origin:'user' as const};
+  expect(()=>checkBundle({...bundle,claims:[...bundle.claims,claim]})).not.toThrow();
+  expect(()=>checkBundle({...bundle,claims:[...bundle.claims,{...claim,value:[1,2]}]})).toThrow();
+  expect(()=>checkBundle({...bundle,claims:[...bundle.claims,{...claim,field_name:'signature_materials' as const,value:'Vetiver'}]})).toThrow();
+ });
  it('live import guard stays closed without recovery approval; export and preview remain accessible',async()=>{
   const guarded=await buildApp({config:testConfig(),pool,key,expectedSchemaVersion:EXPECTED_SCHEMA_VERSION,logger:false});
   const preview=await guarded.inject({method:'POST',url:'/api/v1/import',headers,payload:{bundle}});expect(preview.statusCode).toBe(200);

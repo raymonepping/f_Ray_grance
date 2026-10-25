@@ -30,5 +30,12 @@ BEGIN
   IF (SELECT count(*) FROM app.training_observations o JOIN app.training_exercises x ON x.id=o.exercise_id WHERE x.owner_id=owner_key)<>1 THEN
     RAISE EXCEPTION 'Restored Academy practice read/write failed';
   END IF;
+  -- Phase 12: image metadata remains writable after restore (binaries are checked against the archive).
+  INSERT INTO app.image_assets(owner_id,fragrance_id,source_kind,source_ref,attribution_label,storage_kind,status,failure_code)
+    SELECT owner_key,fragrance_id,'manual_external','https://images.example.invalid/x.jpg','Synthetic','remote_reference','failed','HTTP_ERROR'
+      FROM app.collection_entries WHERE id=entry_key;
+  IF app.primary_image(owner_key,(SELECT fragrance_id FROM app.collection_entries WHERE id=entry_key)) IS NOT NULL THEN
+    RAISE EXCEPTION 'A failed image must never become primary';
+  END IF;
 END $$;
 ROLLBACK;

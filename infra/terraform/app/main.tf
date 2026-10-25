@@ -27,6 +27,7 @@ locals {
     pgdata        = "fraygrance_pgdata"
     vault_data    = "fraygrance_vault_data"
     ollama_models = "fraygrance_ollama_models"
+    image_assets  = "fraygrance_image_assets"
   }
   api_enabled   = var.api_image != ""
   agent_enabled = var.vault_agent_enabled
@@ -262,6 +263,7 @@ resource "docker_container" "api" {
       # Forwarded headers are trusted only from inside the private project network (the gateway).
       "FRAY_TRUSTED_PROXIES=${one(docker_network.fraygrance.ipam_config).subnet}",
       "FRAY_PUBLIC_ORIGINS=${join(",", var.public_origins)}",
+      "FRAY_IMAGE_DIR=/var/lib/fray/images",
     ],
     [for k, v in var.api_env : "${k}=${v}"],
   )
@@ -272,6 +274,11 @@ resource "docker_container" "api" {
       container_path = "/vault/rendered"
       read_only      = true
     }
+  }
+  # Persistent perfume image binaries (protected data root volume; survives container replacement).
+  volumes {
+    volume_name    = local.volumes.image_assets
+    container_path = "/var/lib/fray/images"
   }
   healthcheck {
     test     = ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/api/health/live').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]

@@ -10,7 +10,9 @@ import type { SourceProfile } from '../providers/scento.js';
 type Db = pg.Pool;
 type Tx = pg.PoolClient;
 
-const PROVIDER_FIELDS = ['identity', 'concentration', 'family', 'subfamily', 'pyramid', 'character', 'character_words', 'wears'] as const;
+const PROVIDER_FIELDS = ['identity', 'concentration', 'family', 'subfamily', 'pyramid', 'listed_notes', 'signature_materials', 'character', 'character_words', 'wears'] as const;
+// Fields added after the first observations were stored; backfilled from an unchanged observation.
+const LATER_FIELDS = ['listed_notes', 'signature_materials'] as const;
 export type ClaimField = (typeof PROVIDER_FIELDS)[number] | 'launch_year';
 export const USER_EDITABLE_FIELDS = ['concentration', 'family', 'subfamily', 'pyramid', 'character', 'launch_year'] as const;
 
@@ -38,6 +40,8 @@ function mapped(p: SourceProfile) {
     family: p.family,
     subfamily: p.subfamily,
     pyramid: p.pyramid,
+    listed_notes: p.listedNotes,
+    signature_materials: p.signatureMaterials,
     character: p.character,
     character_words: p.characterWords,
     wears: { seasons: p.wearSeasons, hours: p.wearHours },
@@ -77,7 +81,20 @@ async function writeProviderObservation(c: Tx, fragranceId: string, p: SourcePro
   const hadClaims = existing.rows[0]
     ? (await c.query('SELECT 1 FROM app.source_claims WHERE source_record_id = $1 AND fragrance_id = $2 LIMIT 1', [existing.rows[0].id, fragranceId])).rowCount
     : 0;
-  if (existing.rows[0] && hadClaims) return { sourceRecordId: existing.rows[0].id, created: false };
+  if (existing.rows[0] && hadClaims) {
+    // Same observation already stored: only add facts this app version newly reads from it.
+    const later = { listed_notes: p.listedNotes, signature_materials: p.signatureMaterials };
+    for (const field of LATER_FIELDS) {
+      if (!later[field].length) continue;
+      await c.query(
+        `INSERT INTO app.source_claims (fragrance_id, source_record_id, origin, field_name, value, claimed_at)
+         SELECT $1, $2, 'provider', $3, $4, $5
+          WHERE NOT EXISTS (SELECT 1 FROM app.source_claims WHERE fragrance_id = $1 AND source_record_id = $2 AND field_name = $3)`,
+        [fragranceId, existing.rows[0].id, field, JSON.stringify(later[field]), p.fetchedAt],
+      );
+    }
+    return { sourceRecordId: existing.rows[0].id, created: false };
+  }
 
   const sr =
     existing.rows[0]?.id ??
@@ -98,6 +115,8 @@ async function writeProviderObservation(c: Tx, fragranceId: string, p: SourcePro
     family: m.family,
     subfamily: m.subfamily,
     pyramid: m.pyramid,
+    listed_notes: m.listed_notes.length ? m.listed_notes : null,
+    signature_materials: m.signature_materials.length ? m.signature_materials : null,
     character: m.character,
     character_words: m.character_words,
     wears: m.wears,

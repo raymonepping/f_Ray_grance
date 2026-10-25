@@ -43,6 +43,7 @@ export interface Exercise {
   fragrance?: string | null;
   brand?: string | null;
   observations?: number;
+  primary_image_id?: string | null;
 }
 export interface Observation { id: string; exercise_id: string; stage: Stage; elapsed_minutes: number; descriptors: string[]; free_text: string }
 

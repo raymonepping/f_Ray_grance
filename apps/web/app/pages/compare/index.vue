@@ -108,7 +108,10 @@ const rows = computed(() => data.value?.fragrances[0].traits.filter((t, i) => i 
       <div class="grid min-w-0 gap-5 xl:grid-cols-2">
         <article v-for="(f, i) in data.fragrances" :key="f.fragrance.id" class="bay flex min-w-0 flex-col overflow-hidden" :aria-label="`Scent ${i === 0 ? 'A' : 'B'} profile`">
           <div class="flex items-start gap-4 border-b border-line p-5">
-            <span class="readout grid size-8 shrink-0 place-items-center rounded-control border border-line-strong text-[13px]" aria-hidden="true">{{ i === 0 ? 'A' : 'B' }}</span>
+            <div class="relative shrink-0">
+              <FragranceImage :image-id="f.primaryImageId" :alt="`${f.fragrance.brand} ${f.fragrance.canonical_name}`" size="card" />
+              <span class="readout absolute -left-2 -top-2 grid size-6 place-items-center rounded-[6px] border border-line-strong bg-panel text-[12px]" aria-hidden="true">{{ i === 0 ? 'A' : 'B' }}</span>
+            </div>
             <div class="min-w-0">
               <h2 class="text-[19px] [overflow-wrap:anywhere]"><NuxtLink :to="`/fragrances/${f.fragrance.id}`" class="no-underline hover:underline">{{ f.fragrance.canonical_name }}</NuxtLink></h2>
               <p class="m-0 mt-1 text-[14px] text-ink-2">{{ f.fragrance.brand }} <span class="text-ink-3">/</span> {{ f.fragrance.concentration ? CONCENTRATION_LABEL[f.fragrance.concentration] : 'Concentration unknown' }}</p>

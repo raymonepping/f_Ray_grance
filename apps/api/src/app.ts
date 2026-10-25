@@ -1,5 +1,7 @@
 // Fastify application factory (no listen) — used by server.ts and by tests via inject().
 import { randomUUID } from 'node:crypto';
+import { buildSources, type ImageSources } from './images/sources.js';
+import { AssetStore } from './images/store.js';
 import Fastify, { type FastifyInstance, type FastifyServerOptions } from 'fastify';
 import cookie from '@fastify/cookie';
 import addFormats from 'ajv-formats';
@@ -23,6 +25,8 @@ export interface AppDeps {
   expectedSchemaVersion: number;
   scento?: ScentoClient;
   ollama?: OllamaClient;
+  imageSources?: ImageSources;
+  assetStore?: AssetStore;
   logger?: boolean | object;
 }
 
@@ -50,7 +54,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
 
   app.addHook('onSend', async (req, reply) => {
     reply.header('x-request-id', req.id);
-    reply.header('cache-control', 'no-store');
+    if (!reply.hasHeader('cache-control')) reply.header('cache-control', 'no-store');
   });
 
   app.setErrorHandler((err, req, reply) => {
@@ -63,6 +67,9 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     }
     if (e.statusCode === 429) {
       return reply.code(429).header('retry-after', '60').send(envelope('RATE_LIMITED', 'Too many requests', req.id));
+    }
+    if (e.statusCode === 415 || e.code === 'FST_ERR_CTP_INVALID_MEDIA_TYPE') {
+      return reply.code(415).send(envelope('VALIDATION_FAILED', 'Unsupported content type', req.id));
     }
     if (e.statusCode === 413 || e.code === 'FST_ERR_CTP_BODY_TOO_LARGE') {
       return reply.code(413).send(envelope('VALIDATION_FAILED', 'Payload too large', req.id));
@@ -100,6 +107,6 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     lockout: deps.config.lockout,
     loginRatePerMinute: deps.config.loginRatePerMinute,
   });
-  await app.register(v1Routes, { prefix: '/api/v1', pool: deps.pool, scento: deps.scento ?? new ScentoClient(), ollama: deps.ollama ?? new OllamaClient(fetch, 'http://fray-ollama:11434', deps.config.tutorModel), importEnabled: deps.config.importEnabled });
+  await app.register(v1Routes, { prefix: '/api/v1', pool: deps.pool, scento: deps.scento ?? new ScentoClient(), ollama: deps.ollama ?? new OllamaClient(fetch, 'http://fray-ollama:11434', deps.config.tutorModel), importEnabled: deps.config.importEnabled, imageSources: deps.imageSources ?? buildSources(deps.config.images), assetStore: deps.assetStore ?? new AssetStore(deps.config.images.dir) });
   return app;
 }

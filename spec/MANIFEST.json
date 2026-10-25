@@ -258,8 +258,8 @@
     },
     {
       "path": "prompts/STATE_CONTRACT.md",
-      "bytes": 3841,
-      "sha256": "994dda62e2b2693ed4009378869bec08e3b237b5d096133c67725e35124af77f"
+      "bytes": 4195,
+      "sha256": "866fc4d4722d856d34629ee3d2d737c3d4637a70dc5d04309106dacc27c41307"
     },
     {
       "path": "prompts/launchers/Claude_START_HERE.md",
@@ -318,8 +318,8 @@
     },
     {
       "path": "spec/PERFUME_IMAGE_SPEC.md",
-      "bytes": 4834,
-      "sha256": "1d8623fbcce21819e1bb3356cdea5cafe2368c2008da516f4f77b84ad691a558"
+      "bytes": 6927,
+      "sha256": "63f3ce7a10311b9926c3411417a5c2c6380be53912931532862525506830aeaf"
     },
     {
       "path": "spec/PHASE_00.md",

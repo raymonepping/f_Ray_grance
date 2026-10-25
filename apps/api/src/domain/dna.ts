@@ -29,12 +29,14 @@ export function pyramidFrom(fields: Record<string, EffectiveField>): Pyramid {
 }
 export function deriveDna(fields: Record<string, EffectiveField>) {
   const pyramid = pyramidFrom(fields);
-  const notes = [...new Map(Object.values(pyramid).flatMap((x) => x ?? []).map((label) => [noteKey(label), { key: noteKey(label), label }])).values()];
+  // Untiered notes a source lists (no pyramid given) still count as known notes; tiers are never invented.
+  const listed = Array.isArray(fields.listed_notes?.value) ? (fields.listed_notes!.value as unknown[]).filter((s): s is string => typeof s === 'string') : [];
+  const notes = [...new Map([...Object.values(pyramid).flatMap((x) => x ?? []), ...listed].map((label) => [noteKey(label), { key: noteKey(label), label }])).values()];
   const traits = TRAITS.map((code) => {
     const evidence = notes.flatMap((n) => NOTE_RULES[n.key]?.[code] === undefined ? [] : [{ ...n, expression: NOTE_RULES[n.key]![code]! }]);
     return { code, label: LABEL[code], score: evidence.length ? Math.max(...evidence.map((n) => n.expression)) : null,
       method: TRAIT_METHOD, confidenceState: evidence.length ? 'estimated' : 'unknown', evidence,
-      source: fields.pyramid ?? null };
+      source: fields.pyramid ?? fields.listed_notes ?? null };
   });
   return { pyramid, notes, traits, method: TRAIT_METHOD,
     limitation: 'Indicative 0–5 descriptor expression from known notes. Unmapped or unlisted descriptors remain unknown; note order is not concentration.' };
@@ -50,5 +52,5 @@ export function contrast(a: ReturnType<typeof deriveDna>, b: ReturnType<typeof d
   }).slice(0, 3);
   return { shared, uniqueA, uniqueB, differences,
     limitation: 'A note not listed on one side is not proof of its absence. Only comparable known trait scores are contrasted.',
-    summary: shared.length ? `Both source-listed pyramids include ${shared.map((n) => n.label).join(', ')}.` : 'Insufficient shared source data for a reliable similarity conclusion.' };
+    summary: shared.length ? `Both source note lists include ${shared.map((n) => n.label).join(', ')}.` : 'Insufficient shared source data for a reliable similarity conclusion.' };
 }

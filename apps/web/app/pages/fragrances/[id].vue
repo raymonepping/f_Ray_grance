@@ -6,7 +6,8 @@ import type { DnaProfile } from '~~/shared/dna';
 
 const route = useRoute();
 const id = computed(() => String(route.params.id));
-const data = ref<{ fragrance: Fragrance; fields: Record<string, EffectiveField> } | null>(null);
+const data = ref<{ fragrance: Fragrance; fields: Record<string, EffectiveField>; primaryImageId?: string | null } | null>(null);
+const primaryImage = ref<string | null>(null);
 const error = ref<{ code: string; message: string } | null>(null);
 const header = usePageHeader({ title: 'Fragrance', crumbs: [{ label: 'Collection', to: '/collection' }, { label: 'Fragrance' }] });
 const entries = ref<CollectionEntry[]>([]);
@@ -28,6 +29,7 @@ async function load() {
   error.value = null;
   try {
     data.value = await apiFetch(`/api/v1/fragrances/${id.value}/profile`);
+    primaryImage.value = data.value?.primaryImageId ?? null;
     dna.value = await apiFetch(`/api/v1/fragrances/${id.value}/dna`);
     await loadRelationship();
     const f = data.value!.fragrance;
@@ -45,6 +47,10 @@ void header;
 const pyramid = computed(() => (data.value?.fields.pyramid?.value as Pyramid | undefined) ?? null);
 const character = computed(() => data.value?.fields.character?.value as string | undefined);
 const family = computed(() => data.value?.fields.family?.value as string | undefined);
+const strings = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []);
+const listedNotes = computed(() => strings(data.value?.fields.listed_notes?.value));
+const materials = computed(() => strings(data.value?.fields.signature_materials?.value));
+const tierCount = computed(() => (['top', 'heart', 'base'] as const).reduce((n, k) => n + (pyramid.value?.[k]?.length ?? 0), 0));
 const subfamily = computed(() => data.value?.fields.subfamily?.value as string | undefined);
 </script>
 
@@ -62,6 +68,8 @@ const subfamily = computed(() => data.value?.fields.subfamily?.value as string |
     <template v-else-if="data">
       <section class="bay overflow-hidden" aria-labelledby="frag-title">
         <div class="flex flex-col gap-5 p-5 md:flex-row md:items-start md:justify-between md:p-7">
+          <div class="flex min-w-0 items-start gap-5">
+          <div class="w-24 shrink-0 md:w-36"><FragranceImage :image-id="primaryImage" :alt="`${data.fragrance.brand} ${data.fragrance.canonical_name}`" size="hero" /></div>
           <div class="min-w-0">
             <h1 id="frag-title" class="text-[28px] md:text-[36px] [overflow-wrap:anywhere]">{{ data.fragrance.canonical_name }}</h1>
             <p class="m-0 mt-2 flex flex-wrap items-center gap-x-2 text-[15px] text-ink-2">
@@ -71,6 +79,7 @@ const subfamily = computed(() => data.value?.fields.subfamily?.value as string |
               <template v-if="data.fragrance.launch_year"><span aria-hidden="true" class="text-ink-3">/</span><span class="readout">{{ data.fragrance.launch_year }}</span></template>
             </p>
             <p v-if="data.fragrance.identity_status !== 'verified'" class="m-0 mt-3 text-[13px] text-warn">Unverified draft. Facts below are only what you entered.</p>
+          </div>
           </div>
           <div class="flex shrink-0 flex-wrap items-center gap-3 md:flex-col md:items-end">
             <FragranceIdentityMark :status="data.fragrance.identity_status" />
@@ -85,8 +94,10 @@ const subfamily = computed(() => data.value?.fields.subfamily?.value as string |
             <AcademyExplainLink concept="pyramid" />
           </div>
           <FragranceChromatogram :pyramid="pyramid" label="Scent pyramid" />
+          <FragranceListedNotes v-if="listedNotes.length && !tierCount" class="mt-5" :notes="listedNotes" :materials="materials" :source="data.fields.listed_notes ? ORIGIN_LABEL[data.fields.listed_notes.origin] : 'The source'" />
           <p class="m-0 mt-4 text-[12px] text-ink-3">
-            <template v-if="!pyramid">No pyramid has been sourced or entered for this fragrance.</template>
+            <template v-if="!tierCount && listedNotes.length">No tiered pyramid is sourced, so the chromatogram stays flat.</template>
+            <template v-else-if="!pyramid">No pyramid has been sourced or entered for this fragrance.</template>
             <template v-else>One peak per listed note. Height follows listed order, not concentration.<template v-if="data.fields.pyramid"> Source: {{ ORIGIN_LABEL[data.fields.pyramid.origin] }}.</template></template>
           </p>
         </div>
@@ -134,6 +145,7 @@ const subfamily = computed(() => data.value?.fields.subfamily?.value as string |
               <CollectionAddToCollection :fragrance-id="data.fragrance.id" :label="entries.length ? 'Add another bottle or sample as' : 'Add to collection as'" @added="onAdded" />
             </div>
           </GlassPanel>
+          <FragranceImageManager :fragrance-id="data.fragrance.id" :name="data.fragrance.canonical_name" @changed="(p) => (primaryImage = p)" />
           <FragranceSourceAttribution v-if="Object.keys(data.fields).length" :fields="data.fields" />
           <FragranceLocalIndex v-if="data.fragrance.identity_status === 'verified'" :fragrance-id="data.fragrance.id" />
         </div>

@@ -12,6 +12,7 @@ export interface Config {
   logLevel: string;
   tutorModel: string | null;
   importEnabled: boolean;
+  images: { dir: string; providerHosts: string[]; externalHosts: string[] };
 }
 
 export class ConfigError extends Error {}
@@ -34,6 +35,14 @@ function list(env: NodeJS.ProcessEnv, key: string, fallback: string): string[] {
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean);
+}
+
+function hosts(env: NodeJS.ProcessEnv, key: string): string[] {
+  const out = list(env, key, '').map((h) => h.toLowerCase());
+  for (const h of out) {
+    if (!/^(\*\.)?([a-z0-9-]+\.)+[a-z]{2,}$/.test(h)) throw new ConfigError(`invalid host in ${key}: ${h}`);
+  }
+  return out;
 }
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
@@ -72,5 +81,11 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     // Optional local generative model for the Academy tutor; unset = curated lessons only.
     tutorModel: env.FRAY_TUTOR_MODEL && /^[a-z0-9._:/-]{1,80}$/i.test(env.FRAY_TUTOR_MODEL) ? env.FRAY_TUTOR_MODEL : null,
     importEnabled: env.FRAY_IMPORT_ENABLED === 'true',
+    // Perfume images: binaries on the persistent asset volume; remote hosts only when approved.
+    images: {
+      dir: str(env, 'FRAY_IMAGE_DIR', '/var/lib/fray/images'),
+      providerHosts: hosts(env, 'FRAY_IMAGE_PROVIDER_HOSTS'),
+      externalHosts: hosts(env, 'FRAY_IMAGE_EXTERNAL_HOSTS'),
+    },
   };
 }

@@ -10,6 +10,13 @@ user="${1:?username required}"
   echo "REFUSED: '$user' is not a synthetic test owner (e2e-/probe- + 6 hex)" >&2
   exit 2
 }
+# Image files used only by this owner (content-addressed files can be shared with other records).
+images="$(podman exec -i fray-postgres psql -X -q -At -v ON_ERROR_STOP=1 -v u="$user" -U postgres -d fray <<'SQL'
+SELECT DISTINCT i.storage_path FROM app.image_assets i JOIN app.owners o ON o.id = i.owner_id
+ WHERE o.username = :'u' AND i.storage_path IS NOT NULL
+   AND NOT EXISTS (SELECT 1 FROM app.image_assets j JOIN app.owners p ON p.id = j.owner_id WHERE j.storage_path = i.storage_path AND p.username <> :'u');
+SQL
+)"
 podman exec -i fray-postgres psql -X -q -v ON_ERROR_STOP=1 -v u="$user" -U postgres -d fray <<'SQL'
 BEGIN;
 SET LOCAL session_replication_role = replica; -- suspends the append-only triggers for THIS transaction only
@@ -30,8 +37,14 @@ SELECT (SELECT count(*) FROM d1) AS events, (SELECT count(*) FROM d2) AS entries
        (SELECT count(*) FROM d8) + (SELECT count(*) FROM d9) AS academy_rows;
 -- Exercises after their observations (data-modifying CTEs share one snapshot).
 DELETE FROM app.training_exercises WHERE owner_id IN (SELECT id FROM app.owners WHERE username = :'u');
+DELETE FROM app.image_assets WHERE owner_id IN (SELECT id FROM app.owners WHERE username = :'u');
 DELETE FROM app.login_attempts WHERE username = :'u';
 DELETE FROM app.owners WHERE username = :'u';
 COMMIT;
 SQL
-echo "PURGED synthetic owner $user"
+n=0
+for rel in $images; do
+  [[ "$rel" =~ ^[0-9a-f]{2}/[0-9a-f]{64}$ ]] || continue
+  podman exec fray-api rm -f "/var/lib/fray/images/$rel" "/var/lib/fray/images/$rel.display.webp" && n=$((n + 1))
+done
+echo "PURGED synthetic owner $user (image files removed: $n)"

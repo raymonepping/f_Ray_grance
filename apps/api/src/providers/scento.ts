@@ -86,6 +86,9 @@ export interface SourceProfile {
   family: string | null;
   subfamily: string | null;
   pyramid: { top: string[] | null; heart: string[] | null; base: string[] | null };
+  /** Notes Scento lists without assigning a tier. Never moved into a tier. */
+  listedNotes: string[];
+  signatureMaterials: string[];
   character: string | null;
   characterWords: string[];
   wearSeasons: string[];
@@ -248,6 +251,8 @@ export class ScentoClient {
       family: d.family,
       subfamily: d.subfamily,
       pyramid,
+      listedNotes: (d.notes ?? []).filter((n) => n.trim()),
+      signatureMaterials: (d.signature_materials ?? []).filter((n) => n.trim()),
       character: d.character,
       characterWords: d.character_words ?? [],
       wearSeasons: d.wears?.seasons ?? [],

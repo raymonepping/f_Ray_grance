@@ -33,10 +33,12 @@ export function readCookie(name: string): string | null {
 
 const UNSAFE = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
-export async function apiFetch<T>(path: string, init: { method?: string; body?: unknown; signal?: AbortSignal } = {}): Promise<T> {
+export async function apiFetch<T>(path: string, init: { method?: string; body?: unknown; raw?: Blob; signal?: AbortSignal } = {}): Promise<T> {
   const method = (init.method ?? 'GET').toUpperCase();
   const headers: Record<string, string> = { accept: 'application/json' };
   if (init.body !== undefined) headers['content-type'] = 'application/json';
+  // Raw binary bodies (image uploads) carry their own media type.
+  if (init.raw) headers['content-type'] = init.raw.type || 'application/octet-stream';
   if (UNSAFE.has(method)) {
     const csrf = readCookie('__Host-fray_csrf');
     if (csrf) headers['x-csrf-token'] = csrf;
@@ -47,7 +49,7 @@ export async function apiFetch<T>(path: string, init: { method?: string; body?: 
       method,
       headers,
       credentials: 'same-origin',
-      body: init.body === undefined ? undefined : JSON.stringify(init.body),
+      body: init.raw ?? (init.body === undefined ? undefined : JSON.stringify(init.body)),
       signal: init.signal,
     });
   } catch (err) {

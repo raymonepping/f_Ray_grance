@@ -15,6 +15,9 @@ COPY --from=build /src/node_modules node_modules
 COPY --from=build /src/apps/api/dist apps/api/dist
 COPY --from=build /src/apps/api/package.json apps/api/package.json
 COPY db/migrations db/migrations
+# Mount point for the persistent image volume; owned by the runtime user so a fresh named volume
+# copies up writable by `node`.
+RUN mkdir -p /var/lib/fray/images && chown node:node /var/lib/fray/images && chmod 750 /var/lib/fray/images
 USER node
 EXPOSE 8080
 HEALTHCHECK --interval=15s --timeout=5s --retries=4 CMD node -e "fetch('http://127.0.0.1:8080/api/health/live').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"

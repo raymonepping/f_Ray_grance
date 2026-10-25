@@ -77,3 +77,42 @@ export interface Variant {
 }
 
 export const STATES: CollectionState[] = ['owned', 'previously_owned', 'sampled', 'wishlist', 'rejected'];
+
+// Perfume images (Phase 12).
+export type ImageSourceKind = 'user_upload' | 'approved_remote' | 'scento' | 'manual_external';
+export interface ImageAsset {
+  id: string;
+  fragranceId: string;
+  variantId: string | null;
+  sourceKind: ImageSourceKind;
+  sourceRef: string | null;
+  attribution: string;
+  licenseNotes: string | null;
+  storageKind: string;
+  mimeType: string | null;
+  width: number | null;
+  height: number | null;
+  byteSize: number | null;
+  checksum: string | null;
+  status: 'pending' | 'available' | 'failed' | 'rejected';
+  failureCode: string | null;
+  failureDetail: string | null;
+  isPrimary: boolean;
+  effectivePrimary: boolean;
+  createdAt: string;
+  updatedAt: string;
+  lastVerifiedAt: string | null;
+  url: string | null;
+}
+export interface ImageSourceInfo { enabled: boolean; note: string; hosts?: string[]; maxBytes?: number }
+export interface ImagesResponse {
+  images: ImageAsset[];
+  primaryId: string | null;
+  sources: { precedence: ImageSourceKind[] } & Record<ImageSourceKind, ImageSourceInfo>;
+}
+export const IMAGE_SOURCE_LABEL: Record<ImageSourceKind, string> = {
+  user_upload: 'Your upload',
+  approved_remote: 'Approved provider',
+  scento: 'Scento',
+  manual_external: 'External URL',
+};

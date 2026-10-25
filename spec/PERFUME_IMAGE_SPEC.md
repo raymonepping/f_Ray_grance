@@ -107,3 +107,15 @@ Out of scope:
 - image similarity search
 - arbitrary internet image scraping
 - social sharing / CDN publishing
+
+## Implementation notes (Phase 12, 2026-10-25)
+
+Recorded from the built system; see `reports/12_perfume_images.md` for evidence.
+
+- **Scento:** the Scento Perfume API (OpenAPI v1.0.0, checked 2026-10-25) documents no image, photo or media field on any of its 14 paths. The Scento slot stays in the source chain but reports `SOURCE_UNSUPPORTED`. No page extraction or scraping is performed.
+- **Approved hosts:** remote sources are off until the operator lists hosts. Use `FRAY_IMAGE_PROVIDER_HOSTS` for approved providers and `FRAY_IMAGE_EXTERNAL_HOSTS` for owner-entered URLs; both are comma-separated, exact host or `*.domain`, passed through Terraform `api_env`. Remote fetches are https-only on port 443, with no credentials or IP literals. Every DNS answer must be public before a socket opens. Redirects are re-validated, with a 10 MB cap and a 10 s timeout. The declared type must be JPEG, PNG or WebP, and the file signature must match.
+- **Storage:** content-addressed files on the protected `fraygrance_image_assets` volume: `<2 hex>/<sha256>` for the original and `<...>.display.webp` for the derivative (at most 1200 px, metadata stripped). `app.image_assets` holds metadata and integrity fields.
+- **Primary selection:** `is_primary` is set only by an explicit owner action, with one per owner and fragrance/variant context. The effective image is `app.primary_image()`: the explicit choice, otherwise source precedence, newest first. Imports never change the owner's choice. A failed refresh keeps the stored copy and records the failure next to it.
+- **Failures:** rejected uploads (`rejected`) and failed remote imports (`failed`) are stored with `failure_code` and `failure_detail`. No binary is kept for either.
+- **Ownership:** every image belongs to the owner who attached it. Binaries are served only through owner-authenticated `/api/v1/images/:id/display|original`. Another owner's id behaves as missing.
+- **Portability:** the JSON export does not carry image binaries or image metadata. Images are protected by the manual backup's image archive (`docs/recovery.md`).

@@ -70,7 +70,9 @@ export async function discoveryRoutes(base: FastifyInstance, deps: { pool: Rotat
       if (ranked.eligible) items.push({ fragrance: f, ...ranked });
     }
     items.sort((a, b) => b.rank - a.rank || a.fragrance.id.localeCompare(b.fragrance.id));
-    return { items: items.slice(0, 20), mode, engine: items.some(i => i.semanticRelatedness !== null) ? 'hybrid' : 'structured', model: MODEL, revision: MODEL_REVISION,
+    const top = items.slice(0, 20);
+    const images = new Map((await db().query<{ id: string; image: string | null }>('SELECT f AS id, app.primary_image($1, f, NULL) AS image FROM unnest($2::uuid[]) AS f', [owner, top.map((i) => i.fragrance.id)])).rows.map((r) => [r.id, r.image]));
+    return { items: top.map((i) => ({ ...i, primaryImageId: images.get(i.fragrance.id) ?? null })), mode, engine: items.some(i => i.semanticRelatedness !== null) ? 'hybrid' : 'structured', model: MODEL, revision: MODEL_REVISION,
       reason: online ? 'Ranked from explicit ratings and seasonal choices; vectors are used only when current and compatible.' : 'Ollama unavailable: source-listed note and family rules remain available. No semantic scores were invented.',
       limitation: 'Ranking is an uncalibrated recommendation heuristic. Semantic relatedness measures descriptor text, not smell equivalence. Searches use at most 100 saved catalog identities.' };
   });

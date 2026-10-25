@@ -18,7 +18,8 @@ export async function compareRoutes(base: FastifyInstance, deps: { pool: Rotatin
     const fields = await effectiveProfile(db, id);
     const collection = personal ? (await db.query('SELECT state FROM app.collection_entries WHERE owner_id=$1 AND fragrance_id=$2 ORDER BY created_at', [ownerId, id])).rows : [];
     const seasons = personal ? (await db.query("SELECT season, affinity, affinity_origin FROM app.season_fragrances WHERE owner_id=$1 AND fragrance_id=$2 AND affinity_origin='user' AND ($3::text IS NULL OR season=$3) ORDER BY season", [ownerId, id, season??null])).rows : [];
-    return { fragrance, fields, ...deriveDna(fields), collection, personalSeasons: seasons };
+    const image = (await db.query<{ id: string | null }>('SELECT app.primary_image($1, $2, NULL) AS id', [ownerId, id])).rows[0]?.id ?? null;
+    return { fragrance, fields, ...deriveDna(fields), collection, personalSeasons: seasons, primaryImageId: image };
   }
   app.get('/fragrances/:id/dna', { schema: { params: Type.Object({ id: Uuid }, { additionalProperties: false }) } }, async (req) => profile(req.params.id, req.session!.owner.id));
   app.post('/compare', {

@@ -515,6 +515,44 @@
         "Phase 10 remains blocked; import disabled; Tailscale deferred"
       ],
       "next_phase": "12"
+    },
+    "12": {
+      "status": "completed",
+      "agent": "claude-opus-5-5",
+      "prompt_id": "FRAY-CLAUDE-12",
+      "started_at_utc": "2026-10-25T12:39:24Z",
+      "baseline_head": "1674a32cde794170be3bf81ff5b8fca296d1b079",
+      "report_path": "reports/12_perfume_images.md",
+      "authorization": "ADR-011 accepts Phase 12 for local development; Phase 11 completed and pushed (1674a32).",
+      "planned_scope": [
+        "Typed image source chain (upload > approved remote > Scento if documented > manual external)",
+        "Additive migration 0005 for image metadata and primary selection",
+        "Persistent asset volume outside Git and containers; bounded derivative",
+        "SSRF-safe server-side fetch with allowlist, size/MIME/signature checks",
+        "Image component and owner controls across collection, detail, compare, discover, Academy",
+        "Backup/restore procedure includes asset storage; unit/integration/e2e evidence"
+      ],
+      "completed_at_utc": "2026-10-25T20:27:19Z",
+      "evidence": {
+        "make_test": "PASS",
+        "make_test_e2e": "40/40 PASS",
+        "web_unit": "35/35",
+        "validate_docs": "PASS (71 frozen docs)",
+        "health": "PASS incl. image volume",
+        "drift": "NO_DRIFT data+app",
+        "live_security_probe": "39/39",
+        "migration": "0005_perfume_images applied once",
+        "image_backup_restore_drill": "IMAGES_CHECK_PASS referenced=1 (synthetic probe owner, purged)",
+        "scento_image_source": "unsupported: OpenAPI v1.0.0 has no image field (checked 2026-10-25)",
+        "remote_sources": "implemented, disabled until operator approves hosts; proven in integration tests with fake transport",
+        "impeccable_detect": "[]"
+      },
+      "residual": [
+        "No real external image host exercised (none approved)",
+        "Recovery extraction of image archive into a fresh volume documented, not exercised",
+        "Phase 10 remains blocked; import disabled; Tailscale deferred"
+      ],
+      "next_phase": null
     }
   },
   "accepted_adrs": [
@@ -554,5 +592,5 @@
       "detail": "No approved separate environment supplied for a full recovery drill outside the original Podman VM."
     }
   ],
-  "updated_at_utc": "2026-10-25T12:37:13Z"
+  "updated_at_utc": "2026-10-25T20:27:19Z"
 }

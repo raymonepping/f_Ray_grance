@@ -12,6 +12,7 @@ interface Entry {
   identity_status: string;
   pyramid?: Pyramid | null;
   rating: number | null;
+  primary_image_id?: string | null;
 }
 const route = useRoute();
 const compareSelection = useCompare();
@@ -138,7 +139,9 @@ const pad = (n: number) => String(n).padStart(2, '0');
             :key="e.id"
             class="motion group relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 border-b border-line px-4 py-3.5 last:border-b-0 hover:bg-raised/50 md:grid-cols-[minmax(0,1fr)_132px_9rem_4rem_7.5rem_6.5rem] md:gap-6"
           >
-            <div class="order-1 min-w-0 md:order-none">
+            <div class="order-1 flex min-w-0 items-start gap-3 md:order-none">
+              <FragranceImage :image-id="e.primary_image_id" :alt="`${e.brand} ${e.canonical_name}`" size="thumb" />
+              <div class="min-w-0">
               <NuxtLink :to="`/fragrances/${e.fragrance_id}`" class="block text-[15px] font-medium leading-snug text-ink no-underline after:absolute after:inset-0 after:content-[''] [overflow-wrap:anywhere]">
                 {{ e.canonical_name }}
               </NuxtLink>
@@ -149,6 +152,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
                 <FragranceIdentityMark :status="e.identity_status" />
                 <span class="readout text-[12px] text-ink-3" :aria-label="e.rating ? `Rating ${e.rating} out of 5` : 'Not rated'">{{ e.rating ? `${e.rating}/5` : '—' }}</span>
               </p>
+              </div>
             </div>
             <FragranceChromatogram :pyramid="e.pyramid" micro :label="`${e.canonical_name} note profile`" class="order-3 md:order-none" />
             <FragranceCollectionStatusBadge :state="e.state" class="order-2 justify-self-end md:order-none md:justify-self-start" />

@@ -156,6 +156,7 @@ export interface CollectionListRow extends CollectionEntryRow {
   identity_status: string;
   pyramid?: { top?: string[]; heart?: string[]; base?: string[] } | null;
   pyramid_origin?: 'user' | 'official' | 'provider' | 'derived' | null;
+  primary_image_id?: string | null;
 }
 
 export type CollectionSort = 'recent' | 'name' | 'brand' | 'rating';
@@ -183,7 +184,8 @@ export async function listEntries(
             (SELECT c.origin FROM app.source_claims c
               WHERE c.fragrance_id = f.id AND c.field_name = 'pyramid' AND c.superseded_at IS NULL
               ORDER BY CASE c.origin WHEN 'user' THEN 1 WHEN 'official' THEN 2 WHEN 'provider' THEN 3 ELSE 4 END, c.claimed_at DESC
-              LIMIT 1) AS pyramid_origin
+              LIMIT 1) AS pyramid_origin,
+            app.primary_image(e.owner_id, f.id, NULL) AS primary_image_id
        FROM app.collection_entries e
        JOIN app.fragrances f ON f.id = e.fragrance_id
        JOIN app.brands b ON b.id = f.brand_id

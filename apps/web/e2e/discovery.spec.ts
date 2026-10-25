@@ -25,3 +25,18 @@ test('explicit preference → local indexing → explainable discovery and diffe
   await page.getByRole('button',{name:'Refresh suggestions'}).click();
   await expect(page.getByTestId('discovery-reason')).toContainText('Ollama unavailable');
 });
+
+test('a verified profile without a pyramid still shows its untiered listed notes (Boss Bottled Elixir)', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await login(page, '/discover');
+  await page.getByLabel('Brand').fill('Hugo Boss');
+  await page.getByLabel('Fragrance name').fill('Boss Bottled Elixir');
+  await page.getByRole('button', { name: 'Search', exact: true }).click();
+  await expect(page.getByText(/Exact match verified|Already in your library|Partly unavailable/)).toBeVisible({ timeout: 15_000 });
+  if (await page.getByText('Exact match verified').isVisible()) {
+    const listed = page.getByTestId('listed-notes');
+    await expect(listed).toContainText('Vetiver');
+    await expect(page.getByText('Scento lists these without top, heart or base tiers.')).toBeVisible();
+    await expect(page.getByTestId('tier-top-unknown')).toHaveText('Not listed'); // still no invented tier
+  }
+});

@@ -10,6 +10,9 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Added
 
+- **Phase 12: Perfume images.** Typed image source chain (owner upload > approved provider > Scento > manual external URL). Scento documents no image field, so that slot reports unsupported. Remote hosts are off until approved. SSRF-safe server-side fetching (https, allowlist, public-DNS guard, re-validated redirects, size/time caps, signature and decode checks). Migration `0005_perfume_images` adds metadata, a single explicit primary and checksum dedupe. A protected `fraygrance_image_assets` volume holds originals and EXIF-free WebP derivatives. Owner image manager plus a resilient image component in Collection, detail, Compare, Discover and Academy practice. `make backup` archives the image volume and `make restore-test` checks every referenced file.
+- Untiered Scento notes and signature materials (e.g. Boss Bottled Elixir, which has no pyramid) are kept as provenance-labelled facts and shown as "Listed notes" without inventing tiers; traits and Compare use them.
+
 - **Phase 11: Scent Academy.** Six original versioned lessons with resumable progress, a glossary and Explain-this links from fragrance detail and Compare. On-demand, attributed Scento reference lookups (material, lexicon, family map/detail, journal) with typed fallbacks, budgets and plain-text rendering. An optional local tutor that reports honestly when no generative model is configured. Private Train My Nose blotter practice (three stages, pause/resume, never scored). Migration `0004_scent_academy`, and export format v2 with academy data (v1 still imports).
 - **Console redesign: "Scent Spectrometer"** ([ADR-012](docs/adr/ADR-012-scent-spectrometer-visual-world.md)):
   - graphite and ice-white tokens with lab-paper light theme;

@@ -42,3 +42,7 @@ Phases 00 → 01 → ... → 10 run in order. Multiple agents may work on differ
 ## Phase 11 local-development exception
 
 ADR-010 accepts Phase 11 and explicit operator-authorized local development while Phase 10 recovery remains blocked. Record that authorization and actual local results in phase 11. Keep Phase 10 and its blockers unchanged. `last_successful_phase` is the highest contiguous completed phase, so it remains 09 until Phase 10 genuinely completes. Codex/Claude Phase 11 prompts are accepted; IBM Bob's suite remains 00–10.
+
+## Phase 12 local-development exception
+
+ADR-011 accepts Phase 12 (perfume images) on the same terms as Phase 11: it requires Phase 11 completed and pushed, records its own local results under phase 12, and leaves Phase 10, its blockers and `last_successful_phase` unchanged. Codex/Claude Phase 12 prompts are accepted; IBM Bob's suite remains 00–10.

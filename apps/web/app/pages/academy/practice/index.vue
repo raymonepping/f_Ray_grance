@@ -80,9 +80,12 @@ const when = (iso: string) => new Date(iso).toLocaleDateString(undefined, { date
         <ul v-if="exercises?.length" class="m-0 list-none p-0" aria-label="Practice exercises">
           <li v-for="x in exercises" :key="x.id" class="border-b border-line last:border-b-0">
             <NuxtLink :to="`/academy/practice/${x.id}`" class="motion grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-4 text-ink no-underline hover:bg-raised/50">
-              <span class="min-w-0">
+              <span class="flex min-w-0 items-start gap-3">
+                <FragranceImage v-if="x.fragrance" :image-id="x.primary_image_id" :alt="`${x.brand} ${x.fragrance}`" size="thumb" />
+                <span class="min-w-0">
                 <span class="block text-[15px] font-medium [overflow-wrap:anywhere]">{{ x.title }}</span>
                 <span class="mt-0.5 block text-[13px] text-ink-3">{{ x.fragrance ? `${x.fragrance} · ${x.brand}` : 'Generic blotter' }} · {{ when(x.created_at) }}</span>
+                </span>
               </span>
               <span class="flex items-center gap-4">
                 <span class="readout text-[12px] text-ink-3" :aria-label="`${x.observations ?? 0} of 3 observations`">{{ x.observations ?? 0 }}/3</span>

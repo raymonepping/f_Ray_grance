@@ -12,3 +12,9 @@ Source: Scento Perfume API, scento.com — https://www.scento.com/developers/per
 `material-lavender` (note-portrait), `lexicon-sillage` (perfumery-lexicon), `families`
 (family-map), `family-green-leaf` (family-detail) and `journal-vetiver` (journal-search):
 five on-demand lookups used only as offline adapter tests. Scento content is English.
+
+## Phase 12 untiered-notes fixture (captured 2026-10-25, live HTTP 200)
+
+`profile-boss-bottled-elixir-hugo-boss`: Scento gives no pyramid and no concentration for this
+fragrance, only an untiered `notes` list, signature materials and a character line. It guards the
+adapter against dropping those facts and against inventing tiers for them.

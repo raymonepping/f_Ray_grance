@@ -75,10 +75,27 @@ resource "docker_volume" "ollama_models" {
   }
 }
 
+# Tier A (owner data): perfume image originals and derivatives (Phase 12). Metadata lives in
+# PostgreSQL; this volume holds the binaries, outside Git and outside any disposable container.
+resource "docker_volume" "image_assets" {
+  name = "fraygrance_image_assets"
+  dynamic "labels" {
+    for_each = local.labels
+    content {
+      label = labels.key
+      value = labels.value
+    }
+  }
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
 output "volumes" {
   value = {
     pgdata        = docker_volume.pgdata.name
     vault_data    = docker_volume.vault_data.name
     ollama_models = docker_volume.ollama_models.name
+    image_assets  = docker_volume.image_assets.name
   }
 }

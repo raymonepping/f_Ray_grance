@@ -8,6 +8,7 @@ export interface DnaProfile {
   limitation: string;
   collection: { state: string }[];
   personalSeasons: { season: string; affinity: string }[];
+  primaryImageId?: string | null;
 }
 export interface Comparison {
   fragrances: [DnaProfile, DnaProfile]; method: string;

@@ -12,6 +12,12 @@ Run `make restore-test BACKUP=/absolute/archive.dump`. It checks checksum, trust
 
 This rehearsal uses the current Podman VM. It does **not** prove survival of VM or Mac loss. Before real-data import, copy the repository/runtime pins, archive and manifest to an approved separate Mac or fresh Podman VM and run the same rehearsal there. Record the environment, verified checksum, fingerprints and elapsed recovery time. Only when actually running on the independently verified destination, set `FRAY_RESTORE_ENV_LABEL` to a non-sensitive label and `FRAY_RESTORE_INDEPENDENT=YES` to record the operator attestation. Leave these unset for local rehearsals; the flags alone do not prove independence. No deletion of the original VM is necessary or authorized by this procedure.
 
+### Perfume images
+
+Image binaries live in the protected `fraygrance_image_assets` volume, not in PostgreSQL and not in Git. A persistent volume is not a backup. After the dump, `make backup` writes a read-only, network-less tar of that volume as `fray-<ts>.images.tar`, with its checksum and file count in `fray-<ts>.images.json`. Both are written before the main manifest, which still marks completion. The archive is taken after the dump, so it holds every file the dump references; an image deleted in between may also appear. Copy the image archive and its JSON off-device together with the dump and manifest.
+
+`make restore-test` verifies the image archive checksum. It then checks that every `storage_path` in the restored `app.image_assets` table exists in the archive, both the original and its `.display.webp` derivative (`IMAGES_CHECK_PASS`). A backup whose database references images but has no image archive fails the rehearsal. Restoring images onto a recovered target means extracting the tar into a fresh image volume before the API starts. Like the rest of production promotion, that step is manual and not yet verified.
+
 ## Explicit recovery staging
 
 `make restore BACKUP=/absolute/archive.dump` requires typing `RESTORE TO QUARANTINE`. Only use a trusted project archive: restoring PostgreSQL dumps executes SQL. The command defaults to a fresh isolated target, validates as above, and retains the successfully restored container for operator inspection. Failed targets are removed. No live data is overwritten; there is no public/network port or durable volume on the quarantine target.
@@ -20,7 +26,7 @@ The command prints the exact target name. Inspect via `podman exec <printed-targ
 
 Production promotion is deliberately manual and has not been verified: stop app writes; take and verify a fresh backup of any existing target; retain the original data volume; review a separate Terraform/Ansible recovery plan for a fresh data target; restore with matching roles/extensions; verify fingerprints and API owner-scoped reads/writes; regenerate Vault-issued credentials/session configuration; only then switch the app to the approved target and run health/browser/security checks. Never copy stale Vault leases from an archive. Keep the old target available for rollback. Rebuild embeddings if required; authoritative personal data comes first. A PostgreSQL major/image or pgvector upgrade needs its supported migration path and separate review.
 
-Protect Vault unseal material, the operator recovery process and Terraform state separately, as described in the [operator runbook](runbook.md). A PostgreSQL dump excludes Vault, Ollama models and Terraform state. Source Git history is not a collection backup.
+Protect Vault unseal material, the operator recovery process and Terraform state separately, as described in the [operator runbook](runbook.md). A PostgreSQL dump excludes Vault, Ollama models and Terraform state; perfume image binaries travel in the separate image archive described above. Source Git history is not a collection backup.
 
 ## Reviewed application upgrade
 

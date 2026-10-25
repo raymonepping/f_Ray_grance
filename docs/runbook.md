@@ -11,7 +11,8 @@ Nothing here schedules anything: backups and restore tests are manual (ADR-007).
 | `~/.config/f-ray-grance/operator-token` (0600) | Scoped `fray-operator` Vault token (periodic 32 days, renewed by every `make configure`) | Same as above |
 | `~/.config/f-ray-grance/secrets/pg_superuser` | PostgreSQL bootstrap password (only used at first init; superuser has no network login) | Keep with the above |
 | `~/.local/state/f-ray-grance/terraform/` | Terraform state for the data and app roots | Back up with your Mac; treat as sensitive |
-| `~/F-Ray-grance-backups/` (0700) | Manual `pg_dump` archives, manifests, restore-test results | Copy off-device after each `make backup` |
+| `~/F-Ray-grance-backups/` (0700) | Manual `pg_dump` archives, manifests, image archives (`*.images.tar` + `.json`), restore-test results | Copy off-device after each `make backup` |
+| `fraygrance_image_assets` volume | Perfume image originals and display derivatives, mounted in `fray-api` at `/var/lib/fray/images`. Metadata is in PostgreSQL | A volume is not a backup: `make backup` archives it next to the dump |
 | `~/.local/share/f-ray-grance/toolchain/` | Project-local Node 24 | Re-creatable with `make toolchain` |
 
 ## First-time setup

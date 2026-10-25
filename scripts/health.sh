@@ -46,6 +46,10 @@ ports="$("$PODMAN" inspect fray-web --format '{{range $p, $b := .NetworkSettings
 if "$PODMAN" container exists fray-api; then
   code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "$GW/api/health/ready")"
   [[ "$code" == 200 ]] && ok 'api ready via gateway' || bad "api ready -> $code"
+  imgvol="$("$PODMAN" inspect fray-api --format '{{range .Mounts}}{{if eq .Destination "/var/lib/fray/images"}}{{.Name}}{{end}}{{end}}' 2>/dev/null)"
+  if [[ "$imgvol" == fraygrance_image_assets ]] && "$PODMAN" exec fray-api test -w /var/lib/fray/images; then
+    ok 'image assets on named volume fraygrance_image_assets (writable by api)'
+  else bad "image asset volume is '${imgvol:-none}' or not writable (run make provision)"; fi
 elif [[ -f "${FRAY_CONFIG_DIR:-$HOME/.config/f-ray-grance}/vault-configured" ]]; then
   bad 'fray-api expected (Vault configured) but not provisioned: run make provision'
 else skip 'fray-api not provisioned yet'; fi

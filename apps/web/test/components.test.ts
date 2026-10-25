@@ -3,6 +3,7 @@ import { mount } from '@vue/test-utils';
 import NotePyramid from '../app/components/fragrance/NotePyramid.vue';
 import ScentTraitBars from '../app/components/fragrance/ScentTraitBars.vue';
 import Chromatogram from '../app/components/fragrance/Chromatogram.vue';
+import FragranceImage from '../app/components/fragrance/FragranceImage.vue';
 import { NAVIGATION, PRIMARY_NAV, SECONDARY_NAV, isActive } from '../shared/navigation';
 
 const stubs = { AppIcon: true };
@@ -74,5 +75,23 @@ describe('Chromatogram', () => {
     const w = mount(Chromatogram, { props: { pyramid: null }, global: { stubs } });
     expect(w.get('svg').attributes('aria-label')).toBe('Note profile: no notes listed');
     expect(w.findAll('path')).toHaveLength(0);
+  });
+});
+
+describe('FragranceImage', () => {
+  it('says "No verified image yet" instead of rendering a broken image when there is no image', () => {
+    const w = mount(FragranceImage, { props: { imageId: null, alt: 'Rabanne Phantom in Red', size: 'hero' } });
+    expect(w.find('img').exists()).toBe(false);
+    expect(w.text()).toContain('No verified image yet');
+  });
+  it('lazy-loads the owner-scoped display derivative and falls back to the placeholder on error', async () => {
+    const w = mount(FragranceImage, { props: { imageId: '11111111-1111-4111-8111-111111111111', alt: 'Layton', size: 'thumb' } });
+    const img = w.get('img');
+    expect(img.attributes('src')).toBe('/api/v1/images/11111111-1111-4111-8111-111111111111/display');
+    expect(img.attributes('loading')).toBe('lazy');
+    expect(img.attributes('alt')).toBe('Layton');
+    await img.trigger('error');
+    expect(w.find('img').exists()).toBe(false);
+    expect(w.text()).toContain('No verified image yet');
   });
 });
