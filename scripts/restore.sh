@@ -11,5 +11,8 @@ dump="${1:-}"
 echo 'Target: a NEW network-isolated PostgreSQL container. The live database stays unchanged.'
 echo 'Use only a trusted project backup; PostgreSQL archives contain executable SQL.'
 read -r -p 'Type RESTORE TO QUARANTINE to verify and retain a fresh target: ' answer
-[[ "$answer" == 'RESTORE TO QUARANTINE' ]] || { echo 'Aborted'; exit 2; }
+[[ "$answer" == 'RESTORE TO QUARANTINE' ]] || {
+  echo 'Aborted'
+  exit 2
+}
 bash "$repo/scripts/restore-test.sh" "$dump" retain-validated

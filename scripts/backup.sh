@@ -19,9 +19,15 @@ ts="$(date -u +%Y%m%dT%H%M%SZ)"
 base="fray-$ts"
 part="$DIR/.$base.dump.partial"
 mpart="$DIR/.$base.manifest.partial"
-mkdir "$DIR/.backup.lock" 2>/dev/null || { echo 'BLOCKED: another backup holds .backup.lock; inspect its owner before retrying.' >&2; exit 2; }
+mkdir "$DIR/.backup.lock" 2>/dev/null || {
+  echo 'BLOCKED: another backup holds .backup.lock; inspect its owner before retrying.' >&2
+  exit 2
+}
 trap 'rm -f "$part" "$mpart"; rmdir "$DIR/.backup.lock"' EXIT
-[[ ! -e "$DIR/$base.dump" && ! -e "$DIR/$base.manifest.json" ]] || { echo 'REFUSED: backup filename already exists; retry with a fresh timestamp.' >&2; exit 2; }
+[[ ! -e "$DIR/$base.dump" && ! -e "$DIR/$base.manifest.json" ]] || {
+  echo 'REFUSED: backup filename already exists; retry with a fresh timestamp.' >&2
+  exit 2
+}
 
 python3 "$repo/scripts/backup_snapshot.py" "$part" "$mpart" "$base.dump" "$ts"
 

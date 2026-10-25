@@ -431,7 +431,7 @@
         "Record truthful local-only release decision; Tailscale deferred by operator"
       ],
       "finished_at_utc": "2026-10-25T09:54:39Z",
-      "ci": "not_checked",
+      "ci": "passed",
       "tests": {
         "make_test": "PASS",
         "final_e2e": "28/28 PASS (32.0s)",
@@ -456,7 +456,9 @@
         "Operator must select/provide a protected off-device backup destination and independently verify the copy.",
         "Operator must provide a separate approved Mac/VM recovery environment outside the original Podman VM."
       ],
-      "notes": "All local implementation checks pass. Safe recovery tooling and redacted evidence are ready for review/commit. Release remains blocked by actual external recovery prerequisites; live import disabled. Tailscale deferred; Phase 11 remains draft. Synthetic owners/targets cleaned up; authoritative volumes retained."
+      "notes": "Local recovery tooling and redacted gate report pushed through commit_gh. All local checks pass; GitHub Detect secrets success observed for the implementation commit. Release remains blocked by independent protected-copy/restore prerequisites. Import disabled, Tailscale deferred, Phase 11 draft. Synthetic test owners/targets cleaned up; authoritative volumes retained.",
+      "ci_note": "Observed GitHub Detect secrets completed/success for recovery implementation commit 5d6bee138de9c0319f4c6d440f868cfb0f669782.",
+      "implementation_commit": "5d6bee138de9c0319f4c6d440f868cfb0f669782"
     }
   },
   "accepted_adrs": [
@@ -493,5 +495,5 @@
       "detail": "No approved separate environment supplied for a full recovery drill outside the original Podman VM."
     }
   ],
-  "updated_at_utc": "2026-10-25T09:54:39Z"
+  "updated_at_utc": "2026-10-25T09:55:27Z"
 }

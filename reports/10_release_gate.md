@@ -43,3 +43,5 @@ Production recovery promotion and iPhone Safari/remote device grants/denials are
 ## Changed-file inventory and handoff
 
 Recovery scripts (`backup.sh`, `backup_snapshot.py`, `backup_manifest.py`, `backup-status.sh`, `restore-test.sh`, `restore.sh`, `upgrade.sh`), disposable database setup, runtime restore smoke SQL, synthetic lifecycle/concurrency probes, inherited security probe, Make/test integration, current README/changelog/runbooks, browser evidence and atomic build state. Only these explicit phase-owned changes are committed through `commit_gh`; unrelated agent configuration stays untracked.
+
+Local recovery implementation was committed/pushed through `commit_gh` as `5d6bee138de9c0319f4c6d440f868cfb0f669782`. Its GitHub Detect secrets check was observed completed/success. The following checkpoint includes that observed CI result and shell formatting produced by the pre-commit hook; shell syntax and documentation validation pass. This does not change the blocked independent recovery decision.
