@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "project": "F-Ray-grance",
+  "repository": {
+    "origin": "https://github.com/raymonepping/f_Ray_grance.git",
+    "branch": "main"
+  },
+  "last_successful_phase": "00",
+  "phases": {
+    "00": {
+      "status": "completed",
+      "agent": "claude-opus-5-5",
+      "prompt_id": "FRAY-CLAUDE-00",
+      "started_at_utc": "2026-10-25T05:51:54Z",
+      "baseline_head": "bc5b4faa9395dfe2c5f078985d822b8f13b87523",
+      "report_path": "reports/00_preflight.md",
+      "planned_scope": [
+        "state init",
+        "make help/doctor",
+        "Podman socket identity",
+        "Terraform disposable probe",
+        "PG18+pgvector ARM64 probe",
+        "Vault DB-engine disposable probe (ADR-008)",
+        "Scento exact-match probe",
+        "Ollama embedding probe",
+        "G00 gate matrix"
+      ],
+      "finished_at_utc": "2026-10-25T06:04:30Z",
+      "tests": {
+        "G00.0": "PASS",
+        "G00.1": "PASS",
+        "G00.2": "PASS",
+        "G00.3": "PASS",
+        "G00.4": "OPEN->01",
+        "G00.5": "PASS(disposable)",
+        "G00.6": "PASS(provider)",
+        "G00.7": "PASS",
+        "G00.8": "OPEN->05",
+        "G00.9": "OPEN->01/10",
+        "G00.10": "BLOCKED(operator: tailscale not installed)",
+        "G00.11": "PASS"
+      },
+      "artifacts": {
+        "postgres_image": "docker.io/pgvector/pgvector:0.8.7-pg18-trixie@sha256:14d8a514128e8a98150fa391e522e05a8bf70e17bf1a69448fdb7a436c2187c6",
+        "vault_image": "docker.io/hashicorp/vault:2.1.2@sha256:7d8aca849b113b416a5b90b73659c46190c3720463f0b53da22440c2ada3b36e",
+        "ollama_image": "docker.io/ollama/ollama:0.40.2@sha256:fd3acc213049eb340e64996e49145e1e8dd5d054a29ebcee12a6eff215f4b117",
+        "embedding_model": {
+          "id": "nomic-embed-text:v1.5",
+          "blob": "sha256-970aa74c0a90ef7482477cf803618e776e173c007bf957f635f1015bfcfef0e6",
+          "dimension": 768
+        },
+        "podman_engine": "5.7.1",
+        "terraform_docker_provider": "4.6.0"
+      },
+      "ci": "not_checked",
+      "notes": "ADR-008 accepted: project-owned fray-vault.",
+      "blockers": [
+        "G00.10 Tailscale not installed (needed by Phase 10)"
+      ]
+    }
+  },
+  "accepted_adrs": [
+    "ADR-001",
+    "ADR-002",
+    "ADR-003",
+    "ADR-004",
+    "ADR-005",
+    "ADR-006",
+    "ADR-007",
+    "ADR-008"
+  ],
+  "unresolved_blockers": [
+    {
+      "id": "G00.10",
+      "phase_needed": "10",
+      "owner": "operator",
+      "detail": "Install Tailscale on Mac and iPhone; enable MagicDNS + HTTPS; restrict grants; never Funnel"
+    }
+  ],
+  "updated_at_utc": "2026-10-25T06:04:30Z"
+}

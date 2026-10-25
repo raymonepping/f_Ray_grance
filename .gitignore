@@ -147,7 +147,8 @@ docker-compose.override.yml
 *.tfstate.backup
 *.tfplan
 *.backup
-# .terraform.lock.hcl is committed: provider pins are part of the reproducibility contract
+# .terraform.lock.hcl is committed (overrides global ignore): provider pins are part of the reproducibility contract
+!.terraform.lock.hcl
 .terraform.tfstate.lock.info
 terraform.tfstate.d/
 *.log
