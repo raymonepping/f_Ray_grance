@@ -14,6 +14,7 @@ import json
 import re
 import sys
 from pathlib import Path
+
 from prompt_catalog import accepted_prompts
 
 r = Path(__file__).resolve().parents[1]

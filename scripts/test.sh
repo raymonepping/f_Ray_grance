@@ -19,7 +19,7 @@ run() { # run <label> <command...>
 echo 'F-Ray-grance test gate'
 run 'docs + prompts validation' make -s validate-docs
 run 'shell syntax (scripts/*.sh)' bash -c 'for f in scripts/*.sh scripts/probes/*.sh; do bash -n "$f" || exit 1; done'
-run 'python compile (scripts/*.py)' python3 -m py_compile scripts/state.py scripts/backup_manifest.py scripts/validate_release.py scripts/validate_prompts.py
+run 'python compile (scripts/*.py)' python3 -m py_compile scripts/state.py scripts/backup_manifest.py scripts/backup_snapshot.py scripts/prompt_catalog.py scripts/validate_release.py scripts/validate_prompts.py scripts/probes/p10_lifecycle.py scripts/probes/p10_backup_concurrency.py
 for root in data app phase00; do
   run "terraform fmt ($root)" terraform -chdir="infra/terraform/$root" fmt -check -diff
 done

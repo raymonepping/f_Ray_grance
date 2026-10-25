@@ -10,6 +10,8 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Added
 
+- **Phase 10 recovery tooling.** One shared snapshot for dump/manifest consistency, strict restore compatibility and runtime smoke checks, confirmed quarantine restore, reviewed app-only upgrade with saved-plan validation, and a synthetic persistence drill. Independent off-device recovery and release approval remain pending operator evidence.
+
 - **Phase 09 — Seasonal DNA and portability.** Four explicit seasonal profiles and fragrance affinities, season-aware collection/Compare/Discover, private versioned JSON export, validated read-only import preview and conflict-safe additive import with stable history identities. Live apply remains gated on independent recovery evidence.
 
 - **Phase 08 — Local discovery.** Digest-pinned Ollama embeddings with model/dimension/source checks, explicit indexing, exact pgvector cosine search, preference-driven similar/different suggestions and structured offline fallback.

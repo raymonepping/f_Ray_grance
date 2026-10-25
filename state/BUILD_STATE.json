@@ -400,7 +400,7 @@
         "History identities and deterministic portability roundtrip tests"
       ],
       "finished_at_utc": "2026-10-25T09:41:09Z",
-      "ci": "not_checked",
+      "ci": "passed",
       "tests": {
         "make_test": "PASS",
         "workspace_typecheck": "PASS",
@@ -414,7 +414,49 @@
       },
       "blockers": [],
       "notes": "External writer finished; future Phase 11 prompts preserved as explicitly registered deferred drafts. Strict import validation fixed after browser evidence. Live apply stays disabled until independent recovery.",
-      "resume_head": "bed67d02e8f7b6817945906fa1302f4b5acca1eb"
+      "resume_head": "bed67d02e8f7b6817945906fa1302f4b5acca1eb",
+      "ci_note": "Observed GitHub Detect secrets completed/success for 9d5c5ae0e8701a617a9cf297c5e97be4d4f41605."
+    },
+    "10": {
+      "status": "blocked",
+      "agent": "codex",
+      "prompt_id": "FRAY-CODEX-10",
+      "started_at_utc": "2026-10-25T09:41:34Z",
+      "baseline_head": "9d5c5ae0e8701a617a9cf297c5e97be4d4f41605",
+      "report_path": "reports/10_release_gate.md",
+      "planned_scope": [
+        "Audit manual backup consistency and isolated restore fingerprints",
+        "Verify lifecycle, migration and security regression gates",
+        "Document protected restore/upgrade operations and independent recovery prerequisites",
+        "Record truthful local-only release decision; Tailscale deferred by operator"
+      ],
+      "finished_at_utc": "2026-10-25T09:54:39Z",
+      "ci": "not_checked",
+      "tests": {
+        "make_test": "PASS",
+        "final_e2e": "28/28 PASS (32.0s)",
+        "reviewed_app_upgrade": "PASS including backup/restore, saved app-only plan, configure/health and 28/28 browser tests",
+        "lifecycle": "PASS: all 18 table fingerprints unchanged across down/start/restart, API recreation, full app destroy/reprovision/configure",
+        "noninterference": "108 unrelated containers unchanged",
+        "concurrent_backup": "PASS: 9 synthetic writes during dump; all restored fingerprints match",
+        "live_security": "39 PASS / 0 FAIL",
+        "quarantine_restore": "PASS: explicit confirmation, fresh network=none target, no mounted volumes, runtime smoke/fingerprints, 5.3s; test target removed",
+        "restore_guards": "PASS: corrupted/unsupported/missing archive and unapproved upgrade refused",
+        "final_manual_backup": "PASS: fray-20261025T095344Z.dump, schema 3, shared snapshot",
+        "final_local_restore": "PASS: 18 tables, 93 rows, pgvector 0.8.7, runtime smoke",
+        "health": "PASS",
+        "drift": "NO_DRIFT data + app",
+        "doctor": "PASS",
+        "off_device_copy": "BLOCKED: no protected destination/access supplied",
+        "independent_restore": "BLOCKED: no separate approved environment supplied",
+        "remote_access": "DEFERRED by operator, ADR-009; not PASS",
+        "production_recovery_promotion": "NOT VERIFIED; default restore stages in quarantine without overwriting live DB"
+      },
+      "blockers": [
+        "Operator must select/provide a protected off-device backup destination and independently verify the copy.",
+        "Operator must provide a separate approved Mac/VM recovery environment outside the original Podman VM."
+      ],
+      "notes": "All local implementation checks pass. Safe recovery tooling and redacted evidence are ready for review/commit. Release remains blocked by actual external recovery prerequisites; live import disabled. Tailscale deferred; Phase 11 remains draft. Synthetic owners/targets cleaned up; authoritative volumes retained."
     }
   },
   "accepted_adrs": [
@@ -435,7 +477,21 @@
       "owner": "operator",
       "detail": "Tailscale installed but integration deferred explicitly by operator due to IBM enterprise DNS policy; local Mac access only (ADR-009).",
       "status": "deferred_by_operator"
+    },
+    {
+      "id": "DR-OFFDEVICE",
+      "phase_needed": "10",
+      "owner": "operator",
+      "status": "blocked",
+      "detail": "No protected off-device destination/access supplied; latest host archive has no verified independent copy."
+    },
+    {
+      "id": "DR-INDEPENDENT",
+      "phase_needed": "10",
+      "owner": "operator",
+      "status": "blocked",
+      "detail": "No approved separate environment supplied for a full recovery drill outside the original Podman VM."
     }
   ],
-  "updated_at_utc": "2026-10-25T09:41:09Z"
+  "updated_at_utc": "2026-10-25T09:54:39Z"
 }

@@ -27,7 +27,7 @@ make health
 ```
 
 The app is then served on `http://localhost:8470` (loopback only). Use `localhost`, not
-`127.0.0.1`, for local browser access; remote iPhone access via Tailscale Serve HTTPS is Phase 10.
+`127.0.0.1`, for local browser access; remote iPhone access is deferred by the operator under ADR-009 because of enterprise network policy.
 
 ## Day to day
 
@@ -54,9 +54,11 @@ re-authenticates and renders fresh credentials; the API swaps its pool within se
 ## Vault model (ADR-008)
 
 - `fray-api` holds **no Vault token**. `fray-vault-agent` logs in with AppRole (secret-id bound to
-  the private `fraygrance` network CIDR) and renders `db-runtime.json` (15 min lease, max 4 h) and
+  the private `fraygrance` network CIDR) and renders `db-runtime.json` (5 min lease, max 4 h) and
   `session.json` (session-token HMAC key) into a volume the API mounts read-only.
 - Migrations use a separate 10-minute `fray-migrator` lease issued to Ansible, revoked right after.
 - Rotating the session HMAC key (new version of `kv/fray/session`) signs everyone out.
 - Privileged changes use the `fray-operator` token. If it is lost, use
   `vault operator generate-root` with the unseal key, then `make vault-bootstrap` logic manually.
+
+See [manual recovery and reviewed upgrades](recovery.md) for snapshot-consistent backups, quarantine restore, independent restore requirements and rollback boundaries.

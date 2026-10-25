@@ -19,26 +19,19 @@ ts="$(date -u +%Y%m%dT%H%M%SZ)"
 base="fray-$ts"
 part="$DIR/.$base.dump.partial"
 mpart="$DIR/.$base.manifest.partial"
-trap 'rm -f "$part" "$mpart"' EXIT
+mkdir "$DIR/.backup.lock" 2>/dev/null || { echo 'BLOCKED: another backup holds .backup.lock; inspect its owner before retrying.' >&2; exit 2; }
+trap 'rm -f "$part" "$mpart"; rmdir "$DIR/.backup.lock"' EXIT
+[[ ! -e "$DIR/$base.dump" && ! -e "$DIR/$base.manifest.json" ]] || { echo 'REFUSED: backup filename already exists; retry with a fresh timestamp.' >&2; exit 2; }
 
-"$PODMAN" exec fray-postgres pg_dump -U fray_backup -d fray -Fc --compress=6 >"$part"
-"$PODMAN" exec -i fray-postgres pg_restore --list <"$part" >/dev/null # archive is readable
-
-Q() { "$PODMAN" exec -i fray-postgres psql -X -At -v ON_ERROR_STOP=1 -U fray_backup -d fray "$@"; }
-export FRAY_M_TS="$ts" FRAY_M_FILE="$base.dump"
-FRAY_M_SHA="$(shasum -a 256 "$part" | cut -d' ' -f1)"
-FRAY_M_BYTES="$(stat -f %z "$part")"
-FRAY_M_PG="$(Q -c "SELECT current_setting('server_version')")"
-FRAY_M_VECTOR="$(Q -c "SELECT extversion FROM pg_extension WHERE extname='vector'")"
-FRAY_M_SCHEMA="$(Q -c "SELECT coalesce(max(version)::text,'none') FROM app.schema_migrations" 2>/dev/null || echo none)"
-FRAY_M_GIT="$(git -C "$repo" rev-parse --short HEAD 2>/dev/null || echo unknown)"
-FRAY_M_TOOL="$("$PODMAN" exec fray-postgres pg_dump --version)"
-FRAY_M_TABLES="$(Q <"$repo/scripts/sql/table_fingerprints.sql")"
-export FRAY_M_SHA FRAY_M_BYTES FRAY_M_PG FRAY_M_VECTOR FRAY_M_SCHEMA FRAY_M_GIT FRAY_M_TOOL FRAY_M_TABLES
-python3 "$repo/scripts/backup_manifest.py" write "$mpart"
+python3 "$repo/scripts/backup_snapshot.py" "$part" "$mpart" "$base.dump" "$ts"
 
 mv "$part" "$DIR/$base.dump"
 mv "$mpart" "$DIR/$base.manifest.json" # manifest last: its presence marks completion
+rmdir "$DIR/.backup.lock"
 trap - EXIT
-echo "BACKUP_OK $DIR/$base.dump sha256=$FRAY_M_SHA bytes=$FRAY_M_BYTES tables=$(python3 -c 'import json,os;print(len(json.loads(os.environ["FRAY_M_TABLES"])))')"
+python3 - "$DIR/$base.manifest.json" <<'PYINFO'
+import json,sys
+m=json.load(open(sys.argv[1]))
+print(f"BACKUP_OK {m['file']} sha256={m['sha256']} bytes={m['bytes']} tables={len(m['tables'])} shared_snapshot=yes")
+PYINFO
 echo 'NEXT: copy dump + manifest to protected off-device media, then: make backup-record-copy BACKUP=<dump> LOCATION="<label>"'

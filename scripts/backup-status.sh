@@ -40,10 +40,12 @@ t=datetime.datetime.strptime(last['created_utc'],'%Y%m%dT%H%M%SZ').replace(tzinf
 age=now-t
 print(f"  LAST VERIFIED BACKUP: {last['file']}  age={age.days}d {age.seconds//3600}h  schema={last['schema_version']}  tables={len(last['tables'])}")
 log=d/'offdevice-copies.jsonl'; copies=[json.loads(l) for l in log.read_text().splitlines()] if log.exists() else []
-mine=[c for c in copies if c['file']==last['file']]
+mine=[c for c in copies if c['file']==last['file'] and c.get('sha256')==last['sha256']]
 print(f"  OFF-DEVICE COPY OF LAST BACKUP: {mine[-1]['location']+' (recorded '+mine[-1]['recorded_utc']+')' if mine else 'NOT RECORDED'}")
 tests=sorted((d/'restore-tests').glob('*.json')) if (d/'restore-tests').exists() else []
 rt=[json.loads(p.read_text()) for p in tests]
 ok=[r for r in rt if r.get('result')=='PASS']
-print(f"  LAST RESTORE TEST: {ok[-1]['tested_utc']+' PASS of '+ok[-1]['backup'] if ok else 'NONE PASSED'}")
+print(f"  LAST RESTORE TEST (see environment in report): {ok[-1]['tested_utc']+' PASS of '+ok[-1]['backup'] if ok else 'NONE PASSED'}")
+independent=[r for r in ok if r.get('independent_recovery_operator_attested') and r.get('backup_sha256')==last['sha256']]
+print(f"  INDEPENDENT RESTORE OF LAST BACKUP: {independent[-1]['environment']+' (operator-attested)' if independent else 'NOT RECORDED — local disposable restore alone does not prove VM-loss recovery'}")
 PY

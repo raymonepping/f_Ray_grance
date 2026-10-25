@@ -8,7 +8,8 @@ A=http://127.0.0.1:8270/v1
 GW=http://localhost:8470
 CFG="${FRAY_CONFIG_DIR:-$HOME/.config/f-ray-grance}"
 VIMG="$(awk '/^VAULT_IMAGE/ {print $3}' "$(dirname "$0")/../../infra/versions.mk")"
-OPH=(-H "X-Vault-Token: $(cat "$CFG/operator-token")")
+# Keep the operator credential out of curl's process arguments.
+V() { curl -H @<(printf 'X-Vault-Token: %s\n' "$(cat "$CFG/operator-token")") "$@"; }
 pass=0
 fail=0
 ok() {
@@ -25,8 +26,8 @@ expect() { # expect <label> <want> <got>
 J() { python3 -c "import json,sys;d=json.load(sys.stdin);print($1)"; }
 
 echo '== 1. Vault policy least privilege (real AppRole login from inside the project network)'
-role_id="$(curl -s "${OPH[@]}" $A/auth/approle/role/fray-api/role-id | J 'd["data"]["role_id"]')"
-sec="$(curl -s -X POST "${OPH[@]}" $A/auth/approle/role/fray-api/secret-id -d '{"metadata":"{\"purpose\":\"p03-probe\"}"}')"
+role_id="$(V -s $A/auth/approle/role/fray-api/role-id | J 'd["data"]["role_id"]')"
+sec="$(V -s -X POST $A/auth/approle/role/fray-api/secret-id -d '{"metadata":"{\"purpose\":\"p03-probe\"}"}')"
 secret_id="$(J 'd["data"]["secret_id"]' <<<"$sec")"
 accessor="$(J 'd["data"]["secret_id_accessor"]' <<<"$sec")"
 probe_dir="$CFG/run/p03"
@@ -37,11 +38,14 @@ unset secret_id sec
 codes="$("$PODMAN" run --rm --network fraygrance -v "$probe_dir/login.json:/p/login.json:ro" --entrypoint sh "$VIMG" -c '
   T=$(wget -qO- --post-file=/p/login.json http://fray-vault:8200/v1/auth/approle/login | sed -n "s/.*\"client_token\":\"\([^\"]*\)\".*/\1/p")
   [ -n "$T" ] || { echo LOGIN_FAILED; exit 0; }
+  export VAULT_TOKEN="$T" VAULT_ADDR=http://fray-vault:8200
   for p in database/creds/fray-runtime kv/data/fray/session database/creds/fray-migrator database/config/fray sys/mounts auth/approle/role/fray-api/secret-id kv/data/fray/other; do
-    c=$(wget -S -qO /dev/null --header "X-Vault-Token: $T" "http://fray-vault:8200/v1/$p" 2>&1 | sed -n "s/^  HTTP\/[0-9.]* \([0-9]*\).*/\1/p" | tail -1)
+    if response=$(vault read -format=json "$p" 2>&1); then c=200; else
+      c=$(printf "%s\n" "$response" | sed -n "s/^Code: \([0-9]*\).*/\1/p" | head -1)
+    fi
     echo "$p=${c:-err}"
   done
-  wget -qO /dev/null --header "X-Vault-Token: $T" --post-data "" http://fray-vault:8200/v1/auth/token/revoke-self
+  vault token revoke -self >/dev/null
 ')"
 rm -f "$probe_dir/login.json"
 want() { grep -q "^$1=$2$" <<<"$codes" && ok "fray-api token: $1 -> $2" || bad "fray-api token: $1 expected $2 ($(grep "^$1=" <<<"$codes"))"; }
@@ -58,7 +62,7 @@ fi
 # The same secret-id from the Mac host (outside the bound CIDR) must be refused.
 host_login="$(printf '{"role_id":"%s","secret_id":"x"}' "$role_id" | curl -s -o /dev/null -w '%{http_code}' -X POST $A/auth/approle/login -d @-)"
 [[ "$host_login" =~ ^4 ]] && ok "AppRole login from outside the project CIDR refused ($host_login)" || bad "host login answered $host_login"
-curl -s -X POST "${OPH[@]}" $A/auth/approle/role/fray-api/secret-id-accessor/destroy -d "{\"secret_id_accessor\":\"$accessor\"}" -o /dev/null
+V -s -X POST $A/auth/approle/role/fray-api/secret-id-accessor/destroy -d "{\"secret_id_accessor\":\"$accessor\"}" -o /dev/null
 ok 'probe secret-id destroyed'
 
 echo '== 2. Rendered credentials: runtime login is DML-only'
@@ -74,7 +78,7 @@ expect 'rendered file mode/owner' '640 100:1000' "$perms"
 echo '== 3. Revocation and rotation (pool rebuild without data change)'
 before="$("$PODMAN" exec fray-postgres psql -X -At -U postgres -d fray -c 'SELECT count(*) FROM app.schema_migrations')"
 rebuilds_before="$("$PODMAN" logs fray-api 2>&1 | grep -c 'pool (re)built')"
-curl -s -X PUT "${OPH[@]}" $A/sys/leases/revoke-prefix/database/creds/fray-runtime -o /dev/null -w '' && ok 'revoked all fray-runtime leases'
+V -s -X PUT $A/sys/leases/revoke-prefix/database/creds/fray-runtime -o /dev/null -w '' && ok 'revoked all fray-runtime leases'
 sleep 2
 gone="$("$PODMAN" exec fray-postgres psql -X -At -U postgres -c "SELECT count(*) FROM pg_roles WHERE rolname='$user'")"
 expect 'revoked login dropped in PostgreSQL' 0 "$gone"
@@ -120,7 +124,7 @@ grep -qE 'localhost\s+FALSE\s+/\s+TRUE\s+[0-9]+\s+__Host-fray_csrf' "$jar" && ok
 expect 'authenticated collection' 200 "$(curl -s -b "$jar" -o /dev/null -w '%{http_code}' $GW/api/v1/collection)"
 csrf="$(awk '$6=="__Host-fray_csrf"{print $7}' "$jar")"
 expect 'logout without CSRF header' 403 "$(curl -s -b "$jar" -o /dev/null -w '%{http_code}' -X POST -H "Origin: $GW" $GW/api/v1/auth/logout)"
-expect 'logout with CSRF header' 200 "$(curl -s -b "$jar" -o /dev/null -w '%{http_code}' -X POST -H "Origin: $GW" -H "x-csrf-token: $csrf" $GW/api/v1/auth/logout)"
+expect 'logout with CSRF header' 200 "$(curl -s -b "$jar" -o /dev/null -w '%{http_code}' -X POST -H "Origin: $GW" -H @<(printf 'x-csrf-token: %s\n' "$csrf") $GW/api/v1/auth/logout)"
 expect 'old cookie after logout' 401 "$(curl -s -b "$jar" -o /dev/null -w '%{http_code}' $GW/api/v1/session)"
 rm -f "$jar"
 "$PODMAN" exec -i fray-api node apps/api/dist/cli/owner.js delete-synthetic "$u" >/dev/null && ok 'synthetic owner removed'

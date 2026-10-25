@@ -14,7 +14,7 @@ case "${1:-}" in
 start)
   "$PODMAN" rm -f "$name" >/dev/null 2>&1 || true
   # trust auth is acceptable only for this synthetic, loopback-only, volume-less container.
-  "$PODMAN" run -d --name "$name" --label io.fraygrance.project=fraygrance --label io.fraygrance.tier=test \
+  "$PODMAN" run -d --image-volume=ignore --name "$name" --label io.fraygrance.project=fraygrance --label io.fraygrance.tier=test \
     -p "127.0.0.1:$port:5432" -e POSTGRES_HOST_AUTH_METHOD=trust "$img" >/dev/null
   for _ in 1 2; do
     for _ in $(seq 60); do

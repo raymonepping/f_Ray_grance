@@ -1,4 +1,5 @@
 """Accepted execution prompts and explicitly registered future drafts."""
+
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -7,7 +8,9 @@ DEFERRED = {
     "prompts/Claude/11_scent_academy_and_tutor.md",
     "prompts/Codex/11_scent_academy_and_tutor.md",
 }
-DRAFT_MARKER = "**Status:** Deferred draft; outside the accepted Phase 00–10 execution plan."
+DRAFT_MARKER = (
+    "**Status:** Deferred draft; outside the accepted Phase 00–10 execution plan."
+)
 
 
 def accepted_prompts(agent):

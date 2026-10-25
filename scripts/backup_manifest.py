@@ -13,6 +13,7 @@ def write(out: str) -> None:
     e = os.environ
     manifest = {
         "format": "pg_dump -Fc",
+        "consistent_snapshot": e.get("FRAY_M_SNAPSHOT"),
         "created_utc": e["FRAY_M_TS"],
         "file": e["FRAY_M_FILE"],
         "bytes": int(e["FRAY_M_BYTES"]),
@@ -43,10 +44,18 @@ def compare(manifest_path, restored_path, out, seconds, pgvector, ts) -> int:
         for t in sorted(set(m["tables"]) | set(got))
         if m["tables"].get(t) != got.get(t)
     }
-    res = "PASS" if not diffs and pgvector else "FAIL"
+    res = "PASS" if not diffs and pgvector == m["pgvector_version"] else "FAIL"
     report = {
         "tested_utc": ts,
         "backup": m["file"],
+        "backup_sha256": m["sha256"],
+        "environment": os.environ.get(
+            "FRAY_RESTORE_ENV_LABEL", "local Podman connection"
+        ),
+        "independent_recovery_operator_attested": os.environ.get(
+            "FRAY_RESTORE_INDEPENDENT"
+        )
+        == "YES",
         "result": res,
         "tables_compared": len(m["tables"]),
         "rows_total": sum(v["rows"] for v in got.values()),

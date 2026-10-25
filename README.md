@@ -25,41 +25,33 @@ All authoritative specification documents live in [`spec/`](spec); `spec/MANIFES
 | [`PHASE_00.md`](spec/PHASE_00.md) | Phase 00 environment validation |
 | [`PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md) | **Authoritative 00–10 sequence** for all agents and release stages |
 | [`RELEASE_NOTES.md`](RELEASE_NOTES.md) | v0.1.6 accepted changes, verification limits and start guide |
-| [`docs/adr/`](docs/adr) | Accepted ADR-001 through ADR-007, including private Tailscale access, direct-main commits and manual backups |
+| [`docs/adr/`](docs/adr) | Accepted ADR-001 through ADR-009, including project Vault, direct-main commits, manual backups and the operator’s Tailscale deferral |
 
 ## Locked decisions
 
-- **Database:** PostgreSQL 18 + pgvector. Target pgvector 0.8.7, with tested image/digest selection pending Phase 00.
+- **Database:** PostgreSQL 18 + pgvector. Digest-pinned pgvector 0.8.7 on ARM64, verified during implementation.
 - **Frontend:** Nuxt 4 + Vue 3 + TypeScript, Tailwind CSS v4, mobile-first responsive app. No native iOS developer account required.
 - **Services:** Node.js 24 LTS / Fastify; local Ollama embeddings; Scento-first read-only enrichment.
-- **Security:** private Tailscale Serve HTTPS on iPhone/Mac, explicit tailnet grants, independent owner login and route authZ; externally deployed HashiCorp Vault with scoped dynamic PostgreSQL credentials via Vault Agent where validated.
+- **Security:** local Mac loopback access with independent owner login and route authorization; project-owned HashiCorp Vault with scoped dynamic PostgreSQL credentials via Vault Agent. Remote Tailscale access is deferred by the operator under ADR-009.
 - **Operations:** Terraform provisions, Ansible configures, Make controls, Podman runs; no dual resource ownership. **Manual** backup/restore checks only; no backup scheduler.
 - **UX:** Dark-navy / warm-gold premium glass shell, collapsible left sidebar, sticky header, normal-flow footer and accessible mobile bottom bar/drawer.
 - **Main workflows:** Collection, Discover, **Compare (2 in v0.1)**, My DNA by season. 4-up comparison reserved for v0.2.
 - **Data:** collection history is authoritative and durable; model outputs may be regenerated; no blind reseeding, no default destructive command. `commit_gh` pushes **only `main`** and Git is not a collection backup.
 
-## Current verified and unverified facts
+## Current implementation and release status
 
-**Verified via official documentation:** PostgreSQL 18 supports logical dumps; pgvector supports cosine distance and exact/approximate search; Vault supports PostgreSQL dynamic credentials and Vault Agent auto-auth; Scento exposes a keyless read-only API with restrictions against wholesale catalog replication; the PostgreSQL 18 official container changes volume path to `/var/lib/postgresql`.
+Phases 00–09 are implemented and pushed to the verified GitHub `main`. The app runs locally at `http://localhost:8470` with owner authentication, exact-identity enrichment, collection/history, two-fragrance Compare, local discovery, four-season preferences and private JSON export/import preview. Phase 09 passed the complete quality gate and 28 browser tests. Evidence and revision-specific results are in [build state](state/BUILD_STATE.json) and [phase reports](reports).
 
-**Require local validation:** Terraform Docker-provider ↔ Podman socket compatibility; pgvector 0.8.7 ARM64 image/build selection; Nuxt/Node package lock; actual Vault reachability/auth; barcode resolver availability; Scento exact record coverage; operator-selected backup/off-device destination and restore testing; Tailscale HTTPS/private grants and iPhone access; iPhone Safari/PWA behavior.
+Local Phase 10 security, lifecycle and recovery checks pass, including 39 security checks and the final 28 browser tests. Host backups and restores into disposable containers work. The release remains blocked on independent recovery evidence. Independent off-device protection, a restore outside the original Podman VM, and production recovery promotion still require operator verification. Real-data import stays disabled. iPhone/tailnet access is deferred by operator instruction because of enterprise network policy; it has not been verified. No production-ready release is claimed.
 
-## Operating scaffold status
-
-The bundled `Makefile`, `scripts/doctor.sh` and `infra/terraform/phase00` are **incomplete Phase 00 starting code**, not tested production provisioning. `make up`, `make backup`, `make restore`, and application infrastructure cannot be considered operational until implemented and verified. Deliberately unavailable targets fail closed. Do not import irreplaceable personal data yet.
-
-## Version freeze and runtime status
-
-**v0.1.6 is a documentation/agent-prompt baseline**, not an installed service or proof of remote access, live authentication, backup recovery or GitHub push. Only Phase 00 execution can establish runtime evidence. All direct-to-main agent commits require a separately configured and verified GitHub `origin` pointing to the intended F-Ray-grance repository.
+The v0.1.6 specification remains the accepted documentation baseline. The Phase 11 Scent Academy prompts are preserved deferred drafts; their required accepted specification/addendum is absent, so they do not advance the execution plan.
 
 ## Operating the stack
 
 See the operator runbook [`docs/runbook.md`](docs/runbook.md) for first-time setup (`make up`, `make vault-init`, `make vault-bootstrap`, `make owner-create`), day-to-day commands and `make heal` after Mac sleep. Build progress per phase is in [`reports/`](reports) and [`CHANGELOG.md`](CHANGELOG.md).
 
-## Starting workflow
+## Resuming development
 
-1. Read `RELEASE_NOTES.md`, `PHASE_MANIFEST.md`, `PRODUCT_SPEC.md`, `DESIGN.md`, `COMPARE_SPEC.md` and `ARCHITECTURE.md`.
-2. Run `make validate-docs`, `make help` and then `make doctor` once installed tools are present; examine outputs manually.
-3. Execute `PHASE_00.md`, record evidence and confirm critical durability/security gates.
-4. Implement first vertical slice: search exact Phantom In Red → verify → enrich → save → DNA → add to collection → compare against a second verified fragrance.
-5. Do not declare v0.1 done before `QUALITY.md` acceptance and a successful off-VM restore drill.
+Read the [phase manifest](spec/PHASE_MANIFEST.md), [state contract](prompts/STATE_CONTRACT.md), build state and latest phase report before work. Use the matching [agent launcher](prompts/launchers/Codex_START_HERE.md), keep one writer, and resume the current incomplete phase. Run `make validate-docs`, `make doctor` and the relevant quality gates. Commit through `./scripts/commit_gh` to the verified origin/main. Do not declare a release complete until the actual recovery/security gates have passed.
+
+See [manual recovery and reviewed upgrades](docs/recovery.md) and [seasonal portability](docs/portability.md) for current operational boundaries.

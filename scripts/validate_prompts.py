@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+
 from prompt_catalog import accepted_prompts
 
 root = Path(__file__).resolve().parents[1]

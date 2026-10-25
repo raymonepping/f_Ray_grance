@@ -216,11 +216,11 @@ backup-record-copy: ## Record an operator-verified off-device copy: BACKUP=<file
 restore-test: ## MANUAL isolated restore into a disposable PostgreSQL: [BACKUP=<file>]
 	@bash scripts/restore-test.sh "$(BACKUP)"
 
-upgrade: ## Backup-gated app and database migration (requires completed script)
+upgrade: ## Reviewed app-only upgrade with backup/restore gates: AUTO_APPROVE=YES
 	@test -x scripts/upgrade.sh || { echo 'Upgrade runbook not implemented. No image/tag change performed.' >&2; exit 2; }
 	@bash scripts/upgrade.sh
 
-restore: ## Explicit restore workflow (requires completed script)
+restore: ## Explicit verified restore into a new quarantine target: BACKUP=/absolute/file.dump
 	@test -x scripts/restore.sh || { echo 'Restore unavailable until implemented and tested.' >&2; exit 2; }
 	@bash scripts/restore.sh "$(BACKUP)"
 
