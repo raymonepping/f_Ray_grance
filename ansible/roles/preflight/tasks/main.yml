@@ -1,0 +1,24 @@
+- name: Inspect required project containers (read-only)
+  ansible.builtin.command:
+    argv: ["{{ podman_bin }}", inspect, --format, "{{ '{{' }}.State.Running{{ '}}' }} {{ '{{' }}index .Config.Labels \"io.fraygrance.project\"{{ '}}' }}", "{{ item }}"]
+  loop: "{{ fray_required_containers }}"
+  register: fray_inspect
+  changed_when: false
+
+- name: Require running, project-labelled containers (provisioned by Terraform)
+  ansible.builtin.assert:
+    that: item.stdout == 'true fraygrance'
+    fail_msg: "{{ item.item }} is not running/labelled; run make provision (Ansible never starts containers)"
+    quiet: true
+  loop: "{{ fray_inspect.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+
+- name: Wait for PostgreSQL readiness
+  ansible.builtin.command:
+    argv: ["{{ podman_bin }}", exec, fray-postgres, pg_isready, -U, postgres, -q]
+  register: fray_pg_ready
+  until: fray_pg_ready.rc == 0
+  retries: 30
+  delay: 2
+  changed_when: false

@@ -1,0 +1,39 @@
+# fray-web: same-origin gateway (ADR-005). Listens on :8080 inside the private
+# network; Terraform publishes it only on 127.0.0.1:8470 for Tailscale Serve.
+{
+	admin off
+	auto_https off
+	persist_config off
+	servers {
+		# Tailscale Serve -> 127.0.0.1:8470 -> Podman port forwarder (private range).
+		# Only then are incoming X-Forwarded-* headers kept; the API trusts the gateway only.
+		trusted_proxies static private_ranges
+	}
+}
+
+:8080 {
+	encode zstd gzip
+	header {
+		-Server
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+		Permissions-Policy "camera=(self), microphone=(), geolocation=(), interest-cohort=()"
+		Cross-Origin-Opener-Policy "same-origin"
+		Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
+	}
+
+	handle /api/* {
+		reverse_proxy fray-api:8080
+	}
+
+	handle {
+		root * /srv
+		try_files {path} {path}/ /index.html
+		file_server
+	}
+
+	handle_errors {
+		respond "{err.status_code} {err.status_text}" {err.status_code}
+	}
+}

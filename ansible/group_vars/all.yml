@@ -1,0 +1,7 @@
+podman_bin: podman
+fray_db_name: fray
+fray_required_containers: [fray-postgres, fray-vault, fray-ollama, fray-web]
+fray_embed_model: "{{ lookup('env', 'EMBED_MODEL') | default('nomic-embed-text:v1.5', true) }}"
+fray_vault_addr: "http://127.0.0.1:8270"
+# Phase 01: report only. Phase 03 flips this once Vault is configured.
+fray_require_vault_unsealed: false

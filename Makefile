@@ -1,124 +1,183 @@
-# F-Ray-grance control plane (v0.1.6 Phase 00 scaffold)
+# F-Ray-grance control plane.
 # Terraform = provision; Ansible = configure; Podman = runtime; Make = interface.
-# Operational targets that depend on the future application infrastructure FAIL CLOSED.
+# Data-destroying actions are never part of a normal target (ADR-003, ADR-007).
 SHELL := /bin/bash
 .SHELLFLAGS := -eu -o pipefail -c
 .DEFAULT_GOAL := help
 
+include infra/versions.mk
+
 TF ?= terraform
 ANSIBLE ?= ansible-playbook
 PODMAN ?= podman
-TF_SMOKE := infra/terraform/phase00
-TF_APP := infra/terraform/app
-TF_DATA := infra/terraform/data
 ANSIBLE_SITE := ansible/site.yml
 SERVICE ?= api
-# These are planned names: foundation provisioner must actually use them.
-START_ORDER := fray-postgres fray-ollama fray-api fray-web
-STOP_ORDER := fray-web fray-api fray-ollama fray-postgres
 
-.PHONY: help validate-docs doctor check-socket smoke-init smoke-plan smoke-up smoke-down init plan provision configure up \
- start stop down restart status logs health test backup backup-status restore restore-test upgrade destroy danger-destroy-data check-app check-ansible
+# Operator-local, never in Git. Override via environment if desired.
+FRAY_CONFIG_DIR ?= $(HOME)/.config/f-ray-grance
+FRAY_SECRETS_DIR ?= $(FRAY_CONFIG_DIR)/secrets
+FRAY_STATE_DIR ?= $(HOME)/.local/state/f-ray-grance
+FRAY_BACKUP_DIR ?= $(HOME)/F-Ray-grance-backups
+VAULT_INIT_FILE ?= $(FRAY_CONFIG_DIR)/vault-init.json
+
+WEB_IMAGE ?= $(shell $(PODMAN) image exists localhost/fray-web:current 2>/dev/null && echo localhost/fray-web:current || echo localhost/fray-web:placeholder)
+API_IMAGE ?= $(shell $(PODMAN) image exists localhost/fray-api:current 2>/dev/null && echo localhost/fray-api:current)
+VAULT_AGENT_ENABLED ?= $(shell test -f $(FRAY_CONFIG_DIR)/vault-configured && echo true || echo false)
+
+export TF PODMAN FRAY_CONFIG_DIR FRAY_SECRETS_DIR FRAY_STATE_DIR FRAY_BACKUP_DIR VAULT_INIT_FILE
+export PG_IMAGE VAULT_IMAGE OLLAMA_IMAGE CADDY_IMAGE NODE_IMAGE EMBED_MODEL WEB_IMAGE API_IMAGE VAULT_AGENT_ENABLED
+
+START_ORDER := fray-postgres fray-vault fray-ollama fray-vault-agent fray-api fray-web
+STOP_ORDER := fray-web fray-api fray-vault-agent fray-ollama fray-vault fray-postgres
+APPROVE := $(if $(filter YES,$(AUTO_APPROVE)),-auto-approve,)
+
+.PHONY: help validate-docs doctor check-socket smoke-init smoke-plan smoke-up smoke-down images build bootstrap \
+ init plan drift recreate provision configure up start stop down restart status logs health test \
+ vault-init vault-unseal vault-status vault-snapshot \
+ backup backup-status backup-record-copy restore-test restore upgrade destroy danger-destroy-data check-app check-ansible
+
+help: ## Show command catalog
+	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z0-9_-]+:.*## / { printf "  %-19s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
+	@echo; echo 'Terraform state: $(FRAY_STATE_DIR)/terraform (outside Git). Backups: $(FRAY_BACKUP_DIR) (manual only).'
 
 validate-docs: ## Verify documentation, links, manifest and agent prompts
 	@python3 scripts/validate_release.py
 	@python3 scripts/validate_prompts.py
 
-help: ## Show command catalog
-	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z0-9_-]+:.*## / { printf "  %-17s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
-	@echo; echo 'Phase 00: smoke-* is a disposable Terraform/Podman provider test; not the app stack.'
-
 # Doctor is strictly read-only.
 doctor: ## Inspect installed prerequisites and local Podman connectivity
-	@bash scripts/doctor.sh
+	@PODMAN_DOCKER_HOST="$${PODMAN_DOCKER_HOST:-$$(bash scripts/podman_socket.sh 2>/dev/null || true)}" bash scripts/doctor.sh
 
-check-socket: ## Require an explicitly operator-verified Podman socket for Terraform provider
-	@test -n "$${PODMAN_DOCKER_HOST:-}" || { echo 'Set PODMAN_DOCKER_HOST=unix://<verified-Podman-socket> first.' >&2; exit 2; }
-	@test "$${CONFIRM_PODMAN_SOCKET:-}" = YES || { echo 'Verify the socket belongs to Podman, then export CONFIRM_PODMAN_SOCKET=YES.' >&2; exit 2; }
-	@case "$${PODMAN_DOCKER_HOST}" in unix://*) ;; *) echo 'Phase 00 supports only explicit local unix:// sockets.' >&2; exit 2;; esac
-	@test -S "$${PODMAN_DOCKER_HOST#unix://}" || { echo 'Unix socket does not exist or is inaccessible.' >&2; exit 2; }
-	@$(PODMAN) info >/dev/null
+check-socket: ## Prove the Podman API socket identifies as Podman Engine
+	@bash scripts/podman_socket.sh >/dev/null
 
+# ---------------------------------------------------------------- Phase 00 probe
 smoke-init: check-socket ## Initialize disposable provider compatibility test
-	@TF_VAR_podman_docker_host="$${PODMAN_DOCKER_HOST}" $(TF) -chdir=$(TF_SMOKE) init
+	@bash scripts/tf.sh phase00 init
 
 smoke-plan: check-socket ## Preview disposable network+volume+container test
-	@TF_VAR_podman_docker_host="$${PODMAN_DOCKER_HOST}" $(TF) -chdir=$(TF_SMOKE) plan
+	@bash scripts/tf.sh phase00 plan
 
 smoke-up: check-socket ## Create disposable Podman provider compatibility resources
-	@TF_VAR_podman_docker_host="$${PODMAN_DOCKER_HOST}" $(TF) -chdir=$(TF_SMOKE) apply
+	@bash scripts/tf.sh phase00 apply $(APPROVE)
 	@$(PODMAN) inspect f-ray-grance-phase00-probe >/dev/null || { echo 'Terraform target is not visible in Podman. Check socket!' >&2; exit 2; }
 	@echo 'PASS: Terraform-managed probe visible in Podman.'
 
 smoke-down: check-socket ## Destroy only disposable Phase 00 probe resources
-	@TF_VAR_podman_docker_host="$${PODMAN_DOCKER_HOST}" $(TF) -chdir=$(TF_SMOKE) destroy
+	@bash scripts/tf.sh phase00 destroy $(APPROVE)
+
+# ---------------------------------------------------------------- images and bootstrap
+images: ## Pull pinned arm64 images and build project images (podman --format docker)
+	@bash scripts/images.sh
+
+build: images ## Alias for images
+
+bootstrap: ## Create operator-local dirs and the PostgreSQL bootstrap secret file (never in Git)
+	@bash scripts/bootstrap.sh
 
 check-app:
-	@test -f $(TF_APP)/main.tf || { echo 'Application Terraform root not yet implemented. Finish Phase 00. Protected data root is separate.' >&2; exit 2; }
+	@test -f infra/terraform/app/main.tf || { echo 'Application Terraform root missing.' >&2; exit 2; }
 
 check-ansible:
-	@test -f $(ANSIBLE_SITE) || { echo 'Ansible site.yml not yet implemented. Complete Phase 00 and configuration roles.' >&2; exit 2; }
+	@test -f $(ANSIBLE_SITE) || { echo 'Ansible site.yml missing.' >&2; exit 2; }
 
-init: check-app check-socket ## Initialize the application Terraform root
-	@TF_VAR_podman_docker_host="$${PODMAN_DOCKER_HOST}" $(TF) -chdir=$(TF_APP) init
+init: check-app check-socket ## Initialize data and app Terraform roots (state outside Git)
+	@bash scripts/tf.sh data init
+	@bash scripts/tf.sh app init
 
-plan: check-app check-socket ## Preview Terraform infrastructure changes
-	@TF_VAR_podman_docker_host="$${PODMAN_DOCKER_HOST}" $(TF) -chdir=$(TF_APP) plan
+plan: check-app check-socket ## Preview data and app changes (never applies)
+	@bash scripts/tf.sh data plan -input=false
+	@bash scripts/tf.sh app plan -input=false
 
-provision: check-app check-socket ## Apply Terraform infrastructure changes
-	@TF_VAR_podman_docker_host="$${PODMAN_DOCKER_HOST}" $(TF) -chdir=$(TF_APP) apply
+drift: check-app check-socket ## Exit non-zero if Terraform would change anything (idempotency check)
+	@for r in data app; do \
+	  rc=0; bash scripts/tf.sh $$r plan -detailed-exitcode -input=false -no-color >/dev/null || rc=$$?; \
+	  case $$rc in 0) echo "NO_DRIFT $$r";; 2) echo "DRIFT $$r (run make plan)"; exit 2;; *) echo "PLAN_ERROR $$r"; exit 1;; esac; \
+	done
+
+provision: check-app check-socket ## Apply data root (volumes) then app root (network, containers)
+	@test -f "$(FRAY_SECRETS_DIR)/pg_superuser" || { echo 'Run make bootstrap first.' >&2; exit 2; }
+	@bash scripts/tf.sh data apply -input=false $(APPROVE)
+	@bash scripts/tf.sh app apply -input=false $(APPROVE)
+
+recreate: check-app check-socket ## Replace ONE container (volumes kept): SERVICE=postgres|vault|ollama|web|api|vault-agent
+	@case "$(SERVICE)" in \
+	  postgres|vault|ollama|web) r="docker_container.$(SERVICE)";; api) r='docker_container.api[0]';; vault-agent) r='docker_container.vault_agent[0]';; \
+	  *) echo 'Use SERVICE=postgres|vault|ollama|web|api|vault-agent' >&2; exit 2;; \
+	esac; bash scripts/tf.sh app apply -replace="$$r" -input=false $(APPROVE)
+	@if [[ "$(SERVICE)" == vault ]] && test -f "$(VAULT_INIT_FILE)"; then $(MAKE) --no-print-directory vault-unseal; fi
 
 configure: check-ansible ## Run idempotent service configuration via Ansible
-	@$(ANSIBLE) -i ansible/inventory.ini $(ANSIBLE_SITE)
+	@cd ansible && $(ANSIBLE) site.yml </dev/null
 
-up: doctor check-app check-ansible ## Provision -> configure -> health, fail fast
+up: doctor check-app check-ansible ## images -> bootstrap -> provision -> unseal -> configure -> health
+	@$(MAKE) images
+	@$(MAKE) bootstrap
 	@$(MAKE) provision
+	@if test -f "$(VAULT_INIT_FILE)"; then $(MAKE) vault-unseal; else echo 'NOTICE: Vault not initialised yet: run make vault-init (one-time).'; fi
 	@$(MAKE) configure
 	@$(MAKE) health
 
+# ---------------------------------------------------------------- runtime lifecycle (volumes untouched)
 start: ## Start only existing F-Ray-grance containers in dependency order
 	@for c in $(START_ORDER); do \
-	  if $(PODMAN) container exists "$$c"; then $(PODMAN) start "$$c"; \
-	  else echo "Missing planned container $$c: provision first or update Makefile." >&2; exit 2; fi; \
+	  if $(PODMAN) container exists "$$c"; then $(PODMAN) start "$$c" >/dev/null && echo "started $$c"; \
+	  elif [[ "$$c" == fray-postgres || "$$c" == fray-web ]]; then echo "Missing required container $$c: run make provision." >&2; exit 2; \
+	  else echo "skip $$c (not provisioned)"; fi; \
 	done
+	@if test -f "$(VAULT_INIT_FILE)"; then $(MAKE) --no-print-directory vault-unseal; fi
 
 stop: ## Stop existing project containers, preserve all data volumes
 	@for c in $(STOP_ORDER); do \
-	  if $(PODMAN) container exists "$$c"; then $(PODMAN) stop "$$c"; fi; \
+	  if $(PODMAN) container exists "$$c"; then $(PODMAN) stop -t 15 "$$c" >/dev/null && echo "stopped $$c"; fi; \
 	done
 
 down: stop ## Non-destructive alias for stop
 
 restart: stop start ## Restart project services without deleting volumes
 
-status: ## List only project-named containers, all states
-	@$(PODMAN) ps -a --format '{{.Names}}  {{.Status}}' | grep -E '^(fray-|f-ray-grance-phase00-)' || echo 'No F-Ray-grance containers found.'
+status: ## List only project-labelled containers and volumes
+	@$(PODMAN) ps -a --filter label=io.fraygrance.project=fraygrance --format '{{.Names}}\t{{.Status}}\t{{.Ports}}' | grep -v 'phase00' || echo 'No F-Ray-grance containers found.'
+	@echo '--- volumes'; $(PODMAN) volume ls --filter label=io.fraygrance.project=fraygrance --format '{{.Name}}'
 
-logs: ## View scoped service logs: make logs SERVICE=api
+logs: ## View scoped service logs: make logs SERVICE=api|web|postgres|ollama|vault|vault-agent
 	@case "$(SERVICE)" in \
 	  web) c=fray-web;; api) c=fray-api;; postgres) c=fray-postgres;; ollama) c=fray-ollama;; \
-	  *) echo 'Use SERVICE=web|api|postgres|ollama' >&2; exit 2;; \
+	  vault) c=fray-vault;; vault-agent) c=fray-vault-agent;; \
+	  *) echo 'Use SERVICE=web|api|postgres|ollama|vault|vault-agent' >&2; exit 2;; \
 	esac; $(PODMAN) logs --tail=150 "$$c"
 
-health: ## Execute configured integration health checks (not scaffolded yet)
-	@test -x scripts/health.sh || { echo 'Health checks not implemented; do not claim stack ready.' >&2; exit 2; }
+health: ## Integration health checks; exits non-zero on any failed required check
 	@bash scripts/health.sh
 
-test: ## Run app and infrastructure quality gate (not scaffolded yet)
-	@test -x scripts/test.sh || { echo 'Test runner not implemented.' >&2; exit 2; }
+test: ## Static + infrastructure + application quality gate
 	@bash scripts/test.sh
 
-backup: ## MANUAL protected PostgreSQL backup (requires completed script)
-	@test -x scripts/backup.sh || { echo 'Backup unavailable until implemented and tested.' >&2; exit 2; }
+# ---------------------------------------------------------------- Vault (ADR-008)
+vault-init: ## ONE-TIME: initialise fray-vault; keys go only to the operator file (0600)
+	@bash scripts/vault.sh init
+
+vault-unseal: ## Unseal fray-vault from the operator file (no secret in process args)
+	@bash scripts/vault.sh unseal
+
+vault-status: ## Show fray-vault initialised/sealed status
+	@bash scripts/vault.sh status
+
+vault-snapshot: ## MANUAL Raft snapshot of fray-vault to the backup directory
+	@bash scripts/vault.sh snapshot
+
+# ---------------------------------------------------------------- manual backups (ADR-007)
+backup: ## MANUAL pg_dump -Fc to $(FRAY_BACKUP_DIR) with checksum + manifest
 	@bash scripts/backup.sh
 
-backup-status: ## Report last MANUAL off-VM backup (requires completed script)
-	@test -x scripts/backup-status.sh || { echo 'Backup status not implemented. No protection claim can be made.' >&2; exit 2; }
+backup-status: ## Report last verified manual backup and recorded off-device copy
 	@bash scripts/backup-status.sh
 
-restore-test: ## MANUAL isolated restore verification (requires completed script)
-	@test -x scripts/restore-test.sh || { echo 'Restore rehearsal not implemented.' >&2; exit 2; }
-	@bash scripts/restore-test.sh
+backup-record-copy: ## Record an operator-verified off-device copy: BACKUP=<file> LOCATION="<label>"
+	@bash scripts/backup-status.sh record "$(BACKUP)" "$(LOCATION)"
+
+restore-test: ## MANUAL isolated restore into a disposable PostgreSQL: [BACKUP=<file>]
+	@bash scripts/restore-test.sh "$(BACKUP)"
 
 upgrade: ## Backup-gated app and database migration (requires completed script)
 	@test -x scripts/upgrade.sh || { echo 'Upgrade runbook not implemented. No image/tag change performed.' >&2; exit 2; }
@@ -126,16 +185,16 @@ upgrade: ## Backup-gated app and database migration (requires completed script)
 
 restore: ## Explicit restore workflow (requires completed script)
 	@test -x scripts/restore.sh || { echo 'Restore unavailable until implemented and tested.' >&2; exit 2; }
-	@bash scripts/restore.sh
+	@bash scripts/restore.sh "$(BACKUP)"
 
-destroy: check-app check-socket ## Destroy only app Terraform resources, never data state
+destroy: check-app check-socket ## Destroy only app Terraform resources, never the data root
 	@test "$${VERIFIED_BACKUP:-}" = YES || { echo 'Set VERIFIED_BACKUP=YES only after validating a recent restorable backup.' >&2; exit 2; }
 	@read -r -p 'Type DESTROY F-RAY-GRANCE to proceed: ' answer; \
 	  test "$$answer" = 'DESTROY F-RAY-GRANCE' || { echo 'Aborted'; exit 2; }
-	@echo 'SAFETY BOUNDARY: this target may destroy only Terraform app root; DB volume/state and existing Vault are excluded.'
-	@TF_VAR_podman_docker_host="$${PODMAN_DOCKER_HOST}" $(TF) -chdir=$(TF_APP) destroy
+	@echo 'SAFETY BOUNDARY: app root only; data volumes (data root) and their state are excluded.'
+	@bash scripts/tf.sh app destroy -input=false -auto-approve # typed phrase above is the approval
 
 # Intentional fail-closed procedure. Never delete user data via routine Make targets.
 danger-destroy-data: # Internal deny stub; not a regular help target
-	@echo 'DENIED: destructive data removal is not implemented in the Phase 00 scaffold.' >&2
+	@echo 'DENIED: destructive data removal is not implemented.' >&2
 	@exit 2

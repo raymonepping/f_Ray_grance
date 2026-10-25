@@ -1,0 +1,31 @@
+- name: Check PostgreSQL base layout
+  ansible.builtin.command:
+    argv: ["{{ podman_bin }}", exec, -i, fray-postgres, psql, -X, -At, -U, postgres, -d, postgres]
+    stdin: "{{ lookup('file', 'check.sql') }}"
+  register: fray_pg_check
+  changed_when: false
+
+- name: Apply cluster roles and database (idempotent SQL)
+  ansible.builtin.command:
+    argv: ["{{ podman_bin }}", exec, -i, fray-postgres, psql, -X, -q, -U, postgres, -d, postgres]
+    stdin: "{{ lookup('file', 'cluster.sql') }}"
+  when: fray_pg_check.stdout != 'CONFIGURED'
+  changed_when: true
+
+- name: Apply database extension, schema and default privileges
+  ansible.builtin.command:
+    argv: ["{{ podman_bin }}", exec, -i, fray-postgres, psql, -X, -q, -U, postgres, -d, "{{ fray_db_name }}"]
+    stdin: "{{ lookup('file', 'database.sql') }}"
+  when: fray_pg_check.stdout != 'CONFIGURED'
+  changed_when: true
+
+- name: Verify pgvector and PostgreSQL versions
+  ansible.builtin.command:
+    argv: ["{{ podman_bin }}", exec, fray-postgres, psql, -X, -At, -U, postgres, -d, "{{ fray_db_name }}", -c,
+           "SELECT current_setting('server_version') || ' vector=' || extversion FROM pg_extension WHERE extname='vector'"]
+  register: fray_pg_versions
+  changed_when: false
+
+- name: Report database versions
+  ansible.builtin.debug:
+    msg: "PostgreSQL {{ fray_pg_versions.stdout }}"

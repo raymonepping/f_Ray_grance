@@ -1,0 +1,10 @@
+# F-Ray-grance idempotent configuration. Order: preflight -> PostgreSQL ->
+# Ollama -> Vault status. Later phases add migrations and Vault configuration.
+- name: Configure F-Ray-grance services
+  hosts: fraygrance
+  gather_facts: false
+  roles:
+    - preflight
+    - postgres_base
+    - ollama_model
+    - vault_status

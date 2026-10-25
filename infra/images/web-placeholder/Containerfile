@@ -1,0 +1,5 @@
+# Phase 01 gateway image: Caddy + an honest "not built yet" page.
+# Replaced in Phase 05 by apps/web/Containerfile (Caddy + static Nuxt build).
+ARG CADDY_IMAGE
+FROM ${CADDY_IMAGE}
+COPY index.html /srv/index.html

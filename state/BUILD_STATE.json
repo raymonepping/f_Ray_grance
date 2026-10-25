@@ -5,7 +5,7 @@
     "origin": "https://github.com/raymonepping/f_Ray_grance.git",
     "branch": "main"
   },
-  "last_successful_phase": "00",
+  "last_successful_phase": "01",
   "phases": {
     "00": {
       "status": "completed",
@@ -57,6 +57,56 @@
       "blockers": [
         "G00.10 Tailscale not installed (needed by Phase 10)"
       ]
+    },
+    "01": {
+      "status": "completed",
+      "agent": "claude-opus-5-5",
+      "prompt_id": "FRAY-CLAUDE-01",
+      "started_at_utc": "2026-10-25T06:06:20Z",
+      "baseline_head": "118062e95bcfbab15031fb5a220e1c7779fc0b00",
+      "report_path": "reports/01_infrastructure.md",
+      "planned_scope": [
+        "terraform data root (volumes, prevent_destroy)",
+        "terraform app root (network, postgres, vault, ollama, gateway; api gated)",
+        "state outside git",
+        "ansible site (preflight, postgres base, ollama model, vault status)",
+        "make contract incl. vault-init/unseal, health, backup, backup-status, restore-test",
+        "lifecycle + noninterference tests"
+      ],
+      "launcher": {
+        "prompt": "prompts/launchers/Claude_START_HERE.md",
+        "selected_phase": "01",
+        "predecessor": "00",
+        "predecessor_commit": "118062e",
+        "predecessor_pushed": true,
+        "unpushed_local_commits": 0
+      },
+      "finished_at_utc": "2026-10-25T06:31:30Z",
+      "ci": "not_checked",
+      "tests": {
+        "make_test": "PASS",
+        "provision": "PASS",
+        "drift": "NO_DRIFT data+app",
+        "ansible_idempotent": "changed=0 on rerun",
+        "vault_init": "PASS",
+        "health": "PASS",
+        "stop_start_persist": "PASS",
+        "recreate_persist": "PASS",
+        "backup": "PASS",
+        "restore_test": "PASS",
+        "destroy_guards": "PASS",
+        "app_destroy_keeps_volumes": "PASS",
+        "data_root_destroy_refused": "PASS",
+        "rebuild_after_destroy": "PASS",
+        "noninterference": "PASS (108 containers unchanged)"
+      },
+      "artifacts": {
+        "tf_state_dir": "~/.local/state/f-ray-grance/terraform",
+        "backup_dir": "~/F-Ray-grance-backups",
+        "gateway": "127.0.0.1:8470",
+        "vault_operator": "127.0.0.1:8270"
+      },
+      "blockers": []
     }
   },
   "accepted_adrs": [
@@ -77,5 +127,5 @@
       "detail": "Install Tailscale on Mac and iPhone; enable MagicDNS + HTTPS; restrict grants; never Funnel"
     }
   ],
-  "updated_at_utc": "2026-10-25T06:04:30Z"
+  "updated_at_utc": "2026-10-25T06:31:30Z"
 }

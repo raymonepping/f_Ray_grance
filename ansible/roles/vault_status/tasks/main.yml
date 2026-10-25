@@ -1,0 +1,18 @@
+- name: Read fray-vault seal status (unauthenticated endpoint)
+  ansible.builtin.uri:
+    url: "{{ fray_vault_addr }}/v1/sys/seal-status"
+    return_content: true
+  register: fray_vault_seal
+  retries: 15
+  delay: 2
+  until: fray_vault_seal.status == 200
+
+- name: Report Vault status
+  ansible.builtin.debug:
+    msg: "fray-vault initialized={{ fray_vault_seal.json.initialized }} sealed={{ fray_vault_seal.json.sealed }} version={{ fray_vault_seal.json.version }}"
+
+- name: Require an unsealed Vault once Vault integration is enabled
+  ansible.builtin.assert:
+    that: [fray_vault_seal.json.initialized, not fray_vault_seal.json.sealed]
+    fail_msg: "fray-vault is uninitialised or sealed: run make vault-init / make vault-unseal"
+  when: fray_require_vault_unsealed | bool

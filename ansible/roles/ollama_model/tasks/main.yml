@@ -1,0 +1,11 @@
+- name: List local Ollama models
+  ansible.builtin.command:
+    argv: ["{{ podman_bin }}", exec, fray-ollama, ollama, list]
+  register: fray_ollama_list
+  changed_when: false
+
+- name: Pull the pinned embedding model (approved in Phase 00)
+  ansible.builtin.command:
+    argv: ["{{ podman_bin }}", exec, fray-ollama, ollama, pull, "{{ fray_embed_model }}"]
+  when: fray_embed_model not in fray_ollama_list.stdout
+  changed_when: true

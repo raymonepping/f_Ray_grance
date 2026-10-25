@@ -1,3 +1,15 @@
-# Ansible configuration (pending Phase 00)
+# Ansible configuration
 
-Create `site.yml`, `inventory.ini` and idempotent roles after the Terraform/Podman smoke test and database/Vault bootstrap design are validated. Required future roles: PostgreSQL + pgvector, schema migrations, scoped Vault database engine and auth, Ollama model readiness, app configuration and health. Do not use Ansible to create Terraform-owned containers. The Makefile fails closed until a real playbook exists.
+`make configure` runs `site.yml` on the Mac host. Roles configure services that
+Terraform already runs, through `podman exec` and loopback HTTP. Ansible never
+creates, starts or removes containers (ADR-002).
+
+| Role | Responsibility |
+|---|---|
+| `preflight` | Assert project-labelled containers are running; wait for PostgreSQL |
+| `postgres_base` | Database `fray`, least-privilege role model, `vector` extension, schema `app`, default privileges; superuser loses its network password |
+| `ollama_model` | Pull the pinned embedding model if absent |
+| `vault_status` | Report fray-vault seal state (Phase 03 adds policies, engines, AppRole) |
+
+Every role checks state first, so a second run reports `changed=0`. Tasks that
+handle secrets use `no_log: true`; no log file is written.
