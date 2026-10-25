@@ -1,0 +1,70 @@
+{
+    "folio": "perfume-portrait",
+    "lede": "Invictus Victory by Rabanne belongs to Scento\u2019s Amber & Resin family: lemon and pink pepper open onto incense and lavender, settling on tonka bean and amber.",
+    "detail": {
+        "name": "Invictus Victory",
+        "house": "Rabanne",
+        "year": null,
+        "perfumer": null,
+        "concentration": "eau de parfum",
+        "family": "Amber & Resin",
+        "subfamily": "Green Leaf",
+        "pyramid": {
+            "top": [
+                "Lemon",
+                "Pink Pepper"
+            ],
+            "heart": [
+                "Incense",
+                "Lavender"
+            ],
+            "base": [
+                "Tonka Bean",
+                "Amber"
+            ]
+        },
+        "notes": null,
+        "character": "Lemon and pink peppercorns start crisp, then incense and lavender lead to a warm, resinous finish of tonka bean and amber.",
+        "character_words": [
+            "warm",
+            "fresh",
+            "herbal",
+            "resinous"
+        ],
+        "wears": {
+            "seasons": [
+                "autumn",
+                "winter",
+                "spring"
+            ],
+            "hours": [
+                "day",
+                "evening"
+            ]
+        },
+        "signature_materials": [
+            "Incense",
+            "Amber"
+        ]
+    },
+    "scento_page": {
+        "label": "Invictus Victory on Scento",
+        "url": "https://www.scento.com/perfumes/invictus-victory-elixir-rabanne"
+    },
+    "further_reading": [
+        {
+            "label": "Rabanne on Scento",
+            "url": "https://www.scento.com/brand/rabanne"
+        },
+        {
+            "label": "Incense, the note",
+            "url": "https://www.scento.com/note/incense"
+        },
+        {
+            "label": "Amber, the note",
+            "url": "https://www.scento.com/note/amber"
+        }
+    ],
+    "cite": "Scento Perfume API, scento.com",
+    "continuation": null
+}

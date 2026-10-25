@@ -1,0 +1,97 @@
+{
+    "folio": "perfume-search",
+    "lede": "37 entries in Scento's verified perfume database match \u201c1 Million Black\u201d; showing 1\u201310.",
+    "detail": {
+        "query": "1 Million Black",
+        "kind": "perfume",
+        "total": 37,
+        "matches": [
+            {
+                "kind": "perfume",
+                "name": "1 Million Lucky",
+                "house": "Rabanne",
+                "family": "Wood & Root",
+                "page": "https://www.scento.com/brand/rabanne"
+            },
+            {
+                "kind": "perfume",
+                "name": "1 Million Priv\u00e9",
+                "house": "Rabanne",
+                "family": "Smoke & Leather",
+                "page": "https://www.scento.com/brand/rabanne"
+            },
+            {
+                "kind": "perfume",
+                "name": "Black Opium",
+                "house": "Yves Saint Laurent",
+                "family": "Velvet Sweet",
+                "page": "https://www.scento.com/perfumes/black-opium-yves-saint-laurent"
+            },
+            {
+                "kind": "perfume",
+                "name": "Black Orchid",
+                "house": "Tom Ford",
+                "family": "Wood & Root",
+                "page": "https://www.scento.com/perfumes/black-orchid-tom-ford"
+            },
+            {
+                "kind": "perfume",
+                "name": "Black Aoud",
+                "house": "Montale",
+                "family": "Wood & Root",
+                "page": "https://www.scento.com/perfumes/black-aoud-montale"
+            },
+            {
+                "kind": "perfume",
+                "name": "Fakhar Black",
+                "house": "Lattafa",
+                "family": "Green Leaf",
+                "page": "https://www.scento.com/perfumes/fakhar-black-lattafa"
+            },
+            {
+                "kind": "perfume",
+                "name": "Luna Rossa Black",
+                "house": "Prada",
+                "family": "Green Leaf",
+                "page": "https://www.scento.com/brand/prada"
+            },
+            {
+                "kind": "perfume",
+                "name": "Black Gold",
+                "house": "Mancera",
+                "family": "Wood & Root",
+                "page": "https://www.scento.com/brand/mancera"
+            },
+            {
+                "kind": "perfume",
+                "name": "Black Saffron",
+                "house": "Byredo",
+                "family": "Wood & Root",
+                "page": "https://www.scento.com/perfumes/black-saffron-byredo"
+            },
+            {
+                "kind": "perfume",
+                "name": "Black Afgano",
+                "house": "Nasomatto",
+                "family": "Amber & Resin",
+                "page": "https://www.scento.com/perfumes/black-afgano-nasomatto"
+            }
+        ]
+    },
+    "scento_page": {
+        "label": "Rabanne on Scento",
+        "url": "https://www.scento.com/brand/rabanne"
+    },
+    "further_reading": [
+        {
+            "label": "Black Opium on Scento",
+            "url": "https://www.scento.com/perfumes/black-opium-yves-saint-laurent"
+        },
+        {
+            "label": "Black Orchid on Scento",
+            "url": "https://www.scento.com/perfumes/black-orchid-tom-ford"
+        }
+    ],
+    "cite": "Scento Perfume API, scento.com",
+    "continuation": "cGVyZnVtZS1zZWFyY2h8ZXR5NW9yfDEw"
+}

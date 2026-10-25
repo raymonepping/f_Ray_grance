@@ -1,6 +1,7 @@
 // HTTP contract tests via fastify.inject (no network listener).
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { writeFileSync } from 'node:fs';
+import { randomBytes } from 'node:crypto';
 import type { FastifyInstance, LightMyRequestResponse } from 'fastify';
 import { buildApp } from '../src/app.js';
 import { createSession, revokeSession, CSRF_COOKIE, SESSION_COOKIE } from '../src/security/sessions.js';
@@ -11,7 +12,8 @@ import { RotatingPool } from '../src/db/pool.js';
 import { credentialsFile, runtimePool, seedOwner, sessionKey, silentLog, testConfig, testPg, uniq } from './helpers.js';
 
 const ORIGIN = 'http://localhost:8470';
-const PASSWORD = 'synthetic-Passw0rd-for-tests';
+// Generated per run: no secret-shaped literal in the repository (gitleaks).
+const PASSWORD = `t-${randomBytes(18).toString('base64url')}`;
 
 let app: FastifyInstance;
 let rp: RotatingPool;

@@ -5,7 +5,7 @@
     "origin": "https://github.com/raymonepping/f_Ray_grance.git",
     "branch": "main"
   },
-  "last_successful_phase": "03",
+  "last_successful_phase": "04",
   "phases": {
     "00": {
       "status": "completed",
@@ -182,7 +182,7 @@
         "rotation/revoke/outage tests"
       ],
       "finished_at_utc": "2026-10-25T07:46:13Z",
-      "ci": "not_checked",
+      "ci": "failed",
       "tests": {
         "make_test": "PASS (vitest 65/65)",
         "live_probe": "39/39 PASS",
@@ -207,6 +207,49 @@
         "schema_version_live": 1
       },
       "notes": "Environmental finding: Podman VM pause during Mac sleep revokes leases via wall-clock jump; mitigated by make heal.",
+      "blockers": [],
+      "ci_note": "GitHub gitleaks failed on 83062a2: synthetic test password literal flagged (generic-api-key). Fixed in Phase 04 via runtime-generated password + .gitleaksignore fingerprint."
+    },
+    "04": {
+      "status": "completed",
+      "agent": "claude-opus-5-5",
+      "prompt_id": "FRAY-CLAUDE-04",
+      "started_at_utc": "2026-10-25T07:46:54Z",
+      "baseline_head": "83062a20f456d4cef0cdedc1dbd9e2810f4854c0",
+      "report_path": "reports/04_scento_identity.md",
+      "launcher": {
+        "prompt": "prompts/launchers/Claude_START_HERE.md",
+        "selected_phase": "04",
+        "predecessor": "03",
+        "predecessor_commit": "83062a2",
+        "predecessor_pushed": true,
+        "unpushed_local_commits": 0
+      },
+      "planned_scope": [
+        "typed Scento adapter (documented GET endpoints, timeout/retry/rate-limit/TTL cache, schema validation, typed errors)",
+        "brand alias registry (9 focus brands, open registry)",
+        "exact resolver: exact/candidate_needs_review/unresolved/conflict",
+        "GTIN resolver: local verified mapping first, no unapproved external lookup",
+        "provenance persistence: source_records, claims, notes; refresh never overwrites user corrections",
+        "drafts for unresolved",
+        "fixture contract tests + live Phantom in Red enrichment"
+      ],
+      "finished_at_utc": "2026-10-25T07:56:54Z",
+      "ci": "pending",
+      "tests": {
+        "make_test": "PASS (vitest 100/100)",
+        "resolver_contract": "PASS",
+        "enrichment_persistence": "PASS",
+        "manual_override_survives_refresh": "PASS",
+        "live_enrich_phantom_in_red": "PASS (verified, 10 notes, 1 source record)",
+        "invictus_elixir_not_substituted": "PASS",
+        "drift": "NO_DRIFT",
+        "health": "PASS"
+      },
+      "artifacts": {
+        "verified_fragrances_live": 1,
+        "scento_fixtures": 5
+      },
       "blockers": []
     }
   },
@@ -228,5 +271,5 @@
       "detail": "Install Tailscale on Mac and iPhone; enable MagicDNS + HTTPS; restrict grants; never Funnel"
     }
   ],
-  "updated_at_utc": "2026-10-25T07:46:13Z"
+  "updated_at_utc": "2026-10-25T07:56:54Z"
 }

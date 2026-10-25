@@ -47,20 +47,21 @@ export const securityPlugin = fp<SecurityOptions>(async (app, opts) => {
   app.decorateRequest('session', null);
   app.decorateRequest('sessionLookupFailed', false);
 
+  // Everything runs in onRequest — before body parsing/validation — so anonymous or
+  // forged requests learn nothing from schema errors (401/403 always win over 400).
   app.addHook('onRequest', async (req) => {
     const raw = req.cookies[SESSION_COOKIE];
-    if (!raw) return;
-    try {
-      req.session = await resolveSession(opts.pool.get(), opts.key, raw, opts.idleMinutes);
-    } catch {
-      // DB or key unavailable: never fall open. Protected routes answer 503 in requireOwner.
-      req.session = null;
-      req.sessionLookupFailed = true;
+    if (raw) {
+      try {
+        req.session = await resolveSession(opts.pool.get(), opts.key, raw, opts.idleMinutes);
+      } catch {
+        // DB or key unavailable: never fall open. Protected routes answer 503 in requireOwner.
+        req.session = null;
+        req.sessionLookupFailed = true;
+      }
     }
-  });
 
-  // Origin + CSRF for every state-changing API request.
-  app.addHook('preHandler', async (req) => {
+    // Origin + CSRF for every state-changing API request.
     if (!UNSAFE.has(req.method) || !req.url.startsWith('/api/')) return;
     const origin = requestOrigin(req);
     if (!origin || !allowed.has(origin)) throw new ApiError('CSRF_REJECTED', 'Request origin not allowed');

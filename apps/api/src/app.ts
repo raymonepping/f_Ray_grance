@@ -9,6 +9,7 @@ import { healthRoutes } from './routes/health.js';
 import { v1Routes } from './routes/v1/index.js';
 import { authRoutes } from './routes/auth.js';
 import type { SessionKey } from './security/session-key.js';
+import { ScentoClient } from './providers/scento.js';
 import type { Config } from './config.js';
 import type { RotatingPool } from './db/pool.js';
 
@@ -19,6 +20,7 @@ export interface AppDeps {
   pool: RotatingPool;
   key: SessionKey;
   expectedSchemaVersion: number;
+  scento?: ScentoClient;
   logger?: boolean | object;
 }
 
@@ -96,6 +98,6 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     lockout: deps.config.lockout,
     loginRatePerMinute: deps.config.loginRatePerMinute,
   });
-  await app.register(v1Routes, { prefix: '/api/v1', pool: deps.pool });
+  await app.register(v1Routes, { prefix: '/api/v1', pool: deps.pool, scento: deps.scento ?? new ScentoClient() });
   return app;
 }

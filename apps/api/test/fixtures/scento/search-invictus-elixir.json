@@ -1,0 +1,101 @@
+{
+    "folio": "perfume-search",
+    "lede": "22 entries in Scento's verified perfume database match \u201cInvictus Elixir\u201d; showing 1\u201310.",
+    "detail": {
+        "query": "Invictus Elixir",
+        "kind": "perfume",
+        "total": 22,
+        "matches": [
+            {
+                "kind": "perfume",
+                "name": "Invictus Victory Elixir",
+                "house": "Rabanne",
+                "family": "Spice Route",
+                "page": "https://www.scento.com/perfumes/invictus-victory-elixir-rabanne"
+            },
+            {
+                "kind": "perfume",
+                "name": "9 PM Elixir",
+                "house": "Afnan",
+                "family": "Spice Route",
+                "page": "https://www.scento.com/brand/afnan"
+            },
+            {
+                "kind": "perfume",
+                "name": "Her Elixir",
+                "house": "Burberry",
+                "family": "Orchard Fruit",
+                "page": "https://www.scento.com/brand/burberry"
+            },
+            {
+                "kind": "perfume",
+                "name": "Boss Bottled Elixir",
+                "house": "Hugo Boss",
+                "family": "Wood & Root",
+                "page": "https://www.scento.com/perfumes/boss-bottled-elixir-hugo-boss"
+            },
+            {
+                "kind": "perfume",
+                "name": "Million Elixir",
+                "house": "Rabanne",
+                "family": "Petal Garden",
+                "page": "https://www.scento.com/brand/rabanne"
+            },
+            {
+                "kind": "perfume",
+                "name": "Le Male Elixir",
+                "house": "Jean Paul Gaultier",
+                "family": "Velvet Sweet",
+                "page": "https://www.scento.com/perfumes/le-male-elixir-jean-paul-gaultier"
+            },
+            {
+                "kind": "perfume",
+                "name": "Angel Elixir",
+                "house": "Mugler",
+                "family": "White Bloom",
+                "page": "https://www.scento.com/perfumes/angel-elixir-mugler"
+            },
+            {
+                "kind": "perfume",
+                "name": "Invictus Victory",
+                "house": "Rabanne",
+                "family": "Amber & Resin",
+                "page": "https://www.scento.com/perfumes/invictus-victory-elixir-rabanne"
+            },
+            {
+                "kind": "perfume",
+                "name": "Sauvage Elixir",
+                "house": "Dior",
+                "family": "Green Leaf",
+                "page": "https://www.scento.com/perfumes/sauvage-elixir-by-dior"
+            },
+            {
+                "kind": "perfume",
+                "name": "Acqua di Gi\u00f2 Elixir",
+                "house": "Giorgio Armani",
+                "family": "Sunlit Citrus",
+                "page": "https://www.scento.com/brand/giorgio-armani"
+            }
+        ]
+    },
+    "scento_page": {
+        "label": "Invictus Victory Elixir on Scento",
+        "url": "https://www.scento.com/perfumes/invictus-victory-elixir-rabanne"
+    },
+    "further_reading": [
+        {
+            "label": "Afnan on Scento",
+            "url": "https://www.scento.com/brand/afnan"
+        },
+        {
+            "label": "Burberry on Scento",
+            "url": "https://www.scento.com/brand/burberry"
+        },
+        {
+            "label": "Boss Bottled Elixir on Scento",
+            "url": "https://www.scento.com/perfumes/boss-bottled-elixir-hugo-boss"
+        }
+    ],
+    "cite": "Scento Perfume API, scento.com",
+    "continuation": "cGVyZnVtZS1zZWFyY2h8andmMGtifDEw"
+}

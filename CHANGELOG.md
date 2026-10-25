@@ -10,6 +10,7 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Added
 
+- **Phase 04 — Scento-first identity.** Typed Scento adapter (timeouts, bounded retries, local rate budget, TTL cache, schema validation, typed source errors); 9-brand alias registry; exact-identity resolver (`exact`/`candidate_needs_review`/`unresolved`/`conflict`) that verifies listings against profiles and never substitutes near matches; provenance-preserving enrichment, refresh, manual overrides, drafts and effective-profile API; GTIN resolution via verified local mappings only; Phantom in Red enriched live.
 - **Phase 03 — Vault and owner security.** `make vault-bootstrap` (scoped `fray-operator` token, initial root token revoked); Ansible-managed Vault audit device, `database/`, `kv/`, AppRole and least-privilege policies; Vault Agent rendering 15-minute PostgreSQL leases and a session HMAC key for the API; live migrations with a single-use migrator lease; owner login/logout with Argon2id, `__Host-` Secure/HttpOnly/SameSite=Strict cookies, Origin allow-list, double-submit CSRF, lockout and rate limiting; `make owner-create/owner-reset-password/owner-revoke-sessions`; `make heal`/`make clock-sync` for Podman VM pauses; live security probe (39 checks) and `docs/runbook.md`.
 - **Phase 02 — schema and API foundations.** Migration `0001_canonical_schema` (exact fragrance identity, GTIN-14 variants, provenance claims, NULL-not-zero traits, `vector(768)` embeddings, owner-scoped collection with trigger-written append-only history, four-season preferences); checksummed forward-only migrator with destructive-statement preflight; Fastify API with validated config, error envelope, request IDs, live/ready health, central owner guard on `/api/v1`, opaque hashed sessions and a rotating credential-file DB pool; 53 integration tests on disposable PostgreSQL 18; `docs/migrations.md`.
 - Project-local Node 24.21.0 toolchain (`make toolchain`, `make deps`) and `apps/api/Containerfile`.
@@ -32,6 +33,8 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Fixed
 
+- Anonymous or forged requests could receive 400 schema errors before 401/403: auth and CSRF checks now run in `onRequest`.
+- CI gitleaks failure on the Phase 03 commit (synthetic test password literal): password generated at runtime, historical fingerprint in `.gitleaksignore`.
 - Podman VM pause (Mac sleep) let Vault revoke the API's lease while Vault Agent had not renewed: `make heal` re-syncs the VM clock and re-renders credentials; `make health` fails on clock drift.
 - Agent volume `driver_opts` read back with extra `UID/GID` keys forced replacement: `ignore_changes`.
 - `make heal`/`make health` no longer report green when the API is expected but missing.

@@ -1,0 +1,74 @@
+{
+    "folio": "perfume-portrait",
+    "lede": "Phantom in Red by Rabanne belongs to Scento\u2019s Green Leaf family: plum, saffron and bergamot open onto lavender, sage and orange blossom, settling on amberwood, benzoin, tobacco and oud.",
+    "detail": {
+        "name": "Phantom in Red",
+        "house": "Rabanne",
+        "year": null,
+        "perfumer": null,
+        "concentration": "parfum",
+        "family": "Green Leaf",
+        "subfamily": "Amber & Resin",
+        "pyramid": {
+            "top": [
+                "Plum",
+                "Saffron",
+                "Bergamot"
+            ],
+            "heart": [
+                "Lavender",
+                "Sage",
+                "Orange Blossom"
+            ],
+            "base": [
+                "Amberwood",
+                "Benzoin",
+                "Tobacco",
+                "Oud"
+            ]
+        },
+        "notes": null,
+        "character": "Plum, saffron and bergamot open fruity and spiced. Lavender, sage and orange blossom shape the heart, and amberwood, benzoin, tobacco and oud give a resinous, warm base.",
+        "character_words": [
+            "herbal",
+            "fresh",
+            "resinous",
+            "warm"
+        ],
+        "wears": {
+            "seasons": [
+                "spring",
+                "summer",
+                "autumn"
+            ],
+            "hours": [
+                "day",
+                "evening"
+            ]
+        },
+        "signature_materials": [
+            "Lavender",
+            "Sage"
+        ]
+    },
+    "scento_page": {
+        "label": "Phantom in Red on Scento",
+        "url": "https://www.scento.com/perfumes/phantom-in-red-rabanne"
+    },
+    "further_reading": [
+        {
+            "label": "Rabanne on Scento",
+            "url": "https://www.scento.com/brand/rabanne"
+        },
+        {
+            "label": "Lavender, the note",
+            "url": "https://www.scento.com/note/lavender"
+        },
+        {
+            "label": "Sage, the note",
+            "url": "https://www.scento.com/note/sage"
+        }
+    ],
+    "cite": "Scento Perfume API, scento.com",
+    "continuation": null
+}

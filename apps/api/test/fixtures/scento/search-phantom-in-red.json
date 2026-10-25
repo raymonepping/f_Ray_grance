@@ -1,0 +1,101 @@
+{
+    "folio": "perfume-search",
+    "lede": "38 entries in Scento's verified perfume database match \u201cPhantom In Red\u201d; showing 1\u201310.",
+    "detail": {
+        "query": "Phantom In Red",
+        "kind": "perfume",
+        "total": 38,
+        "matches": [
+            {
+                "kind": "perfume",
+                "name": "Phantom in Red",
+                "house": "Rabanne",
+                "family": "Green Leaf",
+                "page": "https://www.scento.com/perfumes/phantom-in-red-rabanne"
+            },
+            {
+                "kind": "perfume",
+                "name": "Donna Born in Roma",
+                "house": "Valentino",
+                "family": "Orchard Fruit",
+                "page": "https://www.scento.com/perfumes/valentino-donna-born-in-roma-valentino"
+            },
+            {
+                "kind": "perfume",
+                "name": "Uomo Born in Roma Intense",
+                "house": "Valentino",
+                "family": "Green Leaf",
+                "page": "https://www.scento.com/perfumes/valentino-uomo-born-in-roma-intense-valentino"
+            },
+            {
+                "kind": "perfume",
+                "name": "Red Tobacco",
+                "house": "Mancera",
+                "family": "Wood & Root",
+                "page": "https://www.scento.com/perfumes/red-tobacco-mancera"
+            },
+            {
+                "kind": "perfume",
+                "name": "Red Aoud",
+                "house": "Montale",
+                "family": "Sunlit Citrus",
+                "page": "https://www.scento.com/brand/montale"
+            },
+            {
+                "kind": "perfume",
+                "name": "Moonlight in Heaven",
+                "house": "Kilian Paris",
+                "family": "Sunlit Citrus",
+                "page": "https://www.scento.com/perfumes/moonlight-in-heaven-by-kilian"
+            },
+            {
+                "kind": "perfume",
+                "name": "Polo Red",
+                "house": "Ralph Lauren",
+                "family": "Green Leaf",
+                "page": "https://www.scento.com/perfumes/polo-red-ralph-lauren"
+            },
+            {
+                "kind": "perfume",
+                "name": "Phantom",
+                "house": "Rabanne",
+                "family": "Sunlit Citrus",
+                "page": "https://www.scento.com/perfumes/phantom-parfum-rabanne"
+            },
+            {
+                "kind": "perfume",
+                "name": "Replica Springtime in a Park",
+                "house": "Maison Margiela Fragrances",
+                "family": "Petal Garden",
+                "page": "https://www.scento.com/brand/maison-margiela"
+            },
+            {
+                "kind": "perfume",
+                "name": "Lust in Paradise",
+                "house": "Ex Nihilo",
+                "family": "Petal Garden",
+                "page": "https://www.scento.com/perfumes/lust-in-paradise-ex-nihilo"
+            }
+        ]
+    },
+    "scento_page": {
+        "label": "Phantom in Red on Scento",
+        "url": "https://www.scento.com/perfumes/phantom-in-red-rabanne"
+    },
+    "further_reading": [
+        {
+            "label": "Donna Born in Roma on Scento",
+            "url": "https://www.scento.com/perfumes/valentino-donna-born-in-roma-valentino"
+        },
+        {
+            "label": "Uomo Born in Roma Intense on Scento",
+            "url": "https://www.scento.com/perfumes/valentino-uomo-born-in-roma-intense-valentino"
+        },
+        {
+            "label": "Red Tobacco on Scento",
+            "url": "https://www.scento.com/perfumes/red-tobacco-mancera"
+        }
+    ],
+    "cite": "Scento Perfume API, scento.com",
+    "continuation": "cGVyZnVtZS1zZWFyY2h8MTN6MWpjbXwxMA"
+}
