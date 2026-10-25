@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+# F-Ray-grance portable commit_gh interface.
+# Stage only explicit paths, commit once, push to the verified GitHub origin.
+set -euo pipefail
+
+usage() {
+  cat <<'USAGE'
+Usage: ./scripts/commit_gh --message "commit title" --paths <file1> [file2 ...]
+       ./scripts/commit_gh --retry-push
+       ./scripts/commit_gh --help
+Requires a local Git repository, GitHub origin and authenticated push rights.
+Never stages implicit files, does not create a repository and does not skip branch protection.
+USAGE
+}
+msg=''; mode=''; paths=()
+while (($#)); do
+  case "$1" in
+    --help|-h) usage; exit 0 ;;
+    --retry-push) [[ -z "$mode" && -z "$msg" && ${#paths[@]} -eq 0 ]] || { usage >&2; exit 2; }; mode='retry'; shift ;;
+    --message) (($# >= 2)) || { usage >&2; exit 2; }; msg="$2"; shift 2 ;;
+    --paths) mode='paths'; shift; while (($#)); do paths+=("$1"); shift; done ;;
+    *) echo "Unexpected argument: $1" >&2; usage >&2; exit 2 ;;
+  esac
+done
+if [[ "$mode" != 'retry' && ( -z "$msg" || ${#paths[@]} -eq 0 ) ]]; then usage >&2; exit 2; fi
+root="$(git rev-parse --show-toplevel 2>/dev/null)" || { echo 'BLOCKED: not in git repo' >&2; exit 3; }
+cd "$root"
+branch="$(git symbolic-ref --short -q HEAD)" || { echo 'BLOCKED: detached HEAD' >&2; exit 3; }
+[[ "$branch" == main ]] || { echo "BLOCKED: accepted workflow allows only GitHub main; currently on $branch" >&2; exit 3; }
+origin="$(git remote get-url origin 2>/dev/null)" || { echo 'BLOCKED: missing origin' >&2; exit 3; }
+case "$origin" in
+  https://github.com/*|git@github.com:*|ssh://git@github.com/*) ;;
+  *) echo 'BLOCKED: origin must point to an explicitly configured GitHub repository' >&2; exit 3;;
+esac
+[[ -z "$(git diff --cached --name-only)" ]] || { echo 'BLOCKED: pre-staged files found; review/un-stage manually' >&2; exit 3; }
+if [[ "$mode" == 'retry' ]]; then
+  git push -u origin "HEAD:refs/heads/$branch"
+  echo "PUSH_OK branch=$branch sha=$(git rev-parse HEAD)"
+  exit 0
+fi
+# Explicit paths only. Refuse any path traversal or root staging.
+for p in "${paths[@]}"; do
+  case "$p" in ''|.|..|../*|*/../*|*/..|/*) echo 'BLOCKED: unsafe or overly broad path' >&2; exit 4;; esac
+done
+git add -- "${paths[@]}"
+if git diff --cached --quiet; then
+  echo 'NO_CHANGES: no new commit was created. Verify phase was previously GitHub-committed.'
+  exit 5
+fi
+staged="$(git diff --cached --name-only)"
+# Allow a documented .env.example template, never a real .env file or override.
+while IFS= read -r file; do
+  [[ -n "$file" ]] || continue
+  case "$file" in
+    .env.example|*/.env.example) continue ;;
+  esac
+  if printf '%s\n' "$file" | grep -Ei '(^|/)(\.env($|\.)|\.terraform/|\.secrets/|secrets/|backups/|node_modules/|\.run\.lock|.*\.tfstate(\..*)?$|.*\.pem$|.*\.key$)' >/dev/null; then
+    git reset -q -- "${paths[@]}"
+    echo 'BLOCKED: selected files include potential secrets, Terraform state, backups or dependencies' >&2
+    exit 4
+  fi
+done <<< "$staged"
+if ! git diff --cached --check; then git reset -q -- "${paths[@]}"; echo 'BLOCKED: invalid staged diff' >&2; exit 4; fi
+# Minimal redacted signature guard; no printing secret content.
+if git diff --cached --unified=0 -- "${paths[@]}" | grep -E '^\+[^+].*(BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|vault[_-]?root[_-]?token[[:space:]]*[:=])' >/dev/null; then
+  git reset -q -- "${paths[@]}"; echo 'BLOCKED: staged diff contains sensitive signature' >&2; exit 4
+fi
+printf 'About to commit only these paths:\n%s\n' "$staged"
+git commit -m "$msg"
+sha="$(git rev-parse HEAD)"
+if ! git push -u origin "HEAD:refs/heads/$branch"; then
+  echo "COMMITTED_LOCALLY_PUSH_BLOCKED branch=$branch sha=$sha; retry with ./scripts/commit_gh --retry-push" >&2
+  exit 6
+fi
+echo "COMMIT_AND_PUSH_OK branch=$branch sha=$sha"

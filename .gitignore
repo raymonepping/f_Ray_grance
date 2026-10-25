@@ -103,6 +103,28 @@ ipython_config.py
 ########################################
 node_modules/
 npm-debug.log*
+pnpm-debug.log*
+.pnpm-store/
+*.tsbuildinfo
+.eslintcache
+
+########################################
+# 🟩 Nuxt / Nitro / Vite
+########################################
+.nuxt/
+.output/
+.nitro/
+.data/
+.vite/
+.cache/
+
+########################################
+# 🎭 Test artifacts (Vitest / Playwright)
+########################################
+coverage/
+playwright-report/
+test-results/
+blob-report/
 
 ########################################
 # 🐳 Docker
@@ -115,6 +137,7 @@ docker-compose.override.yml
 ########################################
 .env
 .env.*
+!.env.example
 
 ########################################
 # 🛠️ Terraform
@@ -124,7 +147,9 @@ docker-compose.override.yml
 *.tfstate.backup
 *.tfplan
 *.backup
-.terraform.lock.hcl
+# .terraform.lock.hcl is committed: provider pins are part of the reproducibility contract
+.terraform.tfstate.lock.info
+terraform.tfstate.d/
 *.log
 crash.log
 justfile
@@ -213,3 +238,38 @@ kubeconfig
 .kubeconfig
 kube/config
 
+
+# ── Added by commit_gh --harden ─────────────────────────────
+*.env
+.vault.*
+*.vault
+*.jsonl
+input/*
+!input/.gitkeep
+output/*
+!output/.gitkeep
+
+########################################
+# 🌸 F-Ray-grance
+########################################
+# Agent orchestration: track state/BUILD_STATE.json, never locks or temp writes
+state/.run.lock/
+state/*.tmp
+state/.*.tmp
+!state/BUILD_STATE.json
+# Manual PostgreSQL backups live OUTSIDE the repo and the Podman VM; guard anyway
+backups/
+*.dump
+*.pgdump
+*.backup.manifest.json
+# Vault Agent rendered material and AppRole bootstrap files
+.vault-agent/
+vault-agent-sink*
+role-id
+secret-id
+*.role_id
+*.secret_id
+# Owner bootstrap secrets (never in Git)
+owner-bootstrap*
+# Release bundle archives
+*.zip

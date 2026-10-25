@@ -1,0 +1,6 @@
+# Markdown uses trailing double-space hard line breaks; exempt from git diff --check
+*.md whitespace=-trailing-space
+# Shell and Make must stay LF
+*.sh text eol=lf
+Makefile text eol=lf
+scripts/commit_gh text eol=lf

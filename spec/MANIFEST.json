@@ -1,0 +1,314 @@
+{
+  "package": "F-Ray-grance",
+  "version": "0.1.6",
+  "status": "documentation_frozen_runtime_unverified",
+  "phase_count": 11,
+  "agent_prompts_per_agent": 11,
+  "master_launchers": 3,
+  "files": [
+    {
+      "path": "docs/adr/ADR-001-postgresql-pgvector.md",
+      "bytes": 1281,
+      "sha256": "a484b49fd0f105b1a217ae709d5461b125b2723d052d6cb030200d5261d9fd3e"
+    },
+    {
+      "path": "docs/adr/ADR-002-terraform-ansible-make.md",
+      "bytes": 2405,
+      "sha256": "0eee38689dd4122400258321c8b24b9420fd3c858b9f79da663b154dba38875c"
+    },
+    {
+      "path": "docs/adr/ADR-003-persistent-data-boundary.md",
+      "bytes": 2781,
+      "sha256": "ae9e7e6c937c281ff8de9dc0d67ad5370a1619125ce109feb54cbbb4ab998766"
+    },
+    {
+      "path": "docs/adr/ADR-004-compare-as-a-core-experience.md",
+      "bytes": 1049,
+      "sha256": "c147fee72c149c334ea710ef5c440fa25511a4eb5849ef1b2833ea72bd2ce2f6"
+    },
+    {
+      "path": "docs/adr/ADR-005-private-tailscale-https-auth.md",
+      "bytes": 1822,
+      "sha256": "55c686dd206a1640b36363abe401b0505b8e8cddfb65587282cc61f98f4d6bc6"
+    },
+    {
+      "path": "docs/adr/ADR-006-single-main-agent-commits.md",
+      "bytes": 1396,
+      "sha256": "37064b5d8951fcb7f7a2d3dfa591a879576963182da17d1cc39a361169b89067"
+    },
+    {
+      "path": "docs/adr/ADR-007-manual-backups-only.md",
+      "bytes": 1393,
+      "sha256": "3ce202b7fea600dfa3877c41c07b05c0cc2891cbae1c10ad8245352390cbc2cb"
+    },
+    {
+      "path": "prompts/Claude/00_preflight_and_state.md",
+      "bytes": 9960,
+      "sha256": "531818921778e52bfaa9da6d4a4bedd922539c79488744f8b12449337ad947f8"
+    },
+    {
+      "path": "prompts/Claude/01_infrastructure_and_persistence.md",
+      "bytes": 10087,
+      "sha256": "6365422bbbce1773dd56ddbdc9a2f073d960e6fc1138b7606da2d41a3d65791c"
+    },
+    {
+      "path": "prompts/Claude/02_postgres_schema_and_api.md",
+      "bytes": 9734,
+      "sha256": "ded7dcded0bb54e37beeb1eef22a0c3af1f55f2a5d112344f777711ab32333f0"
+    },
+    {
+      "path": "prompts/Claude/03_vault_runtime_security.md",
+      "bytes": 9738,
+      "sha256": "e1671079afa79dcbd9528d1a96b9872105f1dcd10b97f874ad8a10276cf8b94f"
+    },
+    {
+      "path": "prompts/Claude/04_scento_identity_enrichment.md",
+      "bytes": 9861,
+      "sha256": "f06c24f01b1c85719281c79c0ac7bdba324c268487f2e34a7ac79e31f84555da"
+    },
+    {
+      "path": "prompts/Claude/05_frontend_design_shell.md",
+      "bytes": 9562,
+      "sha256": "dbf9c1431ee96d94559145703453c6213e486a5990d8652ba57df226fbc384a4"
+    },
+    {
+      "path": "prompts/Claude/06_collection_and_samples.md",
+      "bytes": 9473,
+      "sha256": "83410a7bb12073081d34b10c95ccbe93942788e38891e2165b33865b7b99762e"
+    },
+    {
+      "path": "prompts/Claude/07_fragrance_dna_and_compare.md",
+      "bytes": 9569,
+      "sha256": "06a12a9d50d75484ad7699458925215d783d45bee328b72de13674b1933bb8b5"
+    },
+    {
+      "path": "prompts/Claude/08_ollama_vectors_and_discovery.md",
+      "bytes": 9446,
+      "sha256": "91abb9e1ea45f6ddc91f0503c41d615fe60158f43e8a6074da7286ec99f5f9a6"
+    },
+    {
+      "path": "prompts/Claude/09_seasonal_dna_and_portability.md",
+      "bytes": 9358,
+      "sha256": "4e7f8376eafe0dc2750006f8d405e1338d03f5ecfc60fc5a8a8da146f87a2937"
+    },
+    {
+      "path": "prompts/Claude/10_recovery_security_and_release_gate.md",
+      "bytes": 9971,
+      "sha256": "a84d4a4cf11e80856ed21b8c588908c87ba3dbc7f4ef81bf78fc536e2bbbf2b1"
+    },
+    {
+      "path": "prompts/Codex/00_preflight_and_state.md",
+      "bytes": 9889,
+      "sha256": "8f7560c10787350bb5f1372825431ffaccde422494ebdde169d6aa008d2a1e72"
+    },
+    {
+      "path": "prompts/Codex/01_infrastructure_and_persistence.md",
+      "bytes": 10016,
+      "sha256": "de836919afa4555cb1ef8b11bf5b5c03fe6b2f4e6753c08ea925a28b30396f57"
+    },
+    {
+      "path": "prompts/Codex/02_postgres_schema_and_api.md",
+      "bytes": 9663,
+      "sha256": "a45b0e2669d73931a9e7379327970f0310b0e7829229d50e5e046baf12715b5d"
+    },
+    {
+      "path": "prompts/Codex/03_vault_runtime_security.md",
+      "bytes": 9667,
+      "sha256": "1f1e19c5707c745b3500c53bea732151bc9f56e684d1960388bb950c8c5caa27"
+    },
+    {
+      "path": "prompts/Codex/04_scento_identity_enrichment.md",
+      "bytes": 9790,
+      "sha256": "36fdb84bae89506bc8340a86014d6dcfc0f9720af4a2c353cf3a8233beeee2e9"
+    },
+    {
+      "path": "prompts/Codex/05_frontend_design_shell.md",
+      "bytes": 9491,
+      "sha256": "be8458657751e203665d83955da740f629ef04fcb5e94324e25bcf140fc3959c"
+    },
+    {
+      "path": "prompts/Codex/06_collection_and_samples.md",
+      "bytes": 9402,
+      "sha256": "a600109b2bcbe79f08958253fe7b32e17c6179b2e2c6ac4b346e1bc90f79c98d"
+    },
+    {
+      "path": "prompts/Codex/07_fragrance_dna_and_compare.md",
+      "bytes": 9498,
+      "sha256": "92ff5c24b707590dde10d9d41fb6935561ffd0be24233ca8039f27a90997c1f2"
+    },
+    {
+      "path": "prompts/Codex/08_ollama_vectors_and_discovery.md",
+      "bytes": 9375,
+      "sha256": "dc9ab89bcfc24e5e8979806025d0ac8f18511a2c5c4228d77ca208a64669d11d"
+    },
+    {
+      "path": "prompts/Codex/09_seasonal_dna_and_portability.md",
+      "bytes": 9287,
+      "sha256": "906ccb658c7c19a1cc193fe0c36c9c2897c876cce3689e2f9e1ab121e3651a12"
+    },
+    {
+      "path": "prompts/Codex/10_recovery_security_and_release_gate.md",
+      "bytes": 9900,
+      "sha256": "330cc35c7a09a726595c3381c56586c60735cd9b50b471d8f0a54a0c50bdd98e"
+    },
+    {
+      "path": "prompts/IBM_Bob/00_preflight_and_state.md",
+      "bytes": 9911,
+      "sha256": "d75fd10370e9db33f5cbc06e216748d1289b3412a158e9130e2331a8983decde"
+    },
+    {
+      "path": "prompts/IBM_Bob/01_infrastructure_and_persistence.md",
+      "bytes": 10038,
+      "sha256": "f3cb533d2add1f13da8654eb56d3eb3ba090724ff5cbe4dfd41dd9d9b977e68e"
+    },
+    {
+      "path": "prompts/IBM_Bob/02_postgres_schema_and_api.md",
+      "bytes": 9685,
+      "sha256": "1413eba2867773738364b81aae58da8108e9cdaa0487516b25ddc59dda03befa"
+    },
+    {
+      "path": "prompts/IBM_Bob/03_vault_runtime_security.md",
+      "bytes": 9689,
+      "sha256": "3ddaa57722bce2021d5ce728e1e0fd2a42c6bda0e4f39f2b4337db82d485ecf1"
+    },
+    {
+      "path": "prompts/IBM_Bob/04_scento_identity_enrichment.md",
+      "bytes": 9812,
+      "sha256": "3a67361b7d6eb2663f01a5a567926a8f7a8423d980113bf4c281e23c97c85757"
+    },
+    {
+      "path": "prompts/IBM_Bob/05_frontend_design_shell.md",
+      "bytes": 9513,
+      "sha256": "a99088d3b239fcbf776d098811a1aebe699f1f65df69b91fdfcca9984447abf9"
+    },
+    {
+      "path": "prompts/IBM_Bob/06_collection_and_samples.md",
+      "bytes": 9424,
+      "sha256": "0d9224e35825d9bb9634210b03f4c3fe292d50e6b83c5b226a1d5a8ef9bf9aa7"
+    },
+    {
+      "path": "prompts/IBM_Bob/07_fragrance_dna_and_compare.md",
+      "bytes": 9520,
+      "sha256": "0ce8b36dd1445b06b44716568280ed7792d96da2eb66998ea7f07e903a15a432"
+    },
+    {
+      "path": "prompts/IBM_Bob/08_ollama_vectors_and_discovery.md",
+      "bytes": 9397,
+      "sha256": "1c0c1f38d8cfdd866f55f66902a255ff80e45bf29874d63eca93f591b98b8516"
+    },
+    {
+      "path": "prompts/IBM_Bob/09_seasonal_dna_and_portability.md",
+      "bytes": 9309,
+      "sha256": "da3dbb4354986128ed767805a4d5455475ae4c77c56ceea3353b8eb80000f6ef"
+    },
+    {
+      "path": "prompts/IBM_Bob/10_recovery_security_and_release_gate.md",
+      "bytes": 9922,
+      "sha256": "21fd465ec8e1a2e495a39c50c1d63268b24823854f5fac92936a717e67e46c83"
+    },
+    {
+      "path": "prompts/README.md",
+      "bytes": 6151,
+      "sha256": "246d6264ce9d8b20e606d7a4223dcfda6f84106cbb5b129ab19da166d53285c3"
+    },
+    {
+      "path": "prompts/STATE_CONTRACT.md",
+      "bytes": 3379,
+      "sha256": "93090dd2697ae61d49823cd645c39e26c2be895e4c0dded95d8393468c47f3c4"
+    },
+    {
+      "path": "prompts/launchers/Claude_START_HERE.md",
+      "bytes": 8560,
+      "sha256": "5f52b505fd63a8a721329bc2321e9eaffc954c95525e3b4133ef25195d1f113f"
+    },
+    {
+      "path": "prompts/launchers/Codex_START_HERE.md",
+      "bytes": 8550,
+      "sha256": "2a0d526e73089046aa7514ed85ac0aed0af6cdb92404a5f45c27ca7b607dbfed"
+    },
+    {
+      "path": "prompts/launchers/IBM_Bob_START_HERE.md",
+      "bytes": 8588,
+      "sha256": "579883aa2768db1cadce8d9c3a5d007549c77b8cb8ef17f9cb1602bab954ca3e"
+    },
+    {
+      "path": "spec/AGENT_PROMPT_SUITE.md",
+      "bytes": 247,
+      "sha256": "fa294d79edc7c292bdd02876a90ce00badbeb8bcb7964f58f457472c280ba097"
+    },
+    {
+      "path": "spec/ARCHITECTURE.md",
+      "bytes": 11744,
+      "sha256": "a75fbbf8f61c737e77dff6b6e9e27950310807cc3839040833d5b0fedc77b37d"
+    },
+    {
+      "path": "spec/COMPARE_SPEC.md",
+      "bytes": 8428,
+      "sha256": "f141fcef601104861f3926250d756012defab62e184268dc52405234a078a46b"
+    },
+    {
+      "path": "spec/DATA_MODEL.md",
+      "bytes": 6190,
+      "sha256": "dfe52bbcd127fa33fc8a2d45205de7b4dd778fa648f3efc3dda45ba98c588ee9"
+    },
+    {
+      "path": "spec/DATA_PERSISTENCE.md",
+      "bytes": 15761,
+      "sha256": "2cce5d96f861612bb92d0f66a8e79cb2231f140e2ce6aba2c0b51e5b30e3f56d"
+    },
+    {
+      "path": "spec/DATA_SOURCES.md",
+      "bytes": 4789,
+      "sha256": "72fa0f3a49e27af4433599fb4f891a0640f7481b6bf5d12bfe481472e3bb992f"
+    },
+    {
+      "path": "spec/DESIGN.md",
+      "bytes": 44236,
+      "sha256": "c3d34d01bb6957646fc68f991509695df20bbee756ca0261067a520304533074"
+    },
+    {
+      "path": "spec/OPERATIONS.md",
+      "bytes": 11366,
+      "sha256": "f727c104e76d5502af25044a86393717b03fdc09a4a0507fb021bc94ae234edc"
+    },
+    {
+      "path": "spec/PHASE_00.md",
+      "bytes": 3649,
+      "sha256": "31039397e49c79a2b15eee9b97b2c2852a361bfddd1777f0d8e74e1a5d64bee4"
+    },
+    {
+      "path": "spec/PHASE_MANIFEST.md",
+      "bytes": 3444,
+      "sha256": "abbcb6209eadc67eb54382dffae99f913ee67320518f42c90453cfbe9d5a224d"
+    },
+    {
+      "path": "spec/PRODUCT_SPEC.md",
+      "bytes": 9411,
+      "sha256": "a93893572c6bf75c11482ca1538b89f42dcc8e5b0644710055a83e656746e103"
+    },
+    {
+      "path": "spec/QUALITY.md",
+      "bytes": 4473,
+      "sha256": "054733bcd71167d6f304006a2c89b93c0ebf3efcd3b7fc6c4cb3689aae641e20"
+    },
+    {
+      "path": "spec/REFERENCES.md",
+      "bytes": 3051,
+      "sha256": "f6a2b2ce061ae321ff2387e80dc653c50be5c1d1bc909a193a1a4c287f989636"
+    },
+    {
+      "path": "spec/SECURITY.md",
+      "bytes": 6818,
+      "sha256": "5df339116ae3a0e80290cc783ebc57e9cb08a02581765daa0ad08c20608b51d1"
+    }
+  ],
+  "layout": {
+    "spec_dir": "spec/",
+    "frozen_globs": [
+      "spec/*.md",
+      "prompts/*.md",
+      "prompts/*/*.md",
+      "docs/adr/*.md"
+    ]
+  }
+}
