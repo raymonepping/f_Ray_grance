@@ -102,6 +102,7 @@ const subfamily = computed(() => data.value?.fields.subfamily?.value as string |
       <FragranceSourceAttribution v-if="Object.keys(data.fields).length" :fields="data.fields" />
       <FragranceScentTraitBars v-if="dna" :rows="dna.traits.map(t => ({ code: t.code, label: t.label, values: [t.score] }))" :series="[data.fragrance.canonical_name]" :method="dna.method" />
       <CollectionVariantList :fragrance-id="data.fragrance.id" :variants="variants" @changed="loadRelationship" />
+      <FragranceLocalIndex v-if="data.fragrance.identity_status === 'verified'" :fragrance-id="data.fragrance.id" />
     </template>
     <div v-else class="surface-solid h-64 rounded-card opacity-60" aria-busy="true" aria-label="Loading fragrance" />
   </div>

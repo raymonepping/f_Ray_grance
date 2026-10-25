@@ -98,6 +98,13 @@ describe('create, read, idempotency', () => {
 });
 
 describe('history-preserving transitions', () => {
+  it('history order uses numeric event ids, including ids across digit-length boundaries', async () => {
+    const id = (await call(A, 'POST', '/api/v1/collection', { fragranceId: other, state: 'wishlist' })).json().entry.id;
+    await rp.get().query(`INSERT INTO app.collection_events (id,entry_id,from_state,to_state) OVERRIDING SYSTEM VALUE VALUES
+      (900000000000001,$1,'wishlist','sampled'),(1000000000000001,$1,'sampled','owned')`,[id]);
+    const history = (await call(A, 'GET', `/api/v1/collection/${id}/history`)).json().items;
+    expect(history.map((e: {to_state:string}) => e.to_state)).toEqual(['wishlist','sampled','owned']);
+  });
   it('sample → owned → previously owned keeps every step; rating/note edits add no events', async () => {
     const id = (await call(A, 'POST', '/api/v1/collection', { fragranceId: other, state: 'sampled', personalNote: 'Tester from the store' })).json().entry.id;
     const promoted = await call(A, 'PATCH', `/api/v1/collection/${id}`, { state: 'owned', reason: 'bought a full bottle' });

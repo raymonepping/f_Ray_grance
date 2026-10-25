@@ -193,7 +193,7 @@ export async function entryHistory(pool: pg.Pool, ownerId: string, entryId: stri
   const owned = await pool.query('SELECT 1 FROM app.collection_entries WHERE id = $1 AND owner_id = $2', [entryId, ownerId]);
   if (owned.rowCount === 0) return null;
   const { rows } = await pool.query<CollectionEventRow>(
-    `SELECT id::text, from_state, to_state, occurred_at, user_reason FROM app.collection_events WHERE entry_id = $1 ORDER BY id`,
+    `SELECT e.id::text, e.from_state, e.to_state, e.occurred_at, e.user_reason FROM app.collection_events e WHERE e.entry_id = $1 ORDER BY e.id`,
     [entryId],
   );
   return rows;

@@ -5,7 +5,7 @@
     "origin": "https://github.com/raymonepping/f_Ray_grance.git",
     "branch": "main"
   },
-  "last_successful_phase": "07",
+  "last_successful_phase": "08",
   "phases": {
     "00": {
       "status": "completed",
@@ -354,6 +354,35 @@
         ]
       },
       "blockers": []
+    },
+    "08": {
+      "status": "completed",
+      "agent": "codex",
+      "prompt_id": "FRAY-CODEX-08",
+      "started_at_utc": "2026-10-25T09:07:00Z",
+      "baseline_head": "acadc10fa6a7a8ae4a2b1e1f86c3e91149e8eebe",
+      "report_path": "reports/08_vector_discovery.md",
+      "planned_scope": [
+        "Pinned local Ollama adapter and validated embeddings",
+        "Versioned pgvector storage and stale-source rejection",
+        "Explicit-preference hybrid discovery and structured offline fallback",
+        "API and browser tests plus live embedding evidence"
+      ],
+      "finished_at_utc": "2026-10-25T09:15:31Z",
+      "ci": "not_checked",
+      "tests": {
+        "make_test": "PASS (API 127; web 24)",
+        "e2e": "27/27 PASS",
+        "live_embedding": "2 records; pinned digest; 768 finite dimensions",
+        "exact_cosine_benchmark": "4 pairs / 2 records, execution 0.297 ms",
+        "health": "PASS"
+      },
+      "artifacts": {
+        "model": "nomic-embed-text:v1.5",
+        "model_revision": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+        "dimension": 768
+      },
+      "blockers": []
     }
   },
   "accepted_adrs": [
@@ -364,15 +393,17 @@
     "ADR-005",
     "ADR-006",
     "ADR-007",
-    "ADR-008"
+    "ADR-008",
+    "ADR-009"
   ],
   "unresolved_blockers": [
     {
       "id": "G00.10",
       "phase_needed": "10",
       "owner": "operator",
-      "detail": "Install Tailscale on Mac and iPhone; enable MagicDNS + HTTPS; restrict grants; never Funnel"
+      "detail": "Tailscale installed but integration deferred explicitly by operator due to IBM enterprise DNS policy; local Mac access only (ADR-009).",
+      "status": "deferred_by_operator"
     }
   ],
-  "updated_at_utc": "2026-10-25T09:06:27Z"
+  "updated_at_utc": "2026-10-25T09:15:31Z"
 }

@@ -47,6 +47,11 @@
       "sha256": "1d5da7a4f067e6fe2f848b7e2b27ec9b28a45469f2819d6a9a5f95c2413e3fff"
     },
     {
+      "path": "docs/adr/ADR-009-defer-tailscale-local-access.md",
+      "bytes": 1312,
+      "sha256": "353039695cffbc654a32bd2a7f75fcdf2bb001f87253cc7d99e17eba68c9e90f"
+    },
+    {
       "path": "prompts/Claude/00_preflight_and_state.md",
       "bytes": 9960,
       "sha256": "531818921778e52bfaa9da6d4a4bedd922539c79488744f8b12449337ad947f8"

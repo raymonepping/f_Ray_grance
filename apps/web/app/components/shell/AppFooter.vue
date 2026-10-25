@@ -9,8 +9,8 @@ const { state } = useConnection();
     <div class="mx-auto flex max-w-[1440px] flex-col items-center gap-3 text-center md:flex-row md:justify-between md:text-left">
       <p class="m-0"><span class="font-semibold text-ink-2">F-Ray-grance</span> v{{ version }}</p>
       <ul class="m-0 flex list-none flex-wrap justify-center gap-4 p-0">
-        <li><NuxtLink to="/settings#sources" class="text-ink-3 hover:text-ink">Data sources</NuxtLink></li>
-        <li><NuxtLink to="/settings#privacy" class="text-ink-3 hover:text-ink">Privacy &amp; provenance</NuxtLink></li>
+        <li><NuxtLink to="/settings#sources" class="tap inline-flex items-center text-ink-3 hover:text-ink">Data sources</NuxtLink></li>
+        <li><NuxtLink to="/settings#privacy" class="tap inline-flex items-center text-ink-3 hover:text-ink">Privacy &amp; provenance</NuxtLink></li>
       </ul>
       <p class="m-0" data-testid="footer-connection">{{ CONNECTION_LABEL[state] }}</p>
     </div>

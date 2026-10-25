@@ -10,6 +10,8 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Added
 
+- **Phase 08 — Local discovery.** Digest-pinned Ollama embeddings with model/dimension/source checks, explicit indexing, exact pgvector cosine search, preference-driven similar/different suggestions and structured offline fallback.
+
 - **Phase 07 — DNA and Compare.** Exactly two verified identities, sourced compact/full pyramids, eleven versioned indicative traits, owner-scoped seasonal context, deterministic explanations, session selection/tray and responsive comparison with URL restoration.
 
 - **Phase 06 — Collection and samples.** Owner-scoped collection API/UI, retry-safe creation, package/barcode records, sample promotion, repeat purchases, private ratings/notes and append-only history. Codex verified and completed Claude's draft; 19 browser tests pass.
@@ -39,6 +41,8 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 - `infra/terraform/foundation/` placeholder, superseded by `infra/terraform/data` and `infra/terraform/app`.
 
 ### Fixed
+
+- Collection history now sorts by numeric event ID rather than its text output alias, preserving order across digit boundaries. Added a deterministic regression.
 
 - Collection cards referenced an unregistered Nuxt component and rendered blank once entries existed. Corrected the component name, retained dirty private-note drafts during status changes, and prevented stale search responses.
 

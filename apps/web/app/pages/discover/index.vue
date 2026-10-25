@@ -148,5 +148,6 @@ const localId = computed(() => result.value?.local?.fragranceId ?? result.value?
       </div>
       <NuxtLink v-if="saved && !result.profile" :to="`/fragrances/${saved}`" class="w-fit">Open the draft</NuxtLink>
     </section>
+    <SearchRecommendations />
   </div>
 </template>
