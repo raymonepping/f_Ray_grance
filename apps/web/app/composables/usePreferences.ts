@@ -22,11 +22,13 @@ function load(): Prefs {
 
 export function usePreferences() {
   const prefs = useState<Prefs>('prefs', () => (import.meta.client ? load() : { ...DEFAULTS }));
+  const systemLight = useState<boolean>('prefs:systemLight', () => import.meta.client && matchMedia('(prefers-color-scheme: light)').matches);
 
   function apply(): void {
     if (!import.meta.client) return;
     const d = document.documentElement;
-    const resolved = prefs.value.theme === 'system' ? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark') : prefs.value.theme;
+    systemLight.value = matchMedia('(prefers-color-scheme: light)').matches;
+    const resolved = prefs.value.theme === 'system' ? (systemLight.value ? 'light' : 'dark') : prefs.value.theme;
     d.dataset.theme = resolved;
     if (prefs.value.reduceTransparency) d.dataset.transparency = 'reduce';
     else delete d.dataset.transparency;
@@ -46,7 +48,7 @@ export function usePreferences() {
   }
 
   const resolvedTheme = computed<'dark' | 'light'>(() =>
-    prefs.value.theme === 'system' ? (import.meta.client && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark') : prefs.value.theme,
+    prefs.value.theme === 'system' ? (systemLight.value ? 'light' : 'dark') : prefs.value.theme,
   );
 
   return { prefs, set, apply, resolvedTheme };

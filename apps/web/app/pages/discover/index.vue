@@ -130,6 +130,7 @@ const localId = computed(() => result.value?.local?.fragranceId ?? result.value?
         </div>
       </template>
       <NuxtLink v-else-if="localId" :to="`/fragrances/${localId}`" class="tap inline-flex w-fit items-center gap-2 rounded-control border border-line px-4 no-underline">Open details <AppIcon name="arrow" :size="18" /></NuxtLink>
+      <NuxtLink v-if="result.state === 'exact' && (saved || localId)" :to="`/compare?a=${saved || localId}`" class="tap inline-flex w-fit items-center">Compare to a fragrance I own</NuxtLink>
 
       <div v-if="result.candidates.length" class="surface-solid rounded-card p-4 md:p-5">
         <h3 class="mb-3">Similar names (not the same fragrance unless verified)</h3>

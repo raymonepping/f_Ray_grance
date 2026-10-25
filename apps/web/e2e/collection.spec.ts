@@ -98,8 +98,17 @@ test.describe.serial('sample → owned → history, with server-acknowledged edi
     await expect(page.getByText('That barcode has an invalid check digit.')).toBeVisible();
     await page.getByLabel('Size (ml)').fill('100');
     await page.getByLabel('Barcode (EAN/GTIN)').fill('');
+    const savedVariant = page.waitForResponse(r => r.request().method() === 'POST' && r.url().endsWith('/variants') && r.status() === 201);
     await page.getByRole('button', { name: 'Add size' }).click();
-    await expect(page.getByText(/100 ml/)).toBeVisible();
+    const variant = await (await savedVariant).json() as { id: string };
+    await expect(page.getByText(/100 ml/).first()).toBeVisible();
+    // Remove only the size record just created by this test (never a linked package).
+    const { execFileSync } = await import('node:child_process');
+    if (!/^[0-9a-f-]{36}$/.test(variant.id)) throw new Error('invalid variant id');
+    execFileSync('podman', ['exec', '-i', 'fray-postgres', 'psql', '-X', '-q', '-v', 'ON_ERROR_STOP=1', '-U', 'postgres', '-d', 'fray'], {
+      input: `DELETE FROM app.product_variants WHERE id='${variant.id}' AND verification_state='unverified' AND gtin14 IS NULL AND NOT EXISTS (SELECT 1 FROM app.collection_entries WHERE variant_id='${variant.id}');`,
+      stdio: ['pipe', 'ignore', 'inherit'],
+    });
     const entry = page.getByRole('article', { name: 'Collection entry 1' });
     await entry.locator('label', { hasText: /^\s*Previously owned/ }).click();
     await entry.getByRole('button', { name: 'Change to Previously owned' }).click();

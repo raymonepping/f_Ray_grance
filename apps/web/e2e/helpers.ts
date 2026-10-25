@@ -27,7 +27,7 @@ export async function noPageOverflow(page: Page): Promise<void> {
 export async function axe(page: Page, label: string): Promise<void> {
   const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
   const serious = r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical');
-  expect(serious.map((v) => `${label}: ${v.id} — ${v.help} (${v.nodes.length})`)).toEqual([]);
+  expect(serious.map((v) => `${label}: ${v.id} — ${v.help} (${v.nodes.length}): ${v.nodes.map(n => `${n.target.join(', ')}: ${n.failureSummary}`).join('; ')}`)).toEqual([]);
 }
 
 export function trackConsole(page: Page): string[] {

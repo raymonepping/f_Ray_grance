@@ -10,6 +10,7 @@ import type { ScentoClient } from '../../providers/scento.js';
 import rateLimit from '@fastify/rate-limit';
 import { fragranceRoutes } from './fragrances.js';
 import { collectionRoutes } from './collection.js';
+import { compareRoutes } from './compare.js';
 
 const Uuid = Type.String({ format: 'uuid' });
 
@@ -21,6 +22,7 @@ export async function v1Routes(base: FastifyInstance, deps: { pool: RotatingPool
   await app.register(rateLimit, { global: false });
   await app.register(fragranceRoutes, { pool: deps.pool, scento: deps.scento });
   await app.register(collectionRoutes, { pool: deps.pool });
+  await app.register(compareRoutes, { pool: deps.pool });
   const db = () => deps.pool.get();
 
   app.get('/session', async (req) => ({ owner: req.session!.owner }));

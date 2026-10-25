@@ -10,6 +10,8 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Added
 
+- **Phase 07 — DNA and Compare.** Exactly two verified identities, sourced compact/full pyramids, eleven versioned indicative traits, owner-scoped seasonal context, deterministic explanations, session selection/tray and responsive comparison with URL restoration.
+
 - **Phase 06 — Collection and samples.** Owner-scoped collection API/UI, retry-safe creation, package/barcode records, sample promotion, repeat purchases, private ratings/notes and append-only history. Codex verified and completed Claude's draft; 19 browser tests pass.
 
 - **Phase 05 — design system and app shell.** Nuxt 4 SPA (`apps/web`) with DESIGN.md tokens (navy/gold dark, light, system), restrained glass with opaque fallbacks and a Reduce-transparency setting, collapsible sidebar / tablet rail / mobile bottom nav and accessible drawer, ⌘K search, login and in-place session-expired flow, truthful connection states; Collection, Discover (live resolver), Fragrance detail and Settings screens; strict-CSP static build served by the gateway; `make test-e2e` (14 Playwright tests, axe-clean at 390/768/1280/1440 in both themes) and a WCAG token-contrast audit.

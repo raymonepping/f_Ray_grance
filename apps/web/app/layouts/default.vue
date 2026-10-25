@@ -11,6 +11,7 @@ const search = ref(false);
 const rail = ref(import.meta.client ? window.innerWidth < 1200 : false);
 const route = useRoute();
 const announce = ref('');
+const compareSelection = useCompare();
 
 function measure() {
   rail.value = window.innerWidth < 1200;
@@ -48,8 +49,10 @@ watch(() => route.fullPath, () => nextTick(() => (announce.value = `${header.val
         </div>
       </main>
       <ShellAppFooter />
+      <div v-if="compareSelection.ids.value.length" class="h-20" aria-hidden="true" />
     </div>
     <ShellMobileNav />
+    <CompareTray />
     <ShellMobileDrawer v-model="drawer" />
     <ShellGlobalSearch v-model="search" />
     <AuthSessionExpired v-if="status === 'expired'" />

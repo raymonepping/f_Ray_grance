@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const { apply } = usePreferences();
-onMounted(apply);
+let media: MediaQueryList | undefined;
+onMounted(() => { apply(); media = matchMedia('(prefers-color-scheme: light)'); media.addEventListener('change', apply); });
+onBeforeUnmount(() => media?.removeEventListener('change', apply));
 </script>
 
 <template>

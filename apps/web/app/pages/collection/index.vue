@@ -12,6 +12,7 @@ interface Entry {
   identity_status: string;
 }
 const route = useRoute();
+const compareSelection = useCompare();
 const filters = [{ key: 'all', label: 'All' }, ...(Object.keys(STATE_LABEL) as CollectionState[]).map((k) => ({ key: k, label: k === 'sampled' ? 'Samples' : STATE_LABEL[k] }))];
 const active = computed(() => (typeof route.query.state === 'string' ? route.query.state : 'all'));
 const q = ref(typeof route.query.q === 'string' ? route.query.q : '');
@@ -102,6 +103,7 @@ const owned = computed(() => items.value.filter((i) => i.state === 'owned').leng
     <ul v-else class="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
       <li v-for="e in items" :key="e.id">
         <FragranceCard :id="e.fragrance_id" :brand="e.brand" :name="e.canonical_name" :concentration="e.concentration" :state="e.state" :identity-status="e.identity_status" />
+        <button v-if="e.identity_status === 'verified'" type="button" class="tap mt-2 w-full rounded-control border border-line px-3" :aria-label="`Add ${e.canonical_name} to Compare`" @click="compareSelection.add(e.fragrance_id)">Add to Compare</button>
       </li>
     </ul>
   </div>

@@ -23,5 +23,13 @@ export default async function setup(): Promise<void> {
   const r = await ctx.post('/api/v1/auth/login', { data: { username, password } });
   if (!r.ok()) throw new Error(`e2e login failed: ${r.status()}`);
   await ctx.storageState({ path: STATE_FILE });
+  // A second explicitly named, source-verified identity for live two-way Compare.
+  // Layton was verified against its live Scento profile; no near-match substitution.
+  const csrf = (await ctx.storageState()).cookies.find(c => c.name === '__Host-fray_csrf')?.value;
+  const enriched = await ctx.post('/api/v1/fragrances/enrich', {
+    headers: { 'x-csrf-token': csrf ?? '' },
+    data: { providerId: 'layton-parfums-de-marly', brand: 'Parfums de Marly', name: 'Layton' },
+  });
+  if (!enriched.ok()) throw new Error(`live comparison identity enrichment failed: ${enriched.status()}`);
   await ctx.dispose();
 }
