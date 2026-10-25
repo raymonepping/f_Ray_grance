@@ -28,3 +28,7 @@ This manifest is authoritative for phase IDs, dependencies and required delivery
 - v0.1 comparison remains exactly **two fragrances**; no price tracker, spray logging, public sign-up, or mandatory daily journal.
 
 See accepted ADR-005, ADR-006 and ADR-007 for decision rationale and reversal criteria.
+
+## Accepted Phase 11 addendum — ADR-010
+
+Phase 11: Scent Academy and optional local tutor, defined in [SCENT_ACADEMY_SPEC.md](SCENT_ACADEMY_SPEC.md). The operator explicitly authorized local development after reviewing Phase 10's outstanding recovery gates. This exception extends the execution plan to 11 for Codex/Claude while preserving Phase 10's blocked release status, import guard and ADR-009 remote-access deferral. Do not interpret development advancement as release acceptance. All other sequencing rules remain unchanged.

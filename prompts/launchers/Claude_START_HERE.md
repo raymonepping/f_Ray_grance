@@ -34,3 +34,7 @@
 
 
 **End of launcher.** Read and execute exactly one selected phase prompt. The phase-specific acceptance criteria override generic suggestions, but never weaken safety or durability invariants.
+
+## Accepted local Phase 11 override
+
+ADR-010 records explicit operator authorization to develop Phase 11 while Phase 10 recovery remains blocked. For this authorized run, select/resume Phase 11 and read `spec/SCENT_ACADEMY_SPEC.md`; preserve Phase 10 blockers and keep import disabled. This exception overrides the generic next-lowest-blocked-phase rule only for the authorized Academy development. The contiguous successful-phase marker stays 09.

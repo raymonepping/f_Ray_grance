@@ -52,6 +52,11 @@
       "sha256": "353039695cffbc654a32bd2a7f75fcdf2bb001f87253cc7d99e17eba68c9e90f"
     },
     {
+      "path": "docs/adr/ADR-010-phase11-local-development.md",
+      "bytes": 1447,
+      "sha256": "589ba368470f1035d17b6affde29b3cb4786cfab4ae1eed1e1689e04a817f93a"
+    },
+    {
       "path": "prompts/Claude/00_preflight_and_state.md",
       "bytes": 9960,
       "sha256": "531818921778e52bfaa9da6d4a4bedd922539c79488744f8b12449337ad947f8"
@@ -108,8 +113,8 @@
     },
     {
       "path": "prompts/Claude/11_scent_academy_and_tutor.md",
-      "bytes": 16323,
-      "sha256": "cd0fe042484dbcf655f7e41e719bd428b1756e4e3a5cf67d4f85c4c04db6dffc"
+      "bytes": 16375,
+      "sha256": "7858c3f15a09a0e3a058e02efe52a9003d4bd79c1f062582c50f9487b60d26fc"
     },
     {
       "path": "prompts/Codex/00_preflight_and_state.md",
@@ -168,8 +173,8 @@
     },
     {
       "path": "prompts/Codex/11_scent_academy_and_tutor.md",
-      "bytes": 16273,
-      "sha256": "847358f7f432fae884604c1e6fe35aedcf67fd0a7c1e181dbd0a0740cbac3c3c"
+      "bytes": 16325,
+      "sha256": "3719900044645e953bb84f5472b6f3eee1e8823226b08bc460f85568c35f03f6"
     },
     {
       "path": "prompts/IBM_Bob/00_preflight_and_state.md",
@@ -228,23 +233,23 @@
     },
     {
       "path": "prompts/README.md",
-      "bytes": 6795,
-      "sha256": "66f6ffec462f006cf70b188c4cd6c226caa1ff455017ab156d6e61fd58234faf"
+      "bytes": 6599,
+      "sha256": "b0b687c90d4bf659c3f2a967859c25fff9c7a085d172cbe8f84b8bdd72514117"
     },
     {
       "path": "prompts/STATE_CONTRACT.md",
-      "bytes": 3379,
-      "sha256": "93090dd2697ae61d49823cd645c39e26c2be895e4c0dded95d8393468c47f3c4"
+      "bytes": 3841,
+      "sha256": "994dda62e2b2693ed4009378869bec08e3b237b5d096133c67725e35124af77f"
     },
     {
       "path": "prompts/launchers/Claude_START_HERE.md",
-      "bytes": 8560,
-      "sha256": "5f52b505fd63a8a721329bc2321e9eaffc954c95525e3b4133ef25195d1f113f"
+      "bytes": 9009,
+      "sha256": "548f9b4331d02fc203143d2394e3c2970a1f99287ed5e1516d6186a1a3e4b7dc"
     },
     {
       "path": "prompts/launchers/Codex_START_HERE.md",
-      "bytes": 8550,
-      "sha256": "2a0d526e73089046aa7514ed85ac0aed0af6cdb92404a5f45c27ca7b607dbfed"
+      "bytes": 8999,
+      "sha256": "5664469d1e2009cd58c766e90734845272dc997d8a7951cd93d31c6b42fb0fe0"
     },
     {
       "path": "prompts/launchers/IBM_Bob_START_HERE.md",
@@ -298,8 +303,8 @@
     },
     {
       "path": "spec/PHASE_MANIFEST.md",
-      "bytes": 3444,
-      "sha256": "abbcb6209eadc67eb54382dffae99f913ee67320518f42c90453cfbe9d5a224d"
+      "bytes": 3980,
+      "sha256": "f8e03df08a7b1f5996fa3bdc509ec8732ac22b528e07791bd371434488f5e64d"
     },
     {
       "path": "spec/PRODUCT_SPEC.md",
@@ -315,6 +320,11 @@
       "path": "spec/REFERENCES.md",
       "bytes": 3051,
       "sha256": "f6a2b2ce061ae321ff2387e80dc653c50be5c1d1bc909a193a1a4c287f989636"
+    },
+    {
+      "path": "spec/SCENT_ACADEMY_SPEC.md",
+      "bytes": 4384,
+      "sha256": "6a2b76e6a9e8444ae23200f4d617c0c8cb4e07713bc8264f0bff28a792d1092a"
     },
     {
       "path": "spec/SECURITY.md",

@@ -15,7 +15,7 @@ import re
 import sys
 from pathlib import Path
 
-from prompt_catalog import accepted_prompts
+from prompt_catalog import accepted_prompts, expected_phases
 
 r = Path(__file__).resolve().parents[1]
 spec = r / "spec"
@@ -86,7 +86,7 @@ for p in r.rglob("*.md"):
         n += 1
 for agent in ["Claude", "Codex", "IBM_Bob"]:
     prompts = accepted_prompts(agent)
-    assert len(prompts) == 11
+    assert len(prompts) == len(expected_phases(agent))
     for f in prompts:
         s = f.read_text()
         for q in [
@@ -126,5 +126,5 @@ for f in [
     assert "manual" in (spec / f).read_text().lower(), f
 assert not broken, broken
 print(
-    f"PASS: {len(manifest['files'])} frozen docs hash-verified, 36 prompts, required hardening references and {n} local Markdown links"
+    f"PASS: {len(manifest['files'])} frozen docs hash-verified, 38 prompts, required hardening references and {n} local Markdown links"
 )

@@ -459,6 +459,22 @@
       "notes": "Local recovery tooling and redacted gate report pushed through commit_gh. All local checks pass; GitHub Detect secrets success observed for the implementation commit. Release remains blocked by independent protected-copy/restore prerequisites. Import disabled, Tailscale deferred, Phase 11 draft. Synthetic test owners/targets cleaned up; authoritative volumes retained.",
       "ci_note": "Observed GitHub Detect secrets completed/success for recovery implementation commit 5d6bee138de9c0319f4c6d440f868cfb0f669782.",
       "implementation_commit": "5d6bee138de9c0319f4c6d440f868cfb0f669782"
+    },
+    "11": {
+      "status": "in_progress",
+      "agent": "codex",
+      "prompt_id": "FRAY-CODEX-11",
+      "started_at_utc": "2026-10-25T09:58:12Z",
+      "baseline_head": "a46000b336b389b84d065b43c47163e15bb0dae6",
+      "report_path": "reports/11_scent_academy.md",
+      "authorization": "Operator explicitly directed move to 11 after Phase 10 recovery blocker handoff; ADR-010 accepts local development only. Phase 10 remains blocked, import disabled.",
+      "planned_scope": [
+        "Six original versioned lessons and owner-scoped progress",
+        "On-demand Scento educational folios with attribution and typed fallback",
+        "Private resumable training exercise and portable owner data",
+        "Accessible Academy navigation, contextual explanation and optional local tutor",
+        "Synthetic API/browser/recovery verification and commit_gh handoff"
+      ]
     }
   },
   "accepted_adrs": [
@@ -470,7 +486,8 @@
     "ADR-006",
     "ADR-007",
     "ADR-008",
-    "ADR-009"
+    "ADR-009",
+    "ADR-010"
   ],
   "unresolved_blockers": [
     {
@@ -495,5 +512,5 @@
       "detail": "No approved separate environment supplied for a full recovery drill outside the original Podman VM."
     }
   ],
-  "updated_at_utc": "2026-10-25T09:55:27Z"
+  "updated_at_utc": "2026-10-25T09:58:12Z"
 }

@@ -38,3 +38,7 @@ On failure, record `blocked` or `failed`, emit redacted report, and commit only 
 
 ## Advancement contract
 Phases 00 → 01 → ... → 10 run in order. Multiple agents may work on different phases across time, but only one agent may modify the repository at once. A successor must read and validate the predecessor's state, commit and gate evidence. Any accepted ADR that changes behavior must be documented and committed before implementation continues.
+
+## Phase 11 local-development exception
+
+ADR-010 accepts Phase 11 and explicit operator-authorized local development while Phase 10 recovery remains blocked. Record that authorization and actual local results in phase 11. Keep Phase 10 and its blockers unchanged. `last_successful_phase` is the highest contiguous completed phase, so it remains 09 until Phase 10 genuinely completes. Codex/Claude Phase 11 prompts are accepted; IBM Bob's suite remains 00–10.

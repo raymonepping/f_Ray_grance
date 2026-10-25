@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 from pathlib import Path
 
-from prompt_catalog import accepted_prompts
+from prompt_catalog import accepted_prompts, expected_phases
 
 root = Path(__file__).resolve().parents[1]
 phases = {"00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10"}
 for agent in ("Codex", "Claude", "IBM_Bob"):
     docs = accepted_prompts(agent)
-    assert len(docs) == 11, (agent, len(docs))
-    assert {p.name.split("_")[0] for p in docs} == phases
+    assert len(docs) == len(expected_phases(agent)), (agent, len(docs))
+    assert {p.name.split("_")[0] for p in docs} == expected_phases(agent)
     for doc in docs:
         txt = doc.read_text()
         must = (
@@ -46,10 +46,10 @@ for path in (root / "prompts" / "launchers").glob("*.md"):
     )
 assert len(list((root / "prompts" / "launchers").glob("*.md"))) == 3
 print(
-    "PASS: 33 independent stage prompts + 3 launchers, state recovery and mandatory commit_gh requirements"
+    "PASS: 35 independent stage prompts + 3 launchers, state recovery and mandatory commit_gh requirements"
 )
 
 assert (root / "spec" / "PHASE_MANIFEST.md").exists()
 print(
-    "PASS: v0.1.6 tailnet/private-auth, direct-main and manual backup contracts present in 36 prompts"
+    "PASS: v0.1.6 tailnet/private-auth, direct-main and manual backup contracts present in 38 prompts"
 )
