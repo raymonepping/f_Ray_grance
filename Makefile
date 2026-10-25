@@ -19,9 +19,13 @@ FRAY_SECRETS_DIR ?= $(FRAY_CONFIG_DIR)/secrets
 FRAY_STATE_DIR ?= $(HOME)/.local/state/f-ray-grance
 FRAY_BACKUP_DIR ?= $(HOME)/F-Ray-grance-backups
 VAULT_INIT_FILE ?= $(FRAY_CONFIG_DIR)/vault-init.json
+# Project-local Node 24 LTS (scripts/toolchain.sh); host default node is untouched.
+FRAY_NODE_BIN ?= $(HOME)/.local/share/f-ray-grance/toolchain/node-v24.21.0-darwin-arm64/bin
+export PATH := $(FRAY_NODE_BIN):$(PATH)
 
 WEB_IMAGE ?= $(shell $(PODMAN) image exists localhost/fray-web:current 2>/dev/null && echo localhost/fray-web:current || echo localhost/fray-web:placeholder)
-API_IMAGE ?= $(shell $(PODMAN) image exists localhost/fray-api:current 2>/dev/null && echo localhost/fray-api:current)
+# fray-api is provisioned only once Vault Agent can deliver its DB credentials (Phase 03).
+API_IMAGE ?= $(if $(filter true,$(VAULT_AGENT_ENABLED)),$(shell $(PODMAN) image exists localhost/fray-api:current 2>/dev/null && echo localhost/fray-api:current))
 VAULT_AGENT_ENABLED ?= $(shell test -f $(FRAY_CONFIG_DIR)/vault-configured && echo true || echo false)
 
 export TF PODMAN FRAY_CONFIG_DIR FRAY_SECRETS_DIR FRAY_STATE_DIR FRAY_BACKUP_DIR VAULT_INIT_FILE
@@ -31,7 +35,7 @@ START_ORDER := fray-postgres fray-vault fray-ollama fray-vault-agent fray-api fr
 STOP_ORDER := fray-web fray-api fray-vault-agent fray-ollama fray-vault fray-postgres
 APPROVE := $(if $(filter YES,$(AUTO_APPROVE)),-auto-approve,)
 
-.PHONY: help validate-docs doctor check-socket smoke-init smoke-plan smoke-up smoke-down images build bootstrap \
+.PHONY: help toolchain deps validate-docs doctor check-socket smoke-init smoke-plan smoke-up smoke-down images build bootstrap \
  init plan drift recreate provision configure up start stop down restart status logs health test \
  vault-init vault-unseal vault-status vault-snapshot \
  backup backup-status backup-record-copy restore-test restore upgrade destroy danger-destroy-data check-app check-ansible
@@ -66,7 +70,13 @@ smoke-up: check-socket ## Create disposable Podman provider compatibility resour
 smoke-down: check-socket ## Destroy only disposable Phase 00 probe resources
 	@bash scripts/tf.sh phase00 destroy $(APPROVE)
 
-# ---------------------------------------------------------------- images and bootstrap
+# ---------------------------------------------------------------- toolchain, images and bootstrap
+toolchain: ## Install/verify project-local Node 24 LTS (nodejs.org, checksum-verified)
+	@bash scripts/toolchain.sh
+
+deps: toolchain ## Install npm workspace dependencies from the lockfile
+	@npm ci --no-audit --no-fund
+
 images: ## Pull pinned arm64 images and build project images (podman --format docker)
 	@bash scripts/images.sh
 

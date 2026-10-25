@@ -10,6 +10,8 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Added
 
+- **Phase 02 — schema and API foundations.** Migration `0001_canonical_schema` (exact fragrance identity, GTIN-14 variants, provenance claims, NULL-not-zero traits, `vector(768)` embeddings, owner-scoped collection with trigger-written append-only history, four-season preferences); checksummed forward-only migrator with destructive-statement preflight; Fastify API with validated config, error envelope, request IDs, live/ready health, central owner guard on `/api/v1`, opaque hashed sessions and a rotating credential-file DB pool; 53 integration tests on disposable PostgreSQL 18; `docs/migrations.md`.
+- Project-local Node 24.21.0 toolchain (`make toolchain`, `make deps`) and `apps/api/Containerfile`.
 - **Phase 01 — infrastructure and persistence.** Terraform data root (`fraygrance_pgdata`, `fraygrance_vault_data`, `fraygrance_ollama_models`, `prevent_destroy`) and app root (`fraygrance` network, `fray-postgres`, `fray-vault`, `fray-ollama`, `fray-web` gateway on `127.0.0.1:8470`) with state under `~/.local/state/f-ray-grance/terraform`, outside Git.
 - Ansible `site.yml` with `preflight`, `postgres_base` (database `fray`, least-privilege role model, `vector`, schema `app`), `ollama_model` and `vault_status` roles; second run is `changed=0`.
 - Make targets `images`, `bootstrap`, `drift`, `recreate`, `vault-init`, `vault-unseal`, `vault-status`, `vault-snapshot`, `backup`, `backup-status`, `backup-record-copy`, `restore-test`; working `health` and `test` gates.
@@ -29,6 +31,8 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Fixed
 
+- Runtime role could modify `app.schema_migrations` through default privileges; now SELECT-only.
+- Migration ledger owned by the migrator login would block Vault `DROP ROLE` revocation; migrations run as `fray_owner`.
 - Terraform drift on Podman: custom `network_mode` reads back as `bridge` and IPAM as `host-local`; use `networks_advanced` and declare `ipam_options`.
 - Vault dynamic-credential revocation on PostgreSQL 16+: `createrole_self_grant = 'set, inherit'` and terminate-then-`DROP ROLE` revocation.
 - `podman build` denied access to `~/Documents` by macOS privacy controls: build contexts are staged to a clean temp copy.

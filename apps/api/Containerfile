@@ -1,0 +1,21 @@
+# fray-api: Fastify on Node 24 LTS. Built by `make images` from a staged context.
+ARG NODE_IMAGE
+FROM ${NODE_IMAGE} AS build
+WORKDIR /src
+COPY package.json package-lock.json .npmrc tsconfig.base.json ./
+COPY apps/api/package.json apps/api/
+RUN npm ci --no-audit --no-fund -w @fray/api --include-workspace-root=false
+COPY apps/api apps/api
+RUN npm run -w @fray/api build && npm prune --omit=dev -w @fray/api
+
+FROM ${NODE_IMAGE}
+ENV NODE_ENV=production FRAY_MIGRATIONS_DIR=/app/db/migrations
+WORKDIR /app
+COPY --from=build /src/node_modules node_modules
+COPY --from=build /src/apps/api/dist apps/api/dist
+COPY --from=build /src/apps/api/package.json apps/api/package.json
+COPY db/migrations db/migrations
+USER node
+EXPOSE 8080
+HEALTHCHECK --interval=15s --timeout=5s --retries=4 CMD node -e "fetch('http://127.0.0.1:8080/api/health/live').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+CMD ["node", "apps/api/dist/server.js"]

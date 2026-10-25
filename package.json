@@ -1,0 +1,22 @@
+{
+  "name": "f-ray-grance",
+  "version": "0.1.6",
+  "private": true,
+  "description": "F-Ray-grance personal fragrance intelligence (Nuxt 4 + Fastify + PostgreSQL 18/pgvector)",
+  "license": "GPL-3.0-only",
+  "type": "module",
+  "engines": {
+    "node": ">=24.11 <25"
+  },
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present"
+  },
+  "allowScripts": {
+    "esbuild": false
+  }
+}

@@ -34,8 +34,20 @@ if command -v gitleaks >/dev/null; then
   run 'gitleaks (tracked files)' gitleaks git --no-banner --redact --log-level warn .
 fi
 if [[ -f package.json ]]; then
+  [[ "$(node --version)" == v24.* ]] || {
+    echo "  [FAIL] Node 24 required (got $(node --version)); run via make or make toolchain"
+    exit 1
+  }
   run 'npm workspaces: typecheck' npm run -s typecheck
-  run 'npm workspaces: unit/integration tests' npm test -s
+  # Fresh disposable PostgreSQL per run (synthetic data only), always removed afterwards.
+  if db="$(bash scripts/test-db.sh start)"; then
+    trap 'bash scripts/test-db.sh stop' EXIT
+    export "${db?}"
+    run 'npm workspaces: unit/integration tests (disposable PG18)' npm test -s
+  else
+    printf '  [FAIL] could not start disposable test database\n'
+    fail=1
+  fi
 fi
 
 ((fail)) && {
