@@ -41,7 +41,7 @@ beforeAll(async () => {
   rp = await runtimePool();
   // Fresh client per app = fresh cache; cacheTtlMs 0 so refresh sees changed fixtures.
   const scento = new ScentoClient({ fetch: fetcher, sleep: async () => {}, ratePerSecond: 1000, burst: 1000, cacheTtlMs: 0 });
-  app = await buildApp({ config: testConfig(), pool: rp, key, scento, expectedSchemaVersion: 1, logger: false });
+  app = await buildApp({ config: testConfig(), pool: rp, key, scento, expectedSchemaVersion: 2, logger: false });
   const owner = await seedOwner(rp.get());
   const s = await createSession(rp.get(), key, owner, 1);
   headers = { cookie: `${SESSION_COOKIE}=${s.token}; ${CSRF_COOKIE}=${s.csrfToken}`, origin: ORIGIN, 'x-csrf-token': s.csrfToken };

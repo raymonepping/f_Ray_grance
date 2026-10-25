@@ -25,7 +25,7 @@ let entryB: string;
 let fragranceId: string;
 let loginUser: string;
 
-const build = (expected = 1, pool = rp, overrides: Record<string, string> = {}) =>
+const build = (expected = 2, pool = rp, overrides: Record<string, string> = {}) =>
   buildApp({ config: testConfig(overrides), pool, key, expectedSchemaVersion: expected, logger: false });
 
 function cookiesFrom(r: LightMyRequestResponse): Record<string, string> {
@@ -74,7 +74,7 @@ describe('health', () => {
     const { host, port } = testPg();
     const pool = new RotatingPool({ host, port, database: 'fray', credentialsFile: '/nonexistent/db.json', poolMax: 1 }, silentLog);
     expect(await pool.refresh()).toBe(false);
-    const other = await build(1, pool);
+    const other = await build(2, pool);
     const r = await other.inject('/api/health/ready');
     await other.close();
     expect(r.statusCode).toBe(503);
@@ -213,7 +213,7 @@ describe('login, cookies, CSRF and logout', () => {
     const user = `lock-${Math.random().toString(36).slice(2, 8)}`;
     const id = await seedOwner(db, user);
     await db.query('INSERT INTO app.owner_credentials (owner_id, password_hash) VALUES ($1, $2)', [id, await hashPassword(PASSWORD)]);
-    const strict = await build(1, rp, { FRAY_LOGIN_MAX_FAILURES: '3', FRAY_LOGIN_RATE_PER_MINUTE: '100' });
+    const strict = await build(2, rp, { FRAY_LOGIN_MAX_FAILURES: '3', FRAY_LOGIN_RATE_PER_MINUTE: '100' });
     const attempt = (password: string) =>
       strict.inject({ method: 'POST', url: '/api/v1/auth/login', payload: { username: user, password }, headers: { origin: ORIGIN } });
     for (let i = 0; i < 3; i++) expect((await attempt('wrong-password-xyz')).statusCode).toBe(401);
@@ -224,7 +224,7 @@ describe('login, cookies, CSRF and logout', () => {
   });
 
   it('rate-limits login bursts per client', async () => {
-    const tight = await build(1, rp, { FRAY_LOGIN_RATE_PER_MINUTE: '2' });
+    const tight = await build(2, rp, { FRAY_LOGIN_RATE_PER_MINUTE: '2' });
     const codes: number[] = [];
     for (let i = 0; i < 4; i++) {
       codes.push((await tight.inject({ method: 'POST', url: '/api/v1/auth/login', payload: { username: 'nobody-x', password: 'x' }, headers: { origin: ORIGIN } })).statusCode);
@@ -293,7 +293,7 @@ describe('credential rotation', () => {
     const { host, port } = testPg();
     const pool = new RotatingPool({ host, port, database: 'fray', credentialsFile: file, poolMax: 1 }, silentLog);
     await pool.refresh();
-    const local = await build(1, pool);
+    const local = await build(2, pool);
     const s = await createSession(rp.get(), key, ownerA, 1);
     // Simulate Vault revocation: terminate the runtime login's sessions from a superuser connection.
     const { Client } = (await import('pg')).default;

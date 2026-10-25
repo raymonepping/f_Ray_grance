@@ -5,7 +5,7 @@
     "origin": "https://github.com/raymonepping/f_Ray_grance.git",
     "branch": "main"
   },
-  "last_successful_phase": "05",
+  "last_successful_phase": "06",
   "phases": {
     "00": {
       "status": "completed",
@@ -268,7 +268,7 @@
         "unpushed_local_commits": 0
       },
       "finished_at_utc": "2026-10-25T08:39:36Z",
-      "ci": "pending",
+      "ci": "passed",
       "tests": {
         "make_test": "PASS (api 102, web 24 incl. WCAG token contrast)",
         "e2e": "14/14 PASS (Playwright Chromium, live gateway)",
@@ -281,6 +281,45 @@
         "web_image": "localhost/fray-web:current",
         "screenshots": "reports/evidence/05/",
         "typescript": "6.0.3"
+      },
+      "blockers": []
+    },
+    "06": {
+      "status": "completed",
+      "agent": "codex",
+      "prompt_id": "FRAY-CODEX-06",
+      "started_at_utc": "2026-10-25T08:40:49Z",
+      "baseline_head": "a7d8b4e728486fbf5ee51c30fa7efff3dea420d0",
+      "report_path": "reports/06_collection.md",
+      "launcher": {
+        "prompt": "prompts/launchers/Claude_START_HERE.md",
+        "selected_phase": "06",
+        "predecessor": "05",
+        "predecessor_commit": "a7d8b4e",
+        "predecessor_pushed": true,
+        "unpushed_local_commits": 0
+      },
+      "planned_scope": [
+        "migration 0002 (idempotent create key, expand-only)",
+        "collection create/read/update with owner checks and history",
+        "sample promotion and repeat purchases",
+        "variants + GTIN recognition of previously owned",
+        "UI: status picker, history timeline, rating/note with server ack, search/sort",
+        "API + mobile E2E tests, provider-offline behaviour"
+      ],
+      "takeover": {
+        "predecessor_verified_remote": "a7d8b4e728486fbf5ee51c30fa7efff3dea420d0",
+        "recovery": "Operator authorized takeover; prior Claude process has no active child commands. Existing Phase 06 edits preserved; previous lock retained locally for audit."
+      },
+      "ci": "not_checked",
+      "finished_at_utc": "2026-10-25T08:55:00Z",
+      "tests": {
+        "make_test": "PASS",
+        "e2e": "19/19 PASS",
+        "prior_live_security_probe": "39/39 PASS",
+        "ansible_idempotent": "changed=0",
+        "health": "PASS",
+        "prior_work_audit": "Found and fixed Phase 05 blank collection cards; corrected draft retention and search races"
       },
       "blockers": []
     }
@@ -303,5 +342,5 @@
       "detail": "Install Tailscale on Mac and iPhone; enable MagicDNS + HTTPS; restrict grants; never Funnel"
     }
   ],
-  "updated_at_utc": "2026-10-25T08:39:36Z"
+  "updated_at_utc": "2026-10-25T08:55:21Z"
 }

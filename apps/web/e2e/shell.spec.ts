@@ -26,7 +26,7 @@ test('login through the form → collection; ?next cannot redirect off-site', as
   const errors = trackConsole(page);
   await uiLogin(page, '/collection');
   await expect(page.getByRole('heading', { level: 1, name: 'My Collection' })).toBeVisible();
-  await expect(page.getByText('Start your collection')).toBeVisible();
+  await expect(page.getByTestId('owned-count')).toHaveText(/owned · \d+ total/);
   await page.goto('/login?next=//evil.example/steal');
   expect(errors.filter((e) => !/401/.test(e))).toEqual([]);
 });

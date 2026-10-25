@@ -10,6 +10,8 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Added
 
+- **Phase 06 — Collection and samples.** Owner-scoped collection API/UI, retry-safe creation, package/barcode records, sample promotion, repeat purchases, private ratings/notes and append-only history. Codex verified and completed Claude's draft; 19 browser tests pass.
+
 - **Phase 05 — design system and app shell.** Nuxt 4 SPA (`apps/web`) with DESIGN.md tokens (navy/gold dark, light, system), restrained glass with opaque fallbacks and a Reduce-transparency setting, collapsible sidebar / tablet rail / mobile bottom nav and accessible drawer, ⌘K search, login and in-place session-expired flow, truthful connection states; Collection, Discover (live resolver), Fragrance detail and Settings screens; strict-CSP static build served by the gateway; `make test-e2e` (14 Playwright tests, axe-clean at 390/768/1280/1440 in both themes) and a WCAG token-contrast audit.
 - **Phase 04 — Scento-first identity.** Typed Scento adapter (timeouts, bounded retries, local rate budget, TTL cache, schema validation, typed source errors); 9-brand alias registry; exact-identity resolver (`exact`/`candidate_needs_review`/`unresolved`/`conflict`) that verifies listings against profiles and never substitutes near matches; provenance-preserving enrichment, refresh, manual overrides, drafts and effective-profile API; GTIN resolution via verified local mappings only; Phantom in Red enriched live.
 - **Phase 03 — Vault and owner security.** `make vault-bootstrap` (scoped `fray-operator` token, initial root token revoked); Ansible-managed Vault audit device, `database/`, `kv/`, AppRole and least-privilege policies; Vault Agent rendering 15-minute PostgreSQL leases and a session HMAC key for the API; live migrations with a single-use migrator lease; owner login/logout with Argon2id, `__Host-` Secure/HttpOnly/SameSite=Strict cookies, Origin allow-list, double-submit CSRF, lockout and rate limiting; `make owner-create/owner-reset-password/owner-revoke-sessions`; `make heal`/`make clock-sync` for Podman VM pauses; live security probe (39 checks) and `docs/runbook.md`.
@@ -35,6 +37,8 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 - `infra/terraform/foundation/` placeholder, superseded by `infra/terraform/data` and `infra/terraform/app`.
 
 ### Fixed
+
+- Collection cards referenced an unregistered Nuxt component and rendered blank once entries existed. Corrected the component name, retained dirty private-note drafts during status changes, and prevented stale search responses.
 
 - Anonymous or forged requests could receive 400 schema errors before 401/403: auth and CSRF checks now run in `onRequest`.
 - CI gitleaks failure on the Phase 03 commit (synthetic test password literal): password generated at runtime, historical fingerprint in `.gitleaksignore`.

@@ -36,9 +36,11 @@ describe('migrations (disposable PostgreSQL 18)', () => {
     const owner = await c.query(`SELECT tableowner FROM pg_tables WHERE schemaname='app' AND tablename='schema_migrations'`);
     const tables = await c.query(`SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='app' AND tableowner <> 'fray_owner'`);
     await c.end();
-    expect(first.applied).toEqual(['0001_canonical_schema']);
+    const labels = m.map((x) => `${String(x.version).padStart(4, '0')}_${x.name}`);
+    expect(labels[0]).toBe('0001_canonical_schema');
+    expect(first.applied).toEqual(labels);
     expect(second.applied).toEqual([]);
-    expect(second.skipped).toEqual(['0001_canonical_schema']);
+    expect(second.skipped).toEqual(labels);
     // Nothing may be owned by the (revocable) migrator login.
     expect(owner.rows[0].tableowner).toBe('fray_owner');
     expect(tables.rows[0].n).toBe(0);
@@ -80,11 +82,12 @@ describe('migrations (disposable PostgreSQL 18)', () => {
     const c = client('t_migrator', DB);
     await c.connect();
     const m = await loadMigrations(MIGRATIONS_DIR);
-    const bad = [...m, { version: 2, name: 'broken', sql: 'CREATE TABLE app.half_done(x int); SELECT * FROM app.nope;', checksum: '1'.repeat(64) }];
-    await expect(migrate(c, bad)).rejects.toThrow(/0002_broken failed/);
+    const next = m.length + 1;
+    const bad = [...m, { version: next, name: 'broken', sql: 'CREATE TABLE app.half_done(x int); SELECT * FROM app.nope;', checksum: '1'.repeat(64) }];
+    await expect(migrate(c, bad)).rejects.toThrow(new RegExp(`${String(next).padStart(4, '0')}_broken failed`));
     const { rows } = await c.query(`SELECT to_regclass('app.half_done') AS t, (SELECT max(version) FROM app.schema_migrations) AS v`);
     await c.end();
     expect(rows[0].t).toBeNull();
-    expect(rows[0].v).toBe(1);
+    expect(rows[0].v).toBe(m.length);
   });
 });

@@ -5,12 +5,11 @@ import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { ApiError } from '../../errors.js';
 import { requireOwner } from '../../security/plugin.js';
 import { getFragrance, searchFragrances } from '../../repo/catalog.js';
-import { entryHistory, listEntries } from '../../repo/collection.js';
-import { COLLECTION_STATES } from '../../domain/identity.js';
 import type { RotatingPool } from '../../db/pool.js';
 import type { ScentoClient } from '../../providers/scento.js';
 import rateLimit from '@fastify/rate-limit';
 import { fragranceRoutes } from './fragrances.js';
+import { collectionRoutes } from './collection.js';
 
 const Uuid = Type.String({ format: 'uuid' });
 
@@ -21,6 +20,7 @@ export async function v1Routes(base: FastifyInstance, deps: { pool: RotatingPool
   app.addHook('onRequest', requireOwner);
   await app.register(rateLimit, { global: false });
   await app.register(fragranceRoutes, { pool: deps.pool, scento: deps.scento });
+  await app.register(collectionRoutes, { pool: deps.pool });
   const db = () => deps.pool.get();
 
   app.get('/session', async (req) => ({ owner: req.session!.owner }));
@@ -68,26 +68,4 @@ export async function v1Routes(base: FastifyInstance, deps: { pool: RotatingPool
     },
   );
 
-  app.get(
-    '/collection',
-    {
-      schema: {
-        querystring: Type.Object(
-          { state: Type.Optional(Type.Union(COLLECTION_STATES.map((s) => Type.Literal(s)))) },
-          { additionalProperties: false },
-        ),
-      },
-    },
-    async (req) => ({ items: await listEntries(db(), req.session!.owner.id, req.query.state) }),
-  );
-
-  app.get(
-    '/collection/:id/history',
-    { schema: { params: Type.Object({ id: Uuid }, { additionalProperties: false }) } },
-    async (req) => {
-      const events = await entryHistory(db(), req.session!.owner.id, req.params.id);
-      if (!events) throw new ApiError('NOT_FOUND', 'Collection entry not found');
-      return { items: events };
-    },
-  );
 }

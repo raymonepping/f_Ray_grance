@@ -46,3 +46,34 @@ export const CONCENTRATION_LABEL: Record<string, string> = {
 };
 
 export const ORIGIN_LABEL: Record<Origin, string> = { user: 'Personal', official: 'Official', provider: 'Scento', derived: 'Derived' };
+
+export interface HistoryEvent {
+  id: string;
+  from_state: CollectionState | null;
+  to_state: CollectionState;
+  occurred_at: string;
+  user_reason: string | null;
+}
+
+export interface CollectionEntry {
+  id: string;
+  fragrance_id: string;
+  variant_id: string | null;
+  state: CollectionState;
+  rating: number | null;
+  personal_note: string | null;
+  acquired_on: string | null;
+  created_at: string;
+  updated_at: string;
+  history?: HistoryEvent[];
+}
+
+export interface Variant {
+  id: string;
+  gtin14: string | null;
+  bottle_ml: string | null;
+  packaging_type: string | null;
+  verification_state: 'verified' | 'unverified' | 'rejected';
+}
+
+export const STATES: CollectionState[] = ['owned', 'previously_owned', 'sampled', 'wishlist', 'rejected'];
