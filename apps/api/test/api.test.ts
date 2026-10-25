@@ -137,6 +137,20 @@ describe('protected namespace /api/v1', () => {
     expect((await app.inject({ url: '/api/v1/session', headers: { cookie: `${SESSION_COOKIE}=${replay}` } })).statusCode).toBe(401);
   });
 
+  it('system status reports only what the server knows (backups: not reported)', async () => {
+    expect((await app.inject('/api/v1/system/status')).statusCode).toBe(401);
+    const r = await app.inject({ url: '/api/v1/system/status', headers: { cookie: cookieA } });
+    expect(r.statusCode).toBe(200);
+    expect(r.json().backup).toEqual({ reported: false, lastManualBackupAt: null, lastVerifiedRestoreAt: null });
+    expect(typeof r.json().scento.verifiedFragrances).toBe('number');
+  });
+
+  it('collection entries carry their fragrance identity (owner-scoped join)', async () => {
+    const items = (await app.inject({ url: '/api/v1/collection', headers: { cookie: cookieA } })).json().items;
+    expect(items[0]).toMatchObject({ owner_id: ownerA, canonical_name: 'Phantom in Red', concentration: 'parfum', identity_status: 'verified' });
+    expect(items[0].brand).toMatch(/Rabanne/);
+  });
+
   it('returns the session owner and a fragrance by id', async () => {
     expect((await app.inject({ url: '/api/v1/session', headers: { cookie: cookieA } })).json().owner.id).toBe(ownerA);
     const f = await app.inject({ url: `/api/v1/fragrances/${fragranceId}`, headers: { cookie: cookieA } });

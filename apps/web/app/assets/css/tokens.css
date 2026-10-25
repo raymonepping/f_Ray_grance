@@ -1,0 +1,75 @@
+/* F-Ray-grance design tokens (spec/DESIGN.md §2-3). Semantic tokens only; components
+   never use raw hex values. Dark navy + warm gold is the default; light is fully designed. */
+:root,
+[data-theme='dark'] {
+  --bg-canvas: #101c2b;
+  --bg-elevated: #203246;
+  --bg-solid: #172638; /* opaque data surfaces (pyramids, tables, long text) */
+  --bg-sunken: #0c1622;
+  --text-primary: #f3f0e9;
+  --text-secondary: #b9c8d8;
+  --text-muted: #9fb0c3;
+  --accent-gold: #e3b458;
+  --accent-gold-ink: #101c2b; /* text on gold */
+  --accent-blue: #78a7d2;
+  --border-subtle: rgba(226, 239, 247, 0.16);
+  --border-strong: rgba(226, 239, 247, 0.32);
+  --focus-ring: #e3b458;
+  --status-success: #7bc9aa;
+  --status-warning: #ffd28a;
+  --status-error: #ff9b99;
+  --glass-fill: rgba(25, 43, 63, 0.82);
+  --glass-fill-strong: rgba(25, 43, 63, 0.94);
+  --glass-edge: rgba(226, 239, 247, 0.16);
+  --shadow-1: 0 8px 24px rgba(4, 10, 18, 0.35);
+  --shadow-2: 0 24px 64px rgba(4, 10, 18, 0.55);
+  --atmosphere-a: rgba(227, 180, 88, 0.1);
+  --atmosphere-b: rgba(120, 167, 210, 0.12);
+  color-scheme: dark;
+}
+
+[data-theme='light'] {
+  --bg-canvas: #f6f5f1;
+  --bg-elevated: #ffffff;
+  --bg-solid: #ffffff;
+  --bg-sunken: #ecebe5;
+  --text-primary: #101c2b;
+  --text-secondary: #495668;
+  --text-muted: #5a6677;
+  --accent-gold: #9c641d;
+  --accent-gold-ink: #ffffff;
+  --accent-blue: #315e89;
+  --border-subtle: rgba(16, 28, 43, 0.12);
+  --border-strong: rgba(16, 28, 43, 0.28);
+  --focus-ring: #315e89;
+  --status-success: #146b4c;
+  --status-warning: #945600;
+  --status-error: #a92f2d;
+  --glass-fill: rgba(255, 255, 255, 0.84);
+  --glass-fill-strong: rgba(255, 255, 255, 0.95);
+  --glass-edge: rgba(16, 28, 43, 0.12);
+  --shadow-1: 0 8px 24px rgba(16, 28, 43, 0.08);
+  --shadow-2: 0 24px 64px rgba(16, 28, 43, 0.18);
+  --atmosphere-a: rgba(156, 100, 29, 0.07);
+  --atmosphere-b: rgba(49, 94, 137, 0.07);
+  color-scheme: light;
+}
+
+:root {
+  --glass-blur: 12px;
+  --radius-card: 20px;
+  --radius-control: 12px;
+  --radius-hero: 24px;
+  --sidebar-w: 260px;
+  --rail-w: 76px;
+  --header-h: 72px;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --dur: 160ms;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@media (max-width: 1199px) {
+  :root { --header-h: 64px; }
+}
+@media (max-width: 767px) {
+  :root { --header-h: 60px; }
+}

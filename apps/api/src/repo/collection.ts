@@ -79,10 +79,21 @@ export async function transitionEntry(
   });
 }
 
-export async function listEntries(pool: pg.Pool, ownerId: string, state?: CollectionState): Promise<CollectionEntryRow[]> {
-  const { rows } = await pool.query<CollectionEntryRow>(
-    `SELECT * FROM app.collection_entries WHERE owner_id = $1 AND ($2::text IS NULL OR state = $2)
-      ORDER BY created_at, id`,
+export interface CollectionListRow extends CollectionEntryRow {
+  brand: string;
+  canonical_name: string;
+  concentration: string | null;
+  identity_status: string;
+}
+
+export async function listEntries(pool: pg.Pool, ownerId: string, state?: CollectionState): Promise<CollectionListRow[]> {
+  const { rows } = await pool.query<CollectionListRow>(
+    `SELECT e.*, b.canonical_name AS brand, f.canonical_name, f.concentration, f.identity_status
+       FROM app.collection_entries e
+       JOIN app.fragrances f ON f.id = e.fragrance_id
+       JOIN app.brands b ON b.id = f.brand_id
+      WHERE e.owner_id = $1 AND ($2::text IS NULL OR e.state = $2)
+      ORDER BY e.created_at, e.id`,
     [ownerId, state ?? null],
   );
   return rows;

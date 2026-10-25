@@ -10,6 +10,7 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Added
 
+- **Phase 05 — design system and app shell.** Nuxt 4 SPA (`apps/web`) with DESIGN.md tokens (navy/gold dark, light, system), restrained glass with opaque fallbacks and a Reduce-transparency setting, collapsible sidebar / tablet rail / mobile bottom nav and accessible drawer, ⌘K search, login and in-place session-expired flow, truthful connection states; Collection, Discover (live resolver), Fragrance detail and Settings screens; strict-CSP static build served by the gateway; `make test-e2e` (14 Playwright tests, axe-clean at 390/768/1280/1440 in both themes) and a WCAG token-contrast audit.
 - **Phase 04 — Scento-first identity.** Typed Scento adapter (timeouts, bounded retries, local rate budget, TTL cache, schema validation, typed source errors); 9-brand alias registry; exact-identity resolver (`exact`/`candidate_needs_review`/`unresolved`/`conflict`) that verifies listings against profiles and never substitutes near matches; provenance-preserving enrichment, refresh, manual overrides, drafts and effective-profile API; GTIN resolution via verified local mappings only; Phantom in Red enriched live.
 - **Phase 03 — Vault and owner security.** `make vault-bootstrap` (scoped `fray-operator` token, initial root token revoked); Ansible-managed Vault audit device, `database/`, `kv/`, AppRole and least-privilege policies; Vault Agent rendering 15-minute PostgreSQL leases and a session HMAC key for the API; live migrations with a single-use migrator lease; owner login/logout with Argon2id, `__Host-` Secure/HttpOnly/SameSite=Strict cookies, Origin allow-list, double-submit CSRF, lockout and rate limiting; `make owner-create/owner-reset-password/owner-revoke-sessions`; `make heal`/`make clock-sync` for Podman VM pauses; live security probe (39 checks) and `docs/runbook.md`.
 - **Phase 02 — schema and API foundations.** Migration `0001_canonical_schema` (exact fragrance identity, GTIN-14 variants, provenance claims, NULL-not-zero traits, `vector(768)` embeddings, owner-scoped collection with trigger-written append-only history, four-season preferences); checksummed forward-only migrator with destructive-statement preflight; Fastify API with validated config, error envelope, request IDs, live/ready health, central owner guard on `/api/v1`, opaque hashed sessions and a rotating credential-file DB pool; 53 integration tests on disposable PostgreSQL 18; `docs/migrations.md`.
@@ -22,6 +23,8 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Changed
 
+- TypeScript pinned to 6.0.3 across workspaces (TypeScript 7's native compiler does not support `vue-tsc`).
+- Vault runtime database lease shortened from 15 to 5 minutes so the API recovers within minutes after a Mac sleep.
 - Spec documents live in `spec/`; validators, manifest hashing (frozen docs only) and 50 relative links adapted.
 - `make doctor` and all Terraform targets prove the socket identifies as *Podman Engine* (replaces the manual `CONFIRM_PODMAN_SOCKET=YES`).
 - `make destroy` auto-approves Terraform only after the typed confirmation phrase and `VERIFIED_BACKUP=YES`.

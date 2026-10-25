@@ -9,7 +9,7 @@ fray_config_dir: "{{ lookup('env', 'FRAY_CONFIG_DIR') | default(lookup('env', 'H
 fray_operator_token_file: "{{ fray_config_dir }}/operator-token"
 fray_vault_policies_dir: "{{ playbook_dir }}/../infra/vault/policies"
 # Lease policy (spec/SECURITY.md: short leases, tested rollover).
-fray_runtime_ttl: 15m
+fray_runtime_ttl: 5m # short: after a Mac sleep the agent re-issues within ~3 min (Phase 05 finding)
 fray_runtime_max_ttl: 4h
 fray_migrator_ttl: 10m
 fray_migrator_max_ttl: 30m

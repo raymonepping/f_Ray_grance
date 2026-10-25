@@ -1,0 +1,109 @@
+@import 'tailwindcss';
+@import './tokens.css';
+
+/* Tailwind theme bound to semantic tokens (no per-component hex values). */
+@theme inline {
+  --color-canvas: var(--bg-canvas);
+  --color-elevated: var(--bg-elevated);
+  --color-solid: var(--bg-solid);
+  --color-sunken: var(--bg-sunken);
+  --color-ink: var(--text-primary);
+  --color-ink-2: var(--text-secondary);
+  --color-ink-3: var(--text-muted);
+  --color-gold: var(--accent-gold);
+  --color-gold-ink: var(--accent-gold-ink);
+  --color-blue: var(--accent-blue);
+  --color-line: var(--border-subtle);
+  --color-line-strong: var(--border-strong);
+  --color-ok: var(--status-success);
+  --color-warn: var(--status-warning);
+  --color-bad: var(--status-error);
+  --font-sans: var(--font-sans);
+  --radius-card: var(--radius-card);
+  --radius-control: var(--radius-control);
+  --radius-hero: var(--radius-hero);
+}
+
+@layer base {
+  html {
+    background: var(--bg-canvas);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    font-size: 16px;
+    line-height: 1.55;
+    /* Muted atmospheric colour pools behind the shell glass — static, no motion. */
+    background:
+      radial-gradient(60rem 40rem at 10% -10%, var(--atmosphere-a), transparent 60%),
+      radial-gradient(50rem 40rem at 110% 10%, var(--atmosphere-b), transparent 60%),
+      var(--bg-canvas);
+    background-attachment: fixed;
+    overflow-x: hidden;
+  }
+  h1 { font-size: 32px; font-weight: 650; line-height: 1.18; margin: 0; letter-spacing: -0.01em; }
+  h2 { font-size: 24px; font-weight: 600; line-height: 1.25; margin: 0; }
+  h3 { font-size: 18px; font-weight: 600; line-height: 1.3; margin: 0; }
+  @media (max-width: 767px) {
+    h1 { font-size: 26px; }
+    h2 { font-size: 21px; }
+  }
+  /* Links in text are underlined, not colour-only (WCAG 1.4.1); nav links opt out with no-underline. */
+  a { color: var(--accent-blue); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  a.no-underline { text-decoration: none; }
+  :focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  ::selection { background: var(--accent-gold); color: var(--accent-gold-ink); }
+}
+
+/* Glass is a material for shell surfaces only (DESIGN §3). */
+.glass {
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-edge);
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
+}
+.glass-strong {
+  background: var(--glass-fill-strong);
+  border: 1px solid var(--glass-edge);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+.surface-solid {
+  background: var(--bg-solid);
+  border: 1px solid var(--border-subtle);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass, .glass-strong { background: var(--bg-elevated); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass, .glass-strong { background: var(--bg-elevated); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+[data-transparency='reduce'] .glass,
+[data-transparency='reduce'] .glass-strong {
+  background: var(--bg-elevated);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+@media (forced-colors: active) {
+  .glass, .glass-strong, .surface-solid { background: Canvas; border-color: CanvasText; backdrop-filter: none; }
+}
+
+/* Motion: 120-200ms, and off when the user or OS asks. */
+.motion { transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease), width var(--dur) var(--ease), transform var(--dur) var(--ease), opacity var(--dur) var(--ease); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0ms !important; animation-duration: 0ms !important; scroll-behavior: auto !important; }
+}
+[data-motion='reduce'] *, [data-motion='reduce'] *::before, [data-motion='reduce'] *::after {
+  transition-duration: 0ms !important;
+  animation-duration: 0ms !important;
+}
+
+.sr-only-focusable:not(:focus) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.tap { min-height: 44px; min-width: 44px; }

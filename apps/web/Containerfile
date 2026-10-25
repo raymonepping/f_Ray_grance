@@ -1,0 +1,14 @@
+# fray-web: static Nuxt build served by the same-origin Caddy gateway (ADR-005).
+# Built by `make images` from a staged context. The Caddyfile is uploaded by Terraform.
+ARG NODE_IMAGE
+ARG CADDY_IMAGE
+FROM ${NODE_IMAGE} AS build
+WORKDIR /src
+COPY package.json package-lock.json .npmrc tsconfig.base.json ./
+COPY apps/web/package.json apps/web/
+RUN npm ci --no-audit --no-fund -w @fray/web --include-workspace-root=false
+COPY apps/web apps/web
+RUN npm run -w @fray/web build
+
+FROM ${CADDY_IMAGE}
+COPY --from=build /src/apps/web/.output/public /srv

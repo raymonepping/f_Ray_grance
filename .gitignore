@@ -274,3 +274,5 @@ secret-id
 owner-bootstrap*
 # Release bundle archives
 *.zip
+# Nuxt build caches inside workspaces
+apps/web/node_modules/.cache/

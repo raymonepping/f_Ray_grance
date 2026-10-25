@@ -36,7 +36,7 @@ STOP_ORDER := fray-web fray-api fray-vault-agent fray-ollama fray-vault fray-pos
 APPROVE := $(if $(filter YES,$(AUTO_APPROVE)),-auto-approve,)
 
 .PHONY: help toolchain deps validate-docs doctor check-socket smoke-init smoke-plan smoke-up smoke-down images build bootstrap \
- init plan drift recreate provision configure up start stop down restart status logs clock-sync heal health test \
+ init plan drift recreate provision configure up start stop down restart status logs clock-sync heal health test test-e2e \
  owner-create owner-reset-password owner-revoke-sessions vault-init vault-unseal vault-bootstrap vault-status vault-snapshot \
  backup backup-status backup-record-copy restore-test restore upgrade destroy danger-destroy-data check-app check-ansible
 
@@ -172,6 +172,10 @@ health: ## Integration health checks; exits non-zero on any failed required chec
 
 test: ## Static + infrastructure + application quality gate
 	@bash scripts/test.sh
+
+test-e2e: ## Browser E2E (Playwright) against the running stack; keeps the Mac awake while it runs
+	@$(MAKE) --no-print-directory heal
+	@cd apps/web && caffeinate -i npx playwright test
 
 # ---------------------------------------------------------------- owner accounts (no public sign-up)
 owner-create: ## Create the app owner: USERNAME=<name> [DISPLAY_NAME="..."] (password prompted, never echoed)

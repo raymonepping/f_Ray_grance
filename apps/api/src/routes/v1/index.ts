@@ -25,6 +25,19 @@ export async function v1Routes(base: FastifyInstance, deps: { pool: RotatingPool
 
   app.get('/session', async (req) => ({ owner: req.session!.owner }));
 
+  // What the server can truthfully report. Backup state lives on the operator's Mac
+  // (outside the containers), so it is reported as not available rather than guessed.
+  app.get('/system/status', async () => {
+    const { rows } = await db().query<{ last: Date | null; verified: number }>(
+      `SELECT (SELECT max(checked_at) FROM app.source_records WHERE provider = 'scento') AS last,
+              (SELECT count(*)::int FROM app.fragrances WHERE identity_status = 'verified') AS verified`,
+    );
+    return {
+      scento: { lastCheckedAt: rows[0]?.last?.toISOString() ?? null, verifiedFragrances: rows[0]?.verified ?? 0 },
+      backup: { reported: false, lastManualBackupAt: null, lastVerifiedRestoreAt: null },
+    };
+  });
+
   app.get(
     '/fragrances',
     {
