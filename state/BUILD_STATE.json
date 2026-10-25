@@ -383,6 +383,35 @@
         "dimension": 768
       },
       "blockers": []
+    },
+    "09": {
+      "status": "blocked",
+      "agent": "codex",
+      "prompt_id": "FRAY-CODEX-09",
+      "started_at_utc": "2026-10-25T09:16:38Z",
+      "baseline_head": "5fad65fe952f15748ffb4be3c2c6f1ba8240a5d5",
+      "report_path": "reports/09_seasonal_portability.md",
+      "planned_scope": [
+        "Four-season explicit choices with unknown distinct from neutral",
+        "Owner-scoped seasonal API/UI and discovery integration",
+        "Versioned JSON export and previewed additive import",
+        "History identities and deterministic portability roundtrip tests"
+      ],
+      "finished_at_utc": "2026-10-25T09:32:17Z",
+      "ci": "not_checked",
+      "tests": {
+        "make_test": "FAIL: unexpected external Phase 11 prompt files are outside frozen manifest",
+        "workspace_typecheck": "PASS",
+        "unit_integration": "PASS, including independent-database portability roundtrip",
+        "infra_static": "PASS",
+        "secret_scan": "PASS",
+        "live_phase09_deploy": "NOT RUN: quality gate stopped chained deployment",
+        "phase09_browser": "NOT RUN"
+      },
+      "blockers": [
+        "External writer introduced Phase 11 prompts during Phase 09. Operator will pause the writer; exclusive ownership and a coherent documentation baseline must be confirmed before resuming."
+      ],
+      "notes": "Application implementation preserved locally; commit only blocked state and report. Live deployment remains Phase 08. Tailscale deferred per ADR-009."
     }
   },
   "accepted_adrs": [
@@ -405,5 +434,5 @@
       "status": "deferred_by_operator"
     }
   ],
-  "updated_at_utc": "2026-10-25T09:15:31Z"
+  "updated_at_utc": "2026-10-25T09:32:17Z"
 }
