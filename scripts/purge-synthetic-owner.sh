@@ -11,7 +11,8 @@ user="${1:?username required}"
   exit 2
 }
 # Image files used only by this owner (content-addressed files can be shared with other records).
-images="$(podman exec -i fray-postgres psql -X -q -At -v ON_ERROR_STOP=1 -v u="$user" -U postgres -d fray <<'SQL'
+images="$(
+  podman exec -i fray-postgres psql -X -q -At -v ON_ERROR_STOP=1 -v u="$user" -U postgres -d fray <<'SQL'
 SELECT DISTINCT i.storage_path FROM app.image_assets i JOIN app.owners o ON o.id = i.owner_id
  WHERE o.username = :'u' AND i.storage_path IS NOT NULL
    AND NOT EXISTS (SELECT 1 FROM app.image_assets j JOIN app.owners p ON p.id = j.owner_id WHERE j.storage_path = i.storage_path AND p.username <> :'u');
