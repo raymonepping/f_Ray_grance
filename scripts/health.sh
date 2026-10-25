@@ -14,6 +14,9 @@ skip() { printf '  [SKIP] %s\n' "$*"; }
 running() { [[ "$("$PODMAN" inspect --format '{{.State.Running}}' "$1" 2>/dev/null)" == true ]]; }
 
 echo 'F-Ray-grance health'
+vm="$("$PODMAN" machine ssh date -u +%s 2>/dev/null || echo 0)"
+d=$(($(date -u +%s) - vm))
+((d <= 2 && d >= -2)) && ok "Podman VM clock in sync (drift ${d}s)" || bad "Podman VM clock drift ${d}s (leases/sessions misbehave): run make heal"
 for c in fray-postgres fray-vault fray-ollama fray-web; do
   running "$c" && ok "$c running" || bad "$c not running"
 done
@@ -43,9 +46,13 @@ ports="$("$PODMAN" inspect fray-web --format '{{range $p, $b := .NetworkSettings
 if "$PODMAN" container exists fray-api; then
   code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "$GW/api/health/ready")"
   [[ "$code" == 200 ]] && ok 'api ready via gateway' || bad "api ready -> $code"
+elif [[ -f "${FRAY_CONFIG_DIR:-$HOME/.config/f-ray-grance}/vault-configured" ]]; then
+  bad 'fray-api expected (Vault configured) but not provisioned: run make provision'
 else skip 'fray-api not provisioned yet'; fi
 if "$PODMAN" container exists fray-vault-agent; then
   running fray-vault-agent && ok 'fray-vault-agent running' || bad 'fray-vault-agent not running'
+elif [[ -f "${FRAY_CONFIG_DIR:-$HOME/.config/f-ray-grance}/vault-configured" ]]; then
+  bad 'fray-vault-agent expected (Vault configured) but not provisioned'
 else skip 'fray-vault-agent not provisioned yet'; fi
 
 ((fail)) && {

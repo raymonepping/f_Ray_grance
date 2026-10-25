@@ -60,6 +60,42 @@ unseal)
     curl -sf --max-time 10 -X PUT "$ADDR/v1/sys/unseal" -d @- | field sealed | grep -qx false
   echo 'UNSEAL_OK'
   ;;
+bootstrap)
+  # One-time: create a scoped, periodic fray-operator token, then revoke the initial
+  # root token. Tokens travel only in request headers/bodies via stdin, never argv.
+  wait_up
+  OP="${FRAY_CONFIG_DIR:?}/operator-token"
+  if [[ -s "$OP" ]]; then
+    echo 'operator token already present; bootstrap skipped.'
+    exit 0
+  fi
+  root="$(python3 -c "import json,sys;print(json.load(open(sys.argv[1])).get('root_token',''))" "$INIT")"
+  [[ "$root" == hvs.* || "$root" == s.* ]] || {
+    echo 'BLOCKED: no usable root token in init file (already revoked?). Use: vault operator generate-root.' >&2
+    exit 2
+  }
+  repo="$(cd "$(dirname "$0")/.." && pwd)"
+  hdr() { printf 'X-Vault-Token: %s\n' "$root"; }
+  python3 -c "import json,sys;print(json.dumps({'policy':open(sys.argv[1]).read()}))" "$repo/infra/vault/policies/fray-operator.hcl" |
+    curl -sf -X PUT -H @<(hdr) "$ADDR/v1/sys/policies/acl/fray-operator" -d @- >/dev/null
+  umask 077
+  curl -sf -X POST -H @<(hdr) "$ADDR/v1/auth/token/create-orphan" \
+    -d '{"policies":["fray-operator"],"period":"768h","display_name":"fray-operator"}' |
+    python3 -c "import json,sys;print(json.load(sys.stdin)['auth']['client_token'],end='')" >"$OP.partial"
+  mv "$OP.partial" "$OP"
+  chmod 600 "$OP"
+  # Prove the operator token works before giving up root.
+  curl -sf -H @<(printf 'X-Vault-Token: %s\n' "$(cat "$OP")") "$ADDR/v1/auth/token/lookup-self" >/dev/null
+  curl -sf -X POST -H @<(hdr) "$ADDR/v1/auth/token/revoke-self" >/dev/null
+  python3 - "$INIT" <<'PY'
+import datetime, json, sys
+p = sys.argv[1]
+d = json.load(open(p))
+d["root_token"] = "REVOKED " + datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+json.dump(d, open(p, "w"), indent=2)
+PY
+  echo "BOOTSTRAP_OK: fray-operator token at $OP (0600, periodic 768h); initial root token revoked."
+  ;;
 snapshot)
   wait_up
   : "${VAULT_TOKEN:?export a token with sys/storage/raft/snapshot read (never the app token)}"
@@ -72,7 +108,7 @@ snapshot)
   echo "SNAPSHOT_OK $out"
   ;;
 *)
-  echo 'usage: vault.sh status|init|unseal|snapshot' >&2
+  echo 'usage: vault.sh status|init|unseal|bootstrap|snapshot' >&2
   exit 2
   ;;
 esac

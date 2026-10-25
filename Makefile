@@ -36,8 +36,8 @@ STOP_ORDER := fray-web fray-api fray-vault-agent fray-ollama fray-vault fray-pos
 APPROVE := $(if $(filter YES,$(AUTO_APPROVE)),-auto-approve,)
 
 .PHONY: help toolchain deps validate-docs doctor check-socket smoke-init smoke-plan smoke-up smoke-down images build bootstrap \
- init plan drift recreate provision configure up start stop down restart status logs health test \
- vault-init vault-unseal vault-status vault-snapshot \
+ init plan drift recreate provision configure up start stop down restart status logs clock-sync heal health test \
+ owner-create owner-reset-password owner-revoke-sessions vault-init vault-unseal vault-bootstrap vault-status vault-snapshot \
  backup backup-status backup-record-copy restore-test restore upgrade destroy danger-destroy-data check-app check-ansible
 
 help: ## Show command catalog
@@ -126,6 +126,10 @@ up: doctor check-app check-ansible ## images -> bootstrap -> provision -> unseal
 	@$(MAKE) provision
 	@if test -f "$(VAULT_INIT_FILE)"; then $(MAKE) vault-unseal; else echo 'NOTICE: Vault not initialised yet: run make vault-init (one-time).'; fi
 	@$(MAKE) configure
+	@# Second pass once Vault is configured: Terraform adds fray-vault-agent + fray-api,
+	@# Ansible delivers AppRole credentials, migrates with a Vault-issued migrator lease.
+	@if test -f "$(FRAY_CONFIG_DIR)/vault-configured" && ! $(PODMAN) container exists fray-api; then \
+	  $(MAKE) provision && $(MAKE) configure; fi
 	@$(MAKE) health
 
 # ---------------------------------------------------------------- runtime lifecycle (volumes untouched)
@@ -135,7 +139,7 @@ start: ## Start only existing F-Ray-grance containers in dependency order
 	  elif [[ "$$c" == fray-postgres || "$$c" == fray-web ]]; then echo "Missing required container $$c: run make provision." >&2; exit 2; \
 	  else echo "skip $$c (not provisioned)"; fi; \
 	done
-	@if test -f "$(VAULT_INIT_FILE)"; then $(MAKE) --no-print-directory vault-unseal; fi
+	@if test -f "$(VAULT_INIT_FILE)"; then $(MAKE) --no-print-directory heal; fi
 
 stop: ## Stop existing project containers, preserve all data volumes
 	@for c in $(STOP_ORDER); do \
@@ -157,11 +161,27 @@ logs: ## View scoped service logs: make logs SERVICE=api|web|postgres|ollama|vau
 	  *) echo 'Use SERVICE=web|api|postgres|ollama|vault|vault-agent' >&2; exit 2;; \
 	esac; $(PODMAN) logs --tail=150 "$$c"
 
+clock-sync: ## Fix Podman VM clock drift (restarts chronyd in the VM if drift > 2 s)
+	@bash scripts/heal.sh clock
+
+heal: ## After Mac sleep: clock-sync, unseal, re-render Vault Agent credentials if the API is not ready
+	@bash scripts/heal.sh all
+
 health: ## Integration health checks; exits non-zero on any failed required check
 	@bash scripts/health.sh
 
 test: ## Static + infrastructure + application quality gate
 	@bash scripts/test.sh
+
+# ---------------------------------------------------------------- owner accounts (no public sign-up)
+owner-create: ## Create the app owner: USERNAME=<name> [DISPLAY_NAME="..."] (password prompted, never echoed)
+	@bash scripts/owner.sh create "$(USERNAME)" "$(DISPLAY_NAME)"
+
+owner-reset-password: ## Reset an owner's password and revoke their sessions: USERNAME=<name>
+	@bash scripts/owner.sh reset-password "$(USERNAME)"
+
+owner-revoke-sessions: ## Sign an owner out everywhere: USERNAME=<name>
+	@bash scripts/owner.sh revoke-sessions "$(USERNAME)"
 
 # ---------------------------------------------------------------- Vault (ADR-008)
 vault-init: ## ONE-TIME: initialise fray-vault; keys go only to the operator file (0600)
@@ -169,6 +189,9 @@ vault-init: ## ONE-TIME: initialise fray-vault; keys go only to the operator fil
 
 vault-unseal: ## Unseal fray-vault from the operator file (no secret in process args)
 	@bash scripts/vault.sh unseal
+
+vault-bootstrap: ## ONE-TIME: create scoped fray-operator token, then revoke the initial root token
+	@bash scripts/vault.sh bootstrap
 
 vault-status: ## Show fray-vault initialised/sealed status
 	@bash scripts/vault.sh status

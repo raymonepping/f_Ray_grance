@@ -1,0 +1,76 @@
+# Apply schema migrations with a short-lived Vault-issued MIGRATOR login (never the
+# runtime login). One-shot job container from the API image; lease revoked afterwards.
+- name: Is fray-api provisioned?
+  ansible.builtin.command:
+    argv: ["{{ podman_bin }}", container, exists, fray-api]
+  register: fray_api_exists
+  failed_when: false
+  changed_when: false
+
+- name: Run migrations
+  when: fray_api_exists.rc == 0
+  block:
+    - name: Private run directory for the one-shot credential file
+      ansible.builtin.file:
+        path: "{{ fray_config_dir }}/run"
+        state: directory
+        mode: "0700"
+
+    - name: Issue migrator credentials
+      ansible.builtin.uri:
+        url: "{{ fray_vault_addr }}/v1/database/creds/fray-migrator"
+        headers: "{{ fray_vault_headers }}"
+      register: fray_migrator
+      no_log: true
+
+    - name: Write the credential file (readable in-container; parent dir is 0700)
+      ansible.builtin.copy:
+        dest: "{{ fray_config_dir }}/run/db-migrator.json"
+        content: "{{ {'username': fray_migrator.json.data.username, 'password': fray_migrator.json.data.password} | to_json }}"
+        mode: "0644"
+      changed_when: false # ephemeral job input; the migration task reports real change
+      no_log: true
+
+    - name: Apply migrations (forward-only, checksummed)
+      ansible.builtin.command:
+        argv:
+          - "{{ podman_bin }}"
+          - run
+          - --rm
+          - --network=fraygrance
+          - --label=io.fraygrance.project=fraygrance
+          - --label=io.fraygrance.tier=job
+          - -e
+          - FRAY_DB_HOST=fray-postgres
+          - -e
+          - FRAY_MIGRATOR_CREDENTIALS_FILE=/run/fray/db-migrator.json
+          - -v
+          - "{{ fray_config_dir }}/run/db-migrator.json:/run/fray/db-migrator.json:ro"
+          - localhost/fray-api:current
+          - node
+          - apps/api/dist/db/migrate-cli.js
+      register: fray_migrate
+      changed_when: "'\"applied\":[]' not in fray_migrate.stdout"
+
+    - name: Report migration result
+      ansible.builtin.debug:
+        msg: "{{ fray_migrate.stdout }}"
+  always:
+    - name: Remove the credential file
+      ansible.builtin.file:
+        path: "{{ fray_config_dir }}/run/db-migrator.json"
+        state: absent
+      changed_when: false
+      when: fray_api_exists.rc == 0
+
+    - name: Revoke the migrator lease immediately
+      ansible.builtin.uri:
+        url: "{{ fray_vault_addr }}/v1/sys/leases/revoke"
+        method: PUT
+        headers: "{{ fray_vault_headers }}"
+        body_format: json
+        body: { lease_id: "{{ fray_migrator.json.lease_id }}" }
+        status_code: [200, 204]
+      when: fray_migrator is defined and fray_migrator.json is defined
+      changed_when: false
+      no_log: true

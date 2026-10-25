@@ -6,6 +6,7 @@ import path from 'node:path';
 import pg from 'pg';
 import { RotatingPool } from '../src/db/pool.js';
 import { loadConfig, type Config } from '../src/config.js';
+import { SessionKey } from '../src/security/session-key.js';
 
 export const MIGRATIONS_DIR = new URL('../../../db/migrations', import.meta.url).pathname;
 
@@ -51,4 +52,12 @@ export async function seedOwner(db: pg.Pool, username = `owner-${Math.random().t
     [username, 'Synthetic Owner'],
   );
   return rows[0]!.id;
+}
+
+/** Session HMAC key file, as Vault Agent would render it. */
+export function sessionKey(value = 'k'.repeat(48), version = 1): { key: SessionKey; file: string } {
+  const dir = mkdtempSync(path.join(tmpdir(), 'fray-key-'));
+  const file = path.join(dir, 'session.json');
+  writeFileSync(file, JSON.stringify({ token_hmac_key: value, version }), { mode: 0o600 });
+  return { key: new SessionKey(file), file };
 }

@@ -1,0 +1,233 @@
+# Configure fray-vault for F-Ray-grance (ADR-008). Uses the scoped fray-operator
+# token (never root). Every step reads current state first; secrets are no_log.
+- name: Require the operator token (run make vault-bootstrap once)
+  ansible.builtin.stat:
+    path: "{{ fray_operator_token_file }}"
+  register: fray_op_stat
+
+- name: Fail clearly when Vault has not been bootstrapped
+  ansible.builtin.assert:
+    that: fray_op_stat.stat.exists
+    fail_msg: "{{ fray_operator_token_file }} missing: run make vault-init && make vault-bootstrap"
+
+- name: Load operator token
+  ansible.builtin.set_fact:
+    fray_vault_headers:
+      X-Vault-Token: "{{ lookup('file', fray_operator_token_file) }}"
+  no_log: true
+
+- name: Renew the periodic operator token
+  ansible.builtin.uri:
+    url: "{{ fray_vault_addr }}/v1/auth/token/renew-self"
+    method: POST
+    headers: "{{ fray_vault_headers }}"
+  changed_when: false
+  no_log: true
+
+# ------------------------------------------------------------- audit, mounts, auth
+- name: Read audit devices, mounts and auth methods
+  ansible.builtin.uri:
+    url: "{{ fray_vault_addr }}/v1/{{ item }}"
+    headers: "{{ fray_vault_headers }}"
+  loop: [sys/audit, sys/mounts, sys/auth]
+  register: fray_vault_sys
+  no_log: true
+
+- name: Enable hashed audit log to container stdout
+  ansible.builtin.uri:
+    url: "{{ fray_vault_addr }}/v1/sys/audit/stdout"
+    method: PUT
+    headers: "{{ fray_vault_headers }}"
+    body_format: json
+    body: { type: file, options: { file_path: stdout, log_raw: "false" } }
+    status_code: [200, 204]
+  when: "'stdout/' not in fray_vault_sys.results[0].json"
+  changed_when: true
+  no_log: true
+
+- name: Enable database and kv-v2 secrets engines
+  ansible.builtin.uri:
+    url: "{{ fray_vault_addr }}/v1/sys/mounts/{{ item.path }}"
+    method: POST
+    headers: "{{ fray_vault_headers }}"
+    body_format: json
+    body: "{{ item.body }}"
+    status_code: [200, 204]
+  loop:
+    - { path: database, body: { type: database, description: "F-Ray-grance PostgreSQL dynamic credentials" } }
+    - { path: kv, body: { type: kv, options: { version: "2" }, description: "F-Ray-grance app secrets" } }
+  when: (item.path + '/') not in fray_vault_sys.results[1].json.data
+  changed_when: true
+  no_log: true
+
+- name: Enable AppRole auth
+  ansible.builtin.uri:
+    url: "{{ fray_vault_addr }}/v1/sys/auth/approle"
+    method: POST
+    headers: "{{ fray_vault_headers }}"
+    body_format: json
+    body: { type: approle, description: "F-Ray-grance Vault Agent machine identity" }
+    status_code: [200, 204]
+  when: "'approle/' not in fray_vault_sys.results[2].json.data"
+  changed_when: true
+  no_log: true
+
+# ------------------------------------------------------------- policies
+- name: Read current fray policies
+  ansible.builtin.uri:
+    url: "{{ fray_vault_addr }}/v1/sys/policies/acl/{{ item }}"
+    headers: "{{ fray_vault_headers }}"
+    status_code: [200, 404]
+  loop: [fray-api, fray-migrator, fray-operator]
+  register: fray_policies_now
+  no_log: true
+
+- name: Write fray policies when they differ from the repository
+  ansible.builtin.uri:
+    url: "{{ fray_vault_addr }}/v1/sys/policies/acl/{{ item.item }}"
+    method: PUT
+    headers: "{{ fray_vault_headers }}"
+    body_format: json
+    body: { policy: "{{ lookup('file', fray_vault_policies_dir + '/' + item.item + '.hcl') }}" }
+    status_code: [200, 204]
+  loop: "{{ fray_policies_now.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when: item.status == 404 or (item.json.data.policy | trim) != (lookup('file', fray_vault_policies_dir + '/' + item.item + '.hcl') | trim)
+  changed_when: true
+  no_log: true
+
+# ------------------------------------------------------------- database engine
+- name: Read database connection config
+  ansible.builtin.uri:
+    url: "{{ fray_vault_addr }}/v1/database/config/fray"
+    headers: "{{ fray_vault_headers }}"
+    status_code: [200, 404]
+  register: fray_db_config
+  no_log: true
+
+- name: Bootstrap the Vault DB admin login (one-time, then rotate-root)
+  when: fray_db_config.status == 404
+  no_log: true
+  block:
+    - name: Generate a one-time bootstrap password
+      ansible.builtin.set_fact:
+        fray_vault_admin_bootstrap: "{{ lookup('community.general.random_string', length=40, special=false) }}"
+
+    - name: Set it on fray_vault_admin through the local socket (stdin, never argv)
+      ansible.builtin.command:
+        argv: ["{{ podman_bin }}", exec, -i, fray-postgres, psql, -X, -q, -v, ON_ERROR_STOP=1, -U, postgres, -d, postgres]
+        stdin: "ALTER ROLE fray_vault_admin PASSWORD '{{ fray_vault_admin_bootstrap }}';"
+      changed_when: true
+
+    - name: Configure the PostgreSQL connection in Vault
+      ansible.builtin.uri:
+        url: "{{ fray_vault_addr }}/v1/database/config/fray"
+        method: POST
+        headers: "{{ fray_vault_headers }}"
+        body_format: json
+        body:
+          plugin_name: postgresql-database-plugin
+          connection_url: "{{ fray_vault_connection_url }}"
+          username: fray_vault_admin
+          password: "{{ fray_vault_admin_bootstrap }}"
+          password_authentication: scram-sha-256
+          allowed_roles: [fray-runtime, fray-migrator]
+          verify_connection: true
+        status_code: [200, 204]
+      changed_when: true
+
+    - name: Rotate the admin password so only Vault knows it
+      ansible.builtin.uri:
+        url: "{{ fray_vault_addr }}/v1/database/rotate-root/fray"
+        method: POST
+        headers: "{{ fray_vault_headers }}"
+        status_code: [200, 204]
+      changed_when: true
+
+    - name: Forget the bootstrap password
+      ansible.builtin.set_fact:
+        fray_vault_admin_bootstrap: ""
+
+- name: Desired dynamic roles
+  ansible.builtin.set_fact:
+    fray_db_roles:
+      fray-runtime:
+        db_name: fray
+        default_ttl: "{{ fray_runtime_ttl }}"
+        max_ttl: "{{ fray_runtime_max_ttl }}"
+        creation_statements: ["{{ fray_vault_creation_runtime }}"]
+        revocation_statements: "{{ fray_vault_revocation }}"
+      fray-migrator:
+        db_name: fray
+        default_ttl: "{{ fray_migrator_ttl }}"
+        max_ttl: "{{ fray_migrator_max_ttl }}"
+        creation_statements: ["{{ fray_vault_creation_migrator }}"]
+        revocation_statements: "{{ fray_vault_revocation }}"
+
+- name: Write dynamic DB roles (idempotent PUT of desired state)
+  ansible.builtin.uri:
+    url: "{{ fray_vault_addr }}/v1/database/roles/{{ item.key }}"
+    method: POST
+    headers: "{{ fray_vault_headers }}"
+    body_format: json
+    body: "{{ item.value }}"
+    status_code: [200, 204]
+  loop: "{{ fray_db_roles | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  changed_when: false
+  no_log: true
+
+# ------------------------------------------------------------- KV: session HMAC key
+- name: Read session key presence
+  ansible.builtin.uri:
+    url: "{{ fray_vault_addr }}/v1/kv/metadata/fray/session"
+    headers: "{{ fray_vault_headers }}"
+    status_code: [200, 404]
+  register: fray_session_meta
+  no_log: true
+
+- name: Create the session-token HMAC key (rotation = new version, invalidates sessions)
+  ansible.builtin.uri:
+    url: "{{ fray_vault_addr }}/v1/kv/data/fray/session"
+    method: POST
+    headers: "{{ fray_vault_headers }}"
+    body_format: json
+    body: { data: { token_hmac_key: "{{ lookup('community.general.random_string', length=64, special=false) }}" } }
+    status_code: [200, 204]
+  when: fray_session_meta.status == 404
+  changed_when: true
+  no_log: true
+
+# ------------------------------------------------------------- AppRole for Vault Agent
+- name: Discover the private project network subnet
+  ansible.builtin.command:
+    argv: ["{{ podman_bin }}", network, inspect, fraygrance, --format, "{{ '{{' }}range .Subnets{{ '}}' }}{{ '{{' }}.Subnet{{ '}}' }}{{ '{{' }}end{{ '}}' }}"]
+  register: fray_subnet
+  changed_when: false
+
+- name: Write AppRole role fray-api (bound to the project network)
+  ansible.builtin.uri:
+    url: "{{ fray_vault_addr }}/v1/auth/approle/role/fray-api"
+    method: POST
+    headers: "{{ fray_vault_headers }}"
+    body_format: json
+    body:
+      token_policies: [fray-api]
+      token_ttl: 1h
+      token_max_ttl: 4h
+      token_bound_cidrs: ["{{ fray_subnet.stdout | trim }}"]
+      secret_id_bound_cidrs: ["{{ fray_subnet.stdout | trim }}"]
+      secret_id_ttl: 0
+      secret_id_num_uses: 0
+      token_type: service
+    status_code: [200, 204]
+  changed_when: false
+  no_log: true
+
+- name: Mark Vault as configured for Make (enables agent + API provisioning)
+  ansible.builtin.copy:
+    dest: "{{ fray_config_dir }}/vault-configured"
+    content: "configured by ansible vault_config\n"
+    mode: "0600"

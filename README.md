@@ -52,6 +52,10 @@ The bundled `Makefile`, `scripts/doctor.sh` and `infra/terraform/phase00` are **
 
 **v0.1.6 is a documentation/agent-prompt baseline**, not an installed service or proof of remote access, live authentication, backup recovery or GitHub push. Only Phase 00 execution can establish runtime evidence. All direct-to-main agent commits require a separately configured and verified GitHub `origin` pointing to the intended F-Ray-grance repository.
 
+## Operating the stack
+
+See the operator runbook [`docs/runbook.md`](docs/runbook.md) for first-time setup (`make up`, `make vault-init`, `make vault-bootstrap`, `make owner-create`), day-to-day commands and `make heal` after Mac sleep. Build progress per phase is in [`reports/`](reports) and [`CHANGELOG.md`](CHANGELOG.md).
+
 ## Starting workflow
 
 1. Read `RELEASE_NOTES.md`, `PHASE_MANIFEST.md`, `PRODUCT_SPEC.md`, `DESIGN.md`, `COMPARE_SPEC.md` and `ARCHITECTURE.md`.

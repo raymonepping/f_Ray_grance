@@ -8,3 +8,7 @@
     - postgres_base
     - ollama_model
     - vault_status
+    - vault_config
+    - vault_agent_credentials
+    - db_migrate
+    - api_ready

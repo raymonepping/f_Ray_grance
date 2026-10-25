@@ -5,7 +5,7 @@
     "origin": "https://github.com/raymonepping/f_Ray_grance.git",
     "branch": "main"
   },
-  "last_successful_phase": "02",
+  "last_successful_phase": "03",
   "phases": {
     "00": {
       "status": "completed",
@@ -155,6 +155,59 @@
       },
       "notes": "Live DB migration deferred to Phase 03 (needs Vault-issued migrator credential).",
       "blockers": []
+    },
+    "03": {
+      "status": "completed",
+      "agent": "claude-opus-5-5",
+      "prompt_id": "FRAY-CLAUDE-03",
+      "started_at_utc": "2026-10-25T07:08:54Z",
+      "baseline_head": "a4ed167866be319552ee0e6d0fbd74c8dee05de1",
+      "report_path": "reports/03_vault_security.md",
+      "launcher": {
+        "prompt": "prompts/launchers/Claude_START_HERE.md",
+        "selected_phase": "03",
+        "predecessor": "02",
+        "predecessor_commit": "a4ed167",
+        "predecessor_pushed": true,
+        "unpushed_local_commits": 0
+      },
+      "planned_scope": [
+        "vault bootstrap: operator token, root revoked",
+        "policies fray-api/fray-migrator/fray-operator + negative tests",
+        "database engine: runtime + migrator roles, rotate-root",
+        "KV session HMAC key",
+        "AppRole + Vault Agent (rendered creds files)",
+        "live migration via Vault-issued migrator lease",
+        "API: login/logout, Argon2id, cookies, CSRF, origin, rate limit/lockout",
+        "rotation/revoke/outage tests"
+      ],
+      "finished_at_utc": "2026-10-25T07:46:13Z",
+      "ci": "not_checked",
+      "tests": {
+        "make_test": "PASS (vitest 65/65)",
+        "live_probe": "39/39 PASS",
+        "ansible_idempotent": "changed=0",
+        "drift": "NO_DRIFT",
+        "health": "PASS",
+        "root_token": "revoked",
+        "policy_negative": "PASS",
+        "lease_issue_renew_revoke": "PASS",
+        "pool_rotation": "PASS",
+        "vault_outage": "PASS",
+        "login_csrf_logout": "PASS"
+      },
+      "artifacts": {
+        "vault_policies": [
+          "fray-api",
+          "fray-migrator",
+          "fray-operator"
+        ],
+        "runtime_lease": "15m/4h",
+        "migrator_lease": "10m/30m",
+        "schema_version_live": 1
+      },
+      "notes": "Environmental finding: Podman VM pause during Mac sleep revokes leases via wall-clock jump; mitigated by make heal.",
+      "blockers": []
     }
   },
   "accepted_adrs": [
@@ -175,5 +228,5 @@
       "detail": "Install Tailscale on Mac and iPhone; enable MagicDNS + HTTPS; restrict grants; never Funnel"
     }
   ],
-  "updated_at_utc": "2026-10-25T07:01:32Z"
+  "updated_at_utc": "2026-10-25T07:46:13Z"
 }

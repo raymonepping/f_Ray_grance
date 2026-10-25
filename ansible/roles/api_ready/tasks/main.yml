@@ -1,0 +1,16 @@
+- name: Is fray-api provisioned?
+  ansible.builtin.command:
+    argv: ["{{ podman_bin }}", container, exists, fray-api]
+  register: fray_api_exists
+  failed_when: false
+  changed_when: false
+
+- name: Wait for API readiness through the loopback gateway
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:8470/api/health/ready"
+    status_code: 200
+  register: fray_ready
+  until: fray_ready.status == 200
+  retries: 30
+  delay: 2
+  when: fray_api_exists.rc == 0

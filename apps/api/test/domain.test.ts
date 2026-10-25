@@ -46,3 +46,16 @@ describe('configuration', () => {
     expect(loadConfig({}).db.credentialsFile).toBe('/vault/rendered/db-runtime.json');
   });
 });
+
+describe('password hashing', () => {
+  it('uses Argon2id PHC strings, rejects short passwords, verifies correctly', async () => {
+    const { hashPassword, verifyPassword } = await import('../src/security/password.js');
+    const h = await hashPassword('correct horse battery');
+    // The PHC prefix proves algorithm Argon2id (constant 2 in password.ts) and parameters.
+    expect(h.startsWith('$argon2id$v=19$m=65536,t=3,p=1$')).toBe(true);
+    expect(await verifyPassword(h, 'correct horse battery')).toBe(true);
+    expect(await verifyPassword(h, 'wrong')).toBe(false);
+    expect(await verifyPassword(null, 'anything')).toBe(false);
+    await expect(hashPassword('short')).rejects.toThrow(/at least 12/);
+  });
+});

@@ -4,4 +4,20 @@ fray_required_containers: [fray-postgres, fray-vault, fray-ollama, fray-web]
 fray_embed_model: "{{ lookup('env', 'EMBED_MODEL') | default('nomic-embed-text:v1.5', true) }}"
 fray_vault_addr: "http://127.0.0.1:8270"
 # Phase 01: report only. Phase 03 flips this once Vault is configured.
-fray_require_vault_unsealed: false
+fray_require_vault_unsealed: true
+fray_config_dir: "{{ lookup('env', 'FRAY_CONFIG_DIR') | default(lookup('env', 'HOME') + '/.config/f-ray-grance', true) }}"
+fray_operator_token_file: "{{ fray_config_dir }}/operator-token"
+fray_vault_policies_dir: "{{ playbook_dir }}/../infra/vault/policies"
+# Lease policy (spec/SECURITY.md: short leases, tested rollover).
+fray_runtime_ttl: 15m
+fray_runtime_max_ttl: 4h
+fray_migrator_ttl: 10m
+fray_migrator_max_ttl: 30m
+# Vault database-engine templates. !unsafe: Ansible must never template Vault's {{...}}.
+fray_vault_connection_url: !unsafe 'postgresql://{{username}}:{{password}}@fray-postgres:5432/fray?sslmode=disable'
+fray_vault_creation_runtime: !unsafe "CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}' IN ROLE fray_runtime;"
+fray_vault_creation_migrator: !unsafe "CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}' IN ROLE fray_migrator;"
+# PG16+: terminate sessions then DROP ROLE (REASSIGN OWNED fails; Phase 00 finding).
+fray_vault_revocation:
+  - !unsafe "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE usename = '{{name}}';"
+  - !unsafe 'DROP ROLE IF EXISTS "{{name}}";'

@@ -52,3 +52,9 @@ variable "vault_host_port" {
   type    = number
   default = 8270
 }
+
+variable "public_origins" {
+  description = "Browser origins allowed for state-changing requests (CSRF/origin check). Add the Tailscale Serve HTTPS FQDN in Phase 10."
+  type        = list(string)
+  default     = ["http://localhost:8470", "http://127.0.0.1:8470"]
+}

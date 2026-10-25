@@ -137,6 +137,12 @@ resource "docker_container" "vault" {
 resource "docker_volume" "agent_auth" {
   count = local.agent_enabled ? 1 : 0
   name  = "fraygrance_agent_auth"
+  # Owned by the agent's uid:gid (vault 100, group 1000 = API's node user) on creation.
+  driver_opts = { o = "uid=100,gid=1000" }
+  # Podman reads options back with extra UID/GID keys; they only matter at creation.
+  lifecycle {
+    ignore_changes = [driver_opts]
+  }
   dynamic "labels" {
     for_each = local.labels
     content {
@@ -149,6 +155,12 @@ resource "docker_volume" "agent_auth" {
 resource "docker_volume" "agent_rendered" {
   count = local.agent_enabled ? 1 : 0
   name  = "fraygrance_agent_rendered"
+  # Owned by the agent's uid:gid (vault 100, group 1000 = API's node user) on creation.
+  driver_opts = { o = "uid=100,gid=1000" }
+  # Podman reads options back with extra UID/GID keys; they only matter at creation.
+  lifecycle {
+    ignore_changes = [driver_opts]
+  }
   dynamic "labels" {
     for_each = local.labels
     content {
@@ -242,7 +254,17 @@ resource "docker_container" "api" {
     name    = docker_network.fraygrance.name
     aliases = ["fray-api"]
   }
-  env = [for k, v in var.api_env : "${k}=${v}"]
+  env = concat(
+    [
+      "FRAY_DB_HOST=fray-postgres",
+      "FRAY_DB_CREDENTIALS_FILE=/vault/rendered/db-runtime.json",
+      "FRAY_SESSION_KEY_FILE=/vault/rendered/session.json",
+      # Forwarded headers are trusted only from inside the private project network (the gateway).
+      "FRAY_TRUSTED_PROXIES=${one(docker_network.fraygrance.ipam_config).subnet}",
+      "FRAY_PUBLIC_ORIGINS=${join(",", var.public_origins)}",
+    ],
+    [for k, v in var.api_env : "${k}=${v}"],
+  )
   dynamic "volumes" {
     for_each = local.agent_enabled ? [1] : []
     content {
@@ -264,7 +286,7 @@ resource "docker_container" "api" {
       value = labels.value
     }
   }
-  depends_on = [docker_container.postgres]
+  depends_on = [docker_container.postgres, docker_container.vault_agent]
 }
 
 # ---------------------------------------------------------------- Gateway / web

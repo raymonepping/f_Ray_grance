@@ -7,6 +7,8 @@ import { ApiError, envelope, statusFor } from './errors.js';
 import { securityPlugin } from './security/plugin.js';
 import { healthRoutes } from './routes/health.js';
 import { v1Routes } from './routes/v1/index.js';
+import { authRoutes } from './routes/auth.js';
+import type { SessionKey } from './security/session-key.js';
 import type { Config } from './config.js';
 import type { RotatingPool } from './db/pool.js';
 
@@ -15,6 +17,7 @@ const REQUEST_ID_RE = /^[A-Za-z0-9-]{8,64}$/;
 export interface AppDeps {
   config: Config;
   pool: RotatingPool;
+  key: SessionKey;
   expectedSchemaVersion: number;
   logger?: boolean | object;
 }
@@ -54,11 +57,20 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     if (e.validation) {
       return reply.code(400).send(envelope('VALIDATION_FAILED', 'Request did not match the schema', req.id, e.validation));
     }
-    if (e.statusCode === 429) return reply.code(429).send(envelope('RATE_LIMITED', 'Too many requests', req.id));
+    if (e.statusCode === 429) {
+      return reply.code(429).header('retry-after', '60').send(envelope('RATE_LIMITED', 'Too many requests', req.id));
+    }
     if (e.statusCode === 413 || e.code === 'FST_ERR_CTP_BODY_TOO_LARGE') {
       return reply.code(413).send(envelope('VALIDATION_FAILED', 'Payload too large', req.id));
     }
+    // Revoked/rotated login or terminated backend: rebuild the pool now, answer 503 meanwhile.
+    if (e.code && ['28P01', '28000', '57P01', '57P02', '57P03', '08006'].includes(e.code)) {
+      void deps.pool.refresh();
+      req.log.warn({ pgcode: e.code }, 'database credentials rejected or connection terminated');
+      return reply.code(503).send(envelope('DEPENDENCY_UNAVAILABLE', 'Database temporarily unavailable', req.id));
+    }
     if (typeof e.message === 'string' && /pool not initialised|credentials|ECONNREFUSED|terminating connection|password authentication/i.test(e.message)) {
+      void deps.pool.refresh();
       req.log.warn({ err: e.message }, 'dependency unavailable');
       return reply.code(503).send(envelope('DEPENDENCY_UNAVAILABLE', 'Database temporarily unavailable', req.id));
     }
@@ -69,8 +81,21 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
   app.setNotFoundHandler((req, reply) => reply.code(404).send(envelope('NOT_FOUND', 'Route not found', req.id)));
 
   await app.register(cookie);
-  await app.register(securityPlugin, { pool: deps.pool, idleMinutes: deps.config.session.idleMinutes });
-  await app.register(healthRoutes, { pool: deps.pool, expectedSchemaVersion: deps.expectedSchemaVersion });
+  await app.register(securityPlugin, {
+    pool: deps.pool,
+    key: deps.key,
+    idleMinutes: deps.config.session.idleMinutes,
+    publicOrigins: deps.config.publicOrigins,
+  });
+  await app.register(healthRoutes, { pool: deps.pool, key: deps.key, expectedSchemaVersion: deps.expectedSchemaVersion });
+  await app.register(authRoutes, {
+    prefix: '/api/v1',
+    pool: deps.pool,
+    key: deps.key,
+    ttlHours: deps.config.session.ttlHours,
+    lockout: deps.config.lockout,
+    loginRatePerMinute: deps.config.loginRatePerMinute,
+  });
   await app.register(v1Routes, { prefix: '/api/v1', pool: deps.pool });
   return app;
 }

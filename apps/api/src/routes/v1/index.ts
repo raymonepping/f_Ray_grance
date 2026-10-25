@@ -11,6 +11,7 @@ import type { RotatingPool } from '../../db/pool.js';
 
 const Uuid = Type.String({ format: 'uuid' });
 
+// Registered inside its own encapsulated context so requireOwner applies to these routes only.
 export async function v1Routes(base: FastifyInstance, deps: { pool: RotatingPool }): Promise<void> {
   const app = base.withTypeProvider<TypeBoxTypeProvider>();
   app.addHook('preHandler', requireOwner);

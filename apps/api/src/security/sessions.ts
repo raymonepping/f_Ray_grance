@@ -1,9 +1,12 @@
 // Opaque server-side sessions (spec/SECURITY.md §3). The browser holds a random
-// token; PostgreSQL stores only SHA-256 digests of the token and its CSRF secret.
-import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
+// token; PostgreSQL stores only HMAC-SHA256 digests (Vault-delivered key) of the
+// token and its CSRF secret.
+import { randomBytes, timingSafeEqual } from 'node:crypto';
 import type pg from 'pg';
+import type { SessionKey } from './session-key.js';
 
 export const SESSION_COOKIE = '__Host-fray_session';
+export const CSRF_COOKIE = '__Host-fray_csrf';
 
 export interface Owner {
   id: string;
@@ -17,16 +20,21 @@ export interface IssuedSession {
   expiresAt: Date;
 }
 
-export const digest = (value: string): Buffer => createHash('sha256').update(value).digest();
 const token = (): string => randomBytes(32).toString('base64url');
 
-export async function createSession(db: pg.Pool, ownerId: string, ttlHours: number, userAgentTag?: string): Promise<IssuedSession> {
+export async function createSession(
+  db: pg.Pool,
+  key: SessionKey,
+  ownerId: string,
+  ttlHours: number,
+  userAgentTag?: string,
+): Promise<IssuedSession> {
   const t = token();
   const csrf = token();
   const { rows } = await db.query<{ expires_at: Date }>(
     `INSERT INTO app.sessions (token_hash, owner_id, csrf_hash, expires_at, user_agent_tag)
      VALUES ($1, $2, $3, now() + make_interval(hours => $4), $5) RETURNING expires_at`,
-    [digest(t), ownerId, digest(csrf), ttlHours, userAgentTag ?? null],
+    [key.digest(t), ownerId, key.digest(csrf), ttlHours, userAgentTag ?? null],
   );
   return { token: t, csrfToken: csrf, expiresAt: rows[0]!.expires_at };
 }
@@ -38,9 +46,14 @@ export interface ResolvedSession {
 }
 
 /** Valid = not revoked, not expired, not idle beyond the limit. Touches last_seen_at. */
-export async function resolveSession(db: pg.Pool, sessionToken: string, idleMinutes: number): Promise<ResolvedSession | null> {
+export async function resolveSession(
+  db: pg.Pool,
+  key: SessionKey,
+  sessionToken: string,
+  idleMinutes: number,
+): Promise<ResolvedSession | null> {
   if (!/^[A-Za-z0-9_-]{43}$/.test(sessionToken)) return null;
-  const hash = digest(sessionToken);
+  const hash = key.digest(sessionToken);
   const { rows } = await db.query<{ id: string; username: string; display_name: string; csrf_hash: Buffer }>(
     `UPDATE app.sessions s SET last_seen_at = now()
        FROM app.owners o
@@ -59,7 +72,7 @@ export async function revokeSession(db: pg.Pool, tokenHash: Buffer): Promise<voi
   await db.query('UPDATE app.sessions SET revoked_at = now() WHERE token_hash = $1 AND revoked_at IS NULL', [tokenHash]);
 }
 
-export function csrfMatches(expectedHash: Buffer, presented: string | undefined): boolean {
+export function csrfMatches(key: SessionKey, expectedHash: Buffer, presented: string | undefined): boolean {
   if (!presented || !/^[A-Za-z0-9_-]{43}$/.test(presented)) return false;
-  return timingSafeEqual(expectedHash, digest(presented));
+  return timingSafeEqual(expectedHash, key.digest(presented));
 }

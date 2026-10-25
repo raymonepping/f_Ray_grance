@@ -6,7 +6,9 @@ export interface Config {
   migrationsDir: string;
   trustedProxies: string[];
   publicOrigins: string[];
-  session: { ttlHours: number; idleMinutes: number };
+  session: { ttlHours: number; idleMinutes: number; keyFile: string };
+  lockout: { maxFailures: number; windowMinutes: number };
+  loginRatePerMinute: number;
   logLevel: string;
 }
 
@@ -57,7 +59,13 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     session: {
       ttlHours: int(env, 'FRAY_SESSION_TTL_HOURS', 12, 1, 24 * 30),
       idleMinutes: int(env, 'FRAY_SESSION_IDLE_MINUTES', 120, 5, 24 * 60),
+      keyFile: str(env, 'FRAY_SESSION_KEY_FILE', '/vault/rendered/session.json'),
     },
+    lockout: {
+      maxFailures: int(env, 'FRAY_LOGIN_MAX_FAILURES', 5, 1, 100),
+      windowMinutes: int(env, 'FRAY_LOGIN_LOCKOUT_MINUTES', 15, 1, 24 * 60),
+    },
+    loginRatePerMinute: int(env, 'FRAY_LOGIN_RATE_PER_MINUTE', 10, 1, 1000),
     logLevel: str(env, 'FRAY_LOG_LEVEL', 'info'),
   };
 }

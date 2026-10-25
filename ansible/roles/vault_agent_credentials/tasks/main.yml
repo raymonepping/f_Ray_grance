@@ -1,0 +1,56 @@
+# Deliver AppRole credentials to fray-vault-agent (only it mounts /vault/auth).
+# Delivered over stdin into the container; never argv, env, logs or the repository.
+- name: Is fray-vault-agent provisioned?
+  ansible.builtin.command:
+    argv: ["{{ podman_bin }}", container, exists, fray-vault-agent]
+  register: fray_agent_exists
+  failed_when: false
+  changed_when: false
+
+- name: Deliver and verify agent credentials
+  when: fray_agent_exists.rc == 0
+  block:
+    - name: Check for existing AppRole credentials in the agent volume
+      ansible.builtin.command:
+        argv: ["{{ podman_bin }}", exec, fray-vault-agent, sh, -c, "test -s /vault/auth/role-id && test -s /vault/auth/secret-id"]
+      register: fray_agent_creds
+      failed_when: false
+      changed_when: false
+
+    - name: Issue and deliver role-id / secret-id
+      when: fray_agent_creds.rc != 0
+      no_log: true
+      block:
+        - name: Read role-id
+          ansible.builtin.uri:
+            url: "{{ fray_vault_addr }}/v1/auth/approle/role/fray-api/role-id"
+            headers: "{{ fray_vault_headers }}"
+          register: fray_role_id
+
+        - name: Generate secret-id (bound to the project network CIDR)
+          ansible.builtin.uri:
+            url: "{{ fray_vault_addr }}/v1/auth/approle/role/fray-api/secret-id"
+            method: POST
+            headers: "{{ fray_vault_headers }}"
+            body_format: json
+            body: { metadata: '{"issued_by":"ansible","purpose":"fray-vault-agent"}' }
+          register: fray_secret_id
+
+        - name: Write credentials atomically inside the agent volume
+          ansible.builtin.command:
+            argv: ["{{ podman_bin }}", exec, -i, fray-vault-agent, sh, -c, "umask 077 && cat > /vault/auth/.{{ item.name }} && mv /vault/auth/.{{ item.name }} /vault/auth/{{ item.name }}"]
+            stdin: "{{ item.value }}"
+            stdin_add_newline: false
+          loop:
+            - { name: role-id, value: "{{ fray_role_id.json.data.role_id }}" }
+            - { name: secret-id, value: "{{ fray_secret_id.json.data.secret_id }}" }
+          changed_when: true
+
+    - name: Wait for Vault Agent to render runtime credentials and session key
+      ansible.builtin.command:
+        argv: ["{{ podman_bin }}", exec, fray-vault-agent, sh, -c, "test -s /vault/rendered/db-runtime.json && test -s /vault/rendered/session.json"]
+      register: fray_rendered
+      until: fray_rendered.rc == 0
+      retries: 30
+      delay: 2
+      changed_when: false
