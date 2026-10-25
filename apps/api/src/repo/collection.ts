@@ -168,7 +168,7 @@ export async function listEntries(
   pool: pg.Pool,
   ownerId: string,
   state?: CollectionState,
-  opts: { q?: string; sort?: CollectionSort } = {},
+  opts: { q?: string; sort?: CollectionSort; season?: string } = {},
 ): Promise<CollectionListRow[]> {
   const { rows } = await pool.query<CollectionListRow>(
     `SELECT e.*, b.canonical_name AS brand, f.canonical_name, f.concentration, f.identity_status
@@ -182,8 +182,9 @@ export async function listEntries(
              OR (length(regexp_replace($3, '[^0-9]', '', 'g')) >= 8
                  AND EXISTS (SELECT 1 FROM app.product_variants v WHERE v.fragrance_id = f.id
                                AND v.gtin14 = lpad(regexp_replace($3, '[^0-9]', '', 'g'), 14, '0'))))
+        AND ($4::text IS NULL OR EXISTS (SELECT 1 FROM app.season_fragrances s WHERE s.owner_id=e.owner_id AND s.fragrance_id=e.fragrance_id AND s.season=$4 AND s.affinity_origin='user' AND s.affinity IS NOT NULL))
       ORDER BY ${ORDER[opts.sort ?? 'recent']}`,
-    [ownerId, state ?? null, opts.q?.trim() || null],
+    [ownerId, state ?? null, opts.q?.trim() || null, opts.season ?? null],
   );
   return rows;
 }

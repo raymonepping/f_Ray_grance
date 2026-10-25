@@ -1,6 +1,6 @@
 // Shared integration-test helpers. Requires FRAY_TEST_PG (scripts/test-db.sh start);
 // DB tests fail rather than silently skip when it is missing.
-import { mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import pg from 'pg';
@@ -9,6 +9,7 @@ import { loadConfig, type Config } from '../src/config.js';
 import { SessionKey } from '../src/security/session-key.js';
 
 export const MIGRATIONS_DIR = new URL('../../../db/migrations', import.meta.url).pathname;
+export const EXPECTED_SCHEMA_VERSION = readdirSync(MIGRATIONS_DIR).filter(f => /^\d{4}_[a-z0-9_]+\.sql$/.test(f)).length;
 
 export function testPg(): { host: string; port: number } {
   const v = process.env.FRAY_TEST_PG;

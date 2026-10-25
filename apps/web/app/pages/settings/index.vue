@@ -75,6 +75,7 @@ async function signOut() {
       </ul>
     </GlassPanel>
 
+    <SettingsPortability />
     <GlassPanel variant="solid" as="section" class="flex flex-col gap-3 p-5" aria-labelledby="backup-h">
       <h2 id="backup-h">Backups</h2>
       <dl class="m-0 grid gap-2 text-sm sm:grid-cols-[max-content_1fr]">

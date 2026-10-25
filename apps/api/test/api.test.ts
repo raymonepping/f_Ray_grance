@@ -1,3 +1,4 @@
+import { EXPECTED_SCHEMA_VERSION } from './helpers.js';
 // HTTP contract tests via fastify.inject (no network listener).
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { writeFileSync } from 'node:fs';
@@ -25,7 +26,7 @@ let entryB: string;
 let fragranceId: string;
 let loginUser: string;
 
-const build = (expected = 2, pool = rp, overrides: Record<string, string> = {}) =>
+const build = (expected = EXPECTED_SCHEMA_VERSION, pool = rp, overrides: Record<string, string> = {}) =>
   buildApp({ config: testConfig(overrides), pool, key, expectedSchemaVersion: expected, logger: false });
 
 function cookiesFrom(r: LightMyRequestResponse): Record<string, string> {

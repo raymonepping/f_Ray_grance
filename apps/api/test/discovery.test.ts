@@ -1,3 +1,4 @@
+import { EXPECTED_SCHEMA_VERSION } from './helpers.js';
 import { beforeAll, afterAll, describe, expect, it } from 'vitest';
 import type { FastifyInstance } from 'fastify';
 import { buildApp } from '../src/app.js';
@@ -22,7 +23,7 @@ const fakeFetch: typeof fetch = async (url, init) => {
 async function session(id: string) { const s = await createSession(pool.get(), key, id, 1); return { origin:'http://localhost:8470', cookie:`${SESSION_COOKIE}=${s.token}; ${CSRF_COOKIE}=${s.csrfToken}`, 'x-csrf-token':s.csrfToken }; }
 beforeAll(async () => {
   pool = await runtimePool(); owner = await seedOwner(pool.get()); headers = await session(owner); otherHeaders = await session(await seedOwner(pool.get()));
-  app = await buildApp({ config:testConfig(), pool, key, expectedSchemaVersion:2, ollama:new OllamaClient(fakeFetch), logger:false });
+  app = await buildApp({ config:testConfig(), pool, key, expectedSchemaVersion:EXPECTED_SCHEMA_VERSION, ollama:new OllamaClient(fakeFetch), logger:false });
   const brandId = await upsertBrand(pool.get(), uniq('Discovery'));
   a = await createFragrance(pool.get(), {brandId,name:'Positive anchor',identityStatus:'verified'});
   b = await createFragrance(pool.get(), {brandId,name:'Related candidate',identityStatus:'verified'});

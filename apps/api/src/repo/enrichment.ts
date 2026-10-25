@@ -54,7 +54,7 @@ async function upsertNote(c: Tx, label: string): Promise<string> {
   return rows[0]!.id;
 }
 
-async function writePyramid(c: Tx, fragranceId: string, claimId: string, pyramid: SourceProfile['pyramid']): Promise<void> {
+export async function writePyramid(c: Tx, fragranceId: string, claimId: string, pyramid: SourceProfile['pyramid']): Promise<void> {
   for (const tier of ['top', 'heart', 'base'] as const) {
     const labels = pyramid[tier] ?? [];
     for (const [i, label] of labels.entries()) {
@@ -169,15 +169,15 @@ export async function refreshFromProvider(db: Db, fragranceId: string, p: Source
 }
 
 /** Manual override: a user claim. Never removed by provider refreshes. */
-export async function addUserClaim(db: Db, fragranceId: string, field: (typeof USER_EDITABLE_FIELDS)[number], value: unknown): Promise<string> {
+export async function addUserClaim(db: Db, fragranceId: string, field: (typeof USER_EDITABLE_FIELDS)[number], value: unknown, ownerId?: string): Promise<string> {
   return tx(db, async (c) => {
     await c.query(`UPDATE app.source_claims SET superseded_at = now() WHERE fragrance_id = $1 AND origin = 'user' AND field_name = $2 AND superseded_at IS NULL`, [
       fragranceId,
       field,
     ]);
     const { rows } = await c.query<{ id: string }>(
-      `INSERT INTO app.source_claims (fragrance_id, origin, field_name, value) VALUES ($1, 'user', $2, $3) RETURNING id`,
-      [fragranceId, field, JSON.stringify(value)],
+      `INSERT INTO app.source_claims (fragrance_id, origin, field_name, value, corrected_by_owner) VALUES ($1, 'user', $2, $3, $4) RETURNING id`,
+      [fragranceId, field, JSON.stringify(value), ownerId ?? null],
     );
     if (field === 'pyramid') await writePyramid(c, fragranceId, rows[0]!.id, value as SourceProfile['pyramid']);
     return rows[0]!.id;
@@ -185,7 +185,7 @@ export async function addUserClaim(db: Db, fragranceId: string, field: (typeof U
 }
 
 /** Draft identity for unresolved fragrances: identity claims only, no invented notes. */
-export async function createDraft(db: Db, input: { brand: string; name: string; concentration: string | null }): Promise<{ fragranceId: string; created: boolean }> {
+export async function createDraft(db: Db, input: { brand: string; name: string; concentration: string | null; ownerId?: string }): Promise<{ fragranceId: string; created: boolean }> {
   return tx(db, async (c) => {
     const b = await c.query<{ id: string }>(
       `INSERT INTO app.brands (canonical_name) VALUES ($1)
@@ -202,9 +202,10 @@ export async function createDraft(db: Db, input: { brand: string; name: string; 
       `INSERT INTO app.fragrances (brand_id, canonical_name, concentration, identity_status) VALUES ($1, $2, $3, 'draft') RETURNING id`,
       [b.rows[0]!.id, input.name, input.concentration],
     );
-    await c.query(`INSERT INTO app.source_claims (fragrance_id, origin, field_name, value) VALUES ($1, 'user', 'identity', $2)`, [
+    await c.query(`INSERT INTO app.source_claims (fragrance_id, origin, field_name, value, corrected_by_owner) VALUES ($1, 'user', 'identity', $2, $3)`, [
       f.rows[0]!.id,
       JSON.stringify({ name: input.name, house: input.brand, entered_as: 'manual_draft' }),
+      input.ownerId ?? null,
     ]);
     return { fragranceId: f.rows[0]!.id, created: true };
   });

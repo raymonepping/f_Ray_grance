@@ -7,6 +7,8 @@ import { effectiveProfile } from '../../repo/enrichment.js';
 import { candidateEvidence, embeddingInput, INPUT_REVISION, rankCandidate } from '../../domain/discovery.js';
 import { OllamaClient, MODEL, MODEL_REVISION, DIMENSION } from '../../providers/ollama.js';
 import type { RotatingPool } from '../../db/pool.js';
+import { emptyChoices, type Choices } from '../../domain/seasons.js';
+import { deriveDna, noteKey } from '../../domain/dna.js';
 
 export async function discoveryRoutes(base: FastifyInstance, deps: { pool: RotatingPool; ollama: OllamaClient }) {
   const app = base.withTypeProvider<TypeBoxTypeProvider>(); const db = () => deps.pool.get();
@@ -27,14 +29,17 @@ export async function discoveryRoutes(base: FastifyInstance, deps: { pool: Rotat
   });
   app.get('/discover', { schema: { querystring: Type.Object({
     mode: Type.Optional(Type.Union([Type.Literal('similar'), Type.Literal('different')], { default: 'similar' })),
-    season: Type.Optional(Type.Union(['spring', 'summer', 'autumn', 'winter'].map(s => Type.Literal(s)))),
+    season: Type.Optional(Type.Enum(['spring', 'summer', 'autumn', 'winter'] as const)),
   }, { additionalProperties: false }) } }, async (req) => {
     const owner = req.session!.owner.id; const mode = req.query.mode ?? 'similar';
     const likedRows = await db().query<{ fragrance_id: string }>(`SELECT DISTINCT fragrance_id FROM app.collection_entries WHERE owner_id=$1 AND rating >= 4 AND state <> 'rejected'
       UNION SELECT fragrance_id FROM app.season_fragrances WHERE owner_id=$1 AND affinity_origin='user' AND affinity IN ('love','like') AND ($2::text IS NULL OR season=$2)`, [owner, req.query.season ?? null]);
-    const prefs = req.query.season ? (await db().query<{ liked_notes: string[]; avoided_notes: string[] }>('SELECT liked_notes,avoided_notes FROM app.seasonal_preferences WHERE owner_id=$1 AND season=$2', [owner, req.query.season])).rows[0] : undefined;
-    const liked = prefs?.liked_notes ?? []; const avoided = prefs?.avoided_notes ?? [];
-    if (!likedRows.rows.length && !liked.length) return { items: [], mode, engine: 'structured', reason: 'Not enough explicit preferences yet. Rate a fragrance positively or choose seasonal likes; ownership alone does not imply liking.' };
+    const prefs = req.query.season ? (await db().query<{ liked_notes: string[]; avoided_notes: string[];choices:Choices }>('SELECT liked_notes,avoided_notes,choices FROM app.seasonal_preferences WHERE owner_id=$1 AND season=$2', [owner, req.query.season])).rows[0] : undefined;
+    const choices={...emptyChoices(),...prefs?.choices};
+    const names=(group:Record<string,string>,affinity:string)=>Object.entries(group).filter(([,a])=>a===affinity).map(([n])=>noteKey(n));
+    const liked = [...(prefs?.liked_notes??[]),...names(choices.accords,'love')]; const avoided = [...(prefs?.avoided_notes??[]),...names(choices.accords,'avoid')];
+    const lovedFamilies=names(choices.families,'love');const avoidedFamilies=names(choices.families,'avoid');const lovedTraits=names(choices.traits,'love');const avoidedTraits=names(choices.traits,'avoid');
+    if (!likedRows.rows.length && !liked.length&&!lovedFamilies.length&&!lovedTraits.length) return { items: [], mode, engine: 'structured', reason: 'Not enough explicit preferences yet. Rate a fragrance positively or choose seasonal likes; ownership alone does not imply liking.' };
     const anchors = await Promise.all(likedRows.rows.slice(0, 100).map(async r => {
       const f = await getFragrance(db(), r.fragrance_id); return f ? { f, fields: await effectiveProfile(db(), f.id) } : null;
     }));
@@ -46,6 +51,10 @@ export async function discoveryRoutes(base: FastifyInstance, deps: { pool: Rotat
     for (const f of candidates) {
       if (excluded.has(f.id) || usable.some(a => a.f.id === f.id)) continue;
       const fields = await effectiveProfile(db(), f.id); const source = embeddingInput(f, fields);
+      const family=typeof fields.family?.value==='string'?noteKey(fields.family.value):'';
+      const expressed=deriveDna(fields).traits.filter(t=>t.score!==null&&t.score>=3).map(t=>t.code);
+      if(avoidedFamilies.includes(family)||expressed.some(t=>avoidedTraits.includes(t)))continue;
+      const extraFit=lovedFamilies.includes(family)||expressed.some(t=>lovedTraits.includes(t))?0.25:0;
       let semantic: number | null = null;
       if (online && usable.length) {
         const validAnchors = usable.map(a => ({ id: a.f.id, hash: embeddingInput(a.f, a.fields).hash }));
@@ -57,7 +66,7 @@ export async function discoveryRoutes(base: FastifyInstance, deps: { pool: Rotat
         const distance = result.rows[0]?.distance;
         if (typeof distance === 'number' && Number.isFinite(distance)) semantic = 1 - distance;
       }
-      const ranked = rankCandidate(candidateEvidence(f, fields), usable.map(a => candidateEvidence(a.f, a.fields)), liked, avoided, mode, semantic);
+      const ranked = rankCandidate(candidateEvidence(f, fields), usable.map(a => candidateEvidence(a.f, a.fields)), liked, avoided, mode, semantic,extraFit);
       if (ranked.eligible) items.push({ fragrance: f, ...ranked });
     }
     items.sort((a, b) => b.rank - a.rank || a.fragrance.id.localeCompare(b.fragrance.id));

@@ -13,19 +13,19 @@ export function embeddingInput(f: FragranceRow, fields: Record<string, Effective
 }
 export const overlap = (a: string[], b: string[]) => { const x = new Set(a); const y = new Set(b); const union = new Set([...x, ...y]); return union.size ? [...x].filter(n => y.has(n)).length / union.size : 0; };
 export interface CandidateEvidence { id: string; notes: string[]; family: string | null }
-export function rankCandidate(candidate: CandidateEvidence, anchors: CandidateEvidence[], liked: string[], avoided: string[], mode: 'similar' | 'different', semantic: number | null) {
+export function rankCandidate(candidate: CandidateEvidence, anchors: CandidateEvidence[], liked: string[], avoided: string[], mode: 'similar' | 'different', semantic: number | null, extraFit=0) {
   const rejected = candidate.notes.some(n => avoided.map(noteKey).includes(n));
   const best = Math.max(0, ...anchors.map(a => overlap(candidate.notes, a.notes)));
   const preferenceOverlap = overlap(candidate.notes, liked.map(noteKey));
   const familyFit = anchors.some(a => a.family && a.family === candidate.family) ? 1 : 0;
   const structured = Math.max(best, preferenceOverlap);
-  const fit = Math.max(structured, familyFit * 0.25);
+  const fit = Math.max(structured, familyFit * 0.25, extraFit);
   // Difference is bounded by meaningful preference fit, never pure unrelatedness.
   const eligible = !rejected && fit > 0;
-  const closeness = semantic === null ? structured : 0.7 * structured + 0.3 * Math.max(0, Math.min(1, semantic));
+  const closeness = semantic === null ? Math.max(structured,extraFit) : 0.7 * Math.max(structured,extraFit) + 0.3 * Math.max(0, Math.min(1, semantic));
   const rank = mode === 'similar' ? 0.8 * closeness + 0.2 * familyFit : 0.65 * fit + 0.35 * (1 - closeness);
   return { eligible, rank, structuredOverlap: structured, semanticRelatedness: semantic,
-    reason: rejected ? 'Contains an explicitly avoided note.' : !eligible ? 'No evidence of fit with explicit preferences.' : `${mode === 'different' ? 'A different direction with' : 'Shares'} ${structured > 0 ? 'source-listed notes' : 'a source-listed family'} from your explicit preferences.`,
+    reason: rejected ? 'Contains an explicitly avoided note.' : !eligible ? 'No evidence of fit with explicit preferences.' : `${mode === 'different' ? 'A different direction with' : 'Shares'} ${structured > 0 ? 'source-listed notes' : 'compatible source-backed descriptors'} from your explicit preferences.`,
     novelNotes: candidate.notes.filter(n => !anchors.some(a => a.notes.includes(n)) && !liked.map(noteKey).includes(n)) };
 }
 export function candidateEvidence(f: FragranceRow, fields: Record<string, EffectiveField>): CandidateEvidence {

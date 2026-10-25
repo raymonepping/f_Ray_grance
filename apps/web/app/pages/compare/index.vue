@@ -4,6 +4,7 @@ import type { Comparison } from '~~/shared/dna';
 usePageHeader({ title: 'Compare' });
 const route = useRoute(); const router = useRouter(); const selection = useCompare();
 const a = ref(''); const b = ref(''); const q = ref('');
+const season = ref('');
 const options = ref<Fragrance[]>([]); const data = ref<Comparison | null>(null);
 const error = ref(''); const loading = ref(false); const expanded = ref(false); const advanced = ref(false);
 let version = 0; let searchVersion = 0; let timer: ReturnType<typeof setTimeout> | undefined;
@@ -27,7 +28,7 @@ async function compare() {
   if (a.value === b.value) { loading.value = false; error.value = 'Choose two different fragrances.'; return; }
   loading.value = true;
   try {
-    const result = await apiFetch<Comparison>('/api/v1/compare', { method: 'POST', body: { fragranceIds: [a.value, b.value] } });
+    const result = await apiFetch<Comparison>('/api/v1/compare', { method: 'POST', body: { fragranceIds: [a.value, b.value],...(season.value?{season:season.value}:{}) } });
     if (v === version) data.value = result;
   } catch (e) { if (v === version) error.value = e instanceof ApiFailure ? e.message : 'Comparison unavailable. Try again.'; }
   finally { if (v === version) loading.value = false; }
@@ -35,12 +36,13 @@ async function compare() {
 function setFromRoute() {
   a.value = typeof route.query.a === 'string' ? route.query.a : '';
   b.value = typeof route.query.b === 'string' ? route.query.b : '';
+  season.value = typeof route.query.season === 'string' ? route.query.season : '';
   selection.set([a.value, b.value].filter(Boolean)); void compare();
 }
 watch(() => route.fullPath, setFromRoute);
 async function select() {
   selection.set([a.value, b.value].filter(Boolean));
-  await router.replace({ path: '/compare', query: { ...(a.value ? { a: a.value } : {}), ...(b.value ? { b: b.value } : {}) } });
+  await router.replace({ path: '/compare', query: { ...(a.value ? { a: a.value } : {}), ...(b.value ? { b: b.value } : {}),...(season.value?{season:season.value}:{}) } });
 }
 function change(side: string, event: Event) { if (side === 'A') a.value = (event.target as HTMLSelectElement).value; else b.value = (event.target as HTMLSelectElement).value; void select(); }
 function swap() { [a.value, b.value] = [b.value, a.value]; void select(); }
@@ -71,6 +73,7 @@ const rows = computed(() => data.value?.fragrances[0].traits.filter((t, i) => i 
         </div>
       </div>
       <div class="flex flex-wrap gap-2">
+        <label class="flex min-w-0 items-center gap-2 text-sm">Personal season<select v-model="season" class="tap min-w-0 rounded-control border border-line bg-sunken px-2" @change="select"><option value="">All seasons</option><option v-for="s in ['spring','summer','autumn','winter']" :key="s" :value="s">{{ s }}</option></select></label>
         <button type="button" class="tap rounded-control border border-line px-3" @click="swap">Swap A / B</button>
         <button type="button" class="tap rounded-control border border-line px-3" @click="clear">Clear selection</button>
       </div>

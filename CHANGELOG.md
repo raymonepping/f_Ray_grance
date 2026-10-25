@@ -10,6 +10,8 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Added
 
+- **Phase 09 — Seasonal DNA and portability.** Four explicit seasonal profiles and fragrance affinities, season-aware collection/Compare/Discover, private versioned JSON export, validated read-only import preview and conflict-safe additive import with stable history identities. Live apply remains gated on independent recovery evidence.
+
 - **Phase 08 — Local discovery.** Digest-pinned Ollama embeddings with model/dimension/source checks, explicit indexing, exact pgvector cosine search, preference-driven similar/different suggestions and structured offline fallback.
 
 - **Phase 07 — DNA and Compare.** Exactly two verified identities, sourced compact/full pyramids, eleven versioned indicative traits, owner-scoped seasonal context, deterministic explanations, session selection/tray and responsive comparison with URL restoration.

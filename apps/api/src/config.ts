@@ -10,6 +10,7 @@ export interface Config {
   lockout: { maxFailures: number; windowMinutes: number };
   loginRatePerMinute: number;
   logLevel: string;
+  importEnabled: boolean;
 }
 
 export class ConfigError extends Error {}
@@ -67,5 +68,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     },
     loginRatePerMinute: int(env, 'FRAY_LOGIN_RATE_PER_MINUTE', 10, 1, 1000),
     logLevel: str(env, 'FRAY_LOG_LEVEL', 'info'),
+    importEnabled: env.FRAY_IMPORT_ENABLED === 'true',
   };
 }

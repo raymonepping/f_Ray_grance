@@ -111,7 +111,7 @@ export async function fragranceRoutes(base: FastifyInstance, deps: { pool: Rotat
     '/fragrances/drafts',
     { schema: { body: Type.Object({ brand: Name, name: Name, concentration: Type.Optional(Conc) }, { additionalProperties: false }) } },
     async (req, reply) => {
-      const out = await createDraft(db(), { brand: req.body.brand, name: req.body.name, concentration: req.body.concentration ?? null });
+      const out = await createDraft(db(), { brand: req.body.brand, name: req.body.name, concentration: req.body.concentration ?? null, ownerId: req.session!.owner.id });
       return reply.code(out.created ? 201 : 200).send({ ...out, identityStatus: 'draft' });
     },
   );
@@ -155,7 +155,7 @@ export async function fragranceRoutes(base: FastifyInstance, deps: { pool: Rotat
     async (req, reply) => {
       if (!(await getFragrance(db(), req.params.id))) throw new ApiError('NOT_FOUND', 'Fragrance not found');
       const field = req.body.field as (typeof USER_EDITABLE_FIELDS)[number];
-      const claimId = await addUserClaim(db(), req.params.id, field, req.body.value);
+      const claimId = await addUserClaim(db(), req.params.id, field, req.body.value, req.session!.owner.id);
       return reply.code(201).send({ claimId, origin: 'user' });
     },
   );

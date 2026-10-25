@@ -1,3 +1,4 @@
+import { EXPECTED_SCHEMA_VERSION } from './helpers.js';
 import { beforeAll, afterAll, describe, it, expect } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
@@ -15,7 +16,7 @@ const { key } = sessionKey();
 async function headers(id: string) { const s = await createSession(pool.get(), key, id, 1); return { cookie: `${SESSION_COOKIE}=${s.token}; ${CSRF_COOKIE}=${s.csrfToken}`, origin: 'http://localhost:8470', 'x-csrf-token': s.csrfToken }; }
 beforeAll(async () => {
   pool = await runtimePool(); owner = await seedOwner(pool.get()); h = await headers(owner); other = await headers(await seedOwner(pool.get()));
-  app = await buildApp({ config: testConfig(), pool, key, expectedSchemaVersion: 2, logger: false });
+  app = await buildApp({ config: testConfig(), pool, key, expectedSchemaVersion: EXPECTED_SCHEMA_VERSION, logger: false });
   const brandId = await upsertBrand(pool.get(), uniq('DNA'));
   a = await createFragrance(pool.get(), { brandId, name: 'Alpha', identityStatus: 'verified' });
   b = await createFragrance(pool.get(), { brandId, name: 'Beta', identityStatus: 'verified' });

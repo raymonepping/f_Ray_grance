@@ -107,6 +107,11 @@
       "sha256": "a84d4a4cf11e80856ed21b8c588908c87ba3dbc7f4ef81bf78fc536e2bbbf2b1"
     },
     {
+      "path": "prompts/Claude/11_scent_academy_and_tutor.md",
+      "bytes": 16323,
+      "sha256": "cd0fe042484dbcf655f7e41e719bd428b1756e4e3a5cf67d4f85c4c04db6dffc"
+    },
+    {
       "path": "prompts/Codex/00_preflight_and_state.md",
       "bytes": 9889,
       "sha256": "8f7560c10787350bb5f1372825431ffaccde422494ebdde169d6aa008d2a1e72"
@@ -160,6 +165,11 @@
       "path": "prompts/Codex/10_recovery_security_and_release_gate.md",
       "bytes": 9900,
       "sha256": "330cc35c7a09a726595c3381c56586c60735cd9b50b471d8f0a54a0c50bdd98e"
+    },
+    {
+      "path": "prompts/Codex/11_scent_academy_and_tutor.md",
+      "bytes": 16273,
+      "sha256": "847358f7f432fae884604c1e6fe35aedcf67fd0a7c1e181dbd0a0740cbac3c3c"
     },
     {
       "path": "prompts/IBM_Bob/00_preflight_and_state.md",
@@ -218,8 +228,8 @@
     },
     {
       "path": "prompts/README.md",
-      "bytes": 6151,
-      "sha256": "246d6264ce9d8b20e606d7a4223dcfda6f84106cbb5b129ab19da166d53285c3"
+      "bytes": 6795,
+      "sha256": "66f6ffec462f006cf70b188c4cd6c226caa1ff455017ab156d6e61fd58234faf"
     },
     {
       "path": "prompts/STATE_CONTRACT.md",

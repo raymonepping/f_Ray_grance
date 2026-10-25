@@ -17,12 +17,14 @@ const filters = [{ key: 'all', label: 'All' }, ...(Object.keys(STATE_LABEL) as C
 const active = computed(() => (typeof route.query.state === 'string' ? route.query.state : 'all'));
 const q = ref(typeof route.query.q === 'string' ? route.query.q : '');
 const sort = ref(typeof route.query.sort === 'string' ? route.query.sort : 'recent');
+const season = ref(typeof route.query.season === 'string' ? route.query.season : '');
 let timer: ReturnType<typeof setTimeout> | undefined;
 watch(q, () => {
   clearTimeout(timer);
   timer = setTimeout(load, 300); // debounce
 });
 watch(sort, load);
+watch(season, load);
 const items = ref<Entry[]>([]);
 const error = ref<string | null>(null);
 const loading = ref(true);
@@ -37,6 +39,7 @@ async function load() {
     if (active.value !== 'all') params.set('state', active.value);
     if (q.value.trim()) params.set('q', q.value.trim());
     params.set('sort', sort.value);
+    if(season.value) params.set('season',season.value);
     const result = await apiFetch<{ items: Entry[] }>(`/api/v1/collection?${params}`);
     if (version === requestVersion) items.value = result.items;
   } catch (e) {
@@ -63,6 +66,10 @@ const owned = computed(() => items.value.filter((i) => i.state === 'owned').leng
       <div class="flex min-w-0 flex-1 flex-col gap-1">
         <label for="collection-search" class="text-sm font-semibold">Search your collection</label>
         <input id="collection-search" v-model="q" type="search" placeholder="Brand, name or barcode" class="tap rounded-control border border-line bg-solid px-3 text-ink placeholder:text-ink-3" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label for="collection-season" class="text-sm font-semibold">Personal season</label>
+        <select id="collection-season" v-model="season" class="tap rounded-control border border-line bg-solid px-3 text-ink"><option value="">All seasons</option><option v-for="s in ['spring','summer','autumn','winter']" :key="s" :value="s">{{ s }}</option></select>
       </div>
       <div class="flex flex-col gap-1">
         <label for="collection-sort" class="text-sm font-semibold">Sort</label>

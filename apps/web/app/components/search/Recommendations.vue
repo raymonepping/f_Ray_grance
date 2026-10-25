@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Fragrance } from '~~/shared/types';
 interface Suggestions { items: { fragrance: Fragrance; reason: string; novelNotes: string[]; semanticRelatedness: number | null }[]; engine: string; reason: string; limitation?: string }
-const mode = ref('similar'); const season = ref(''); const result = ref<Suggestions | null>(null); const error = ref(''); const loading = ref(false);
+const mode = ref('similar'); const season = ref(typeof useRoute().query.season === 'string' ? String(useRoute().query.season) : ''); const result = ref<Suggestions | null>(null); const error = ref(''); const loading = ref(false);
 let version = 0;
 async function load() {
   const v = ++version; loading.value = true; error.value = '';

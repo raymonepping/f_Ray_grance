@@ -5,7 +5,7 @@
     "origin": "https://github.com/raymonepping/f_Ray_grance.git",
     "branch": "main"
   },
-  "last_successful_phase": "08",
+  "last_successful_phase": "09",
   "phases": {
     "00": {
       "status": "completed",
@@ -338,7 +338,7 @@
         "Deterministic API and browser acceptance tests"
       ],
       "finished_at_utc": "2026-10-25T09:06:26Z",
-      "ci": "not_checked",
+      "ci": "passed",
       "tests": {
         "make_test": "PASS",
         "e2e": "26/26 PASS including both themes at six Compare widths",
@@ -353,7 +353,8 @@
           "Parfums de Marly Layton"
         ]
       },
-      "blockers": []
+      "blockers": [],
+      "ci_note": "Observed GitHub Detect secrets completed/success for acadc10fa6a7a8ae4a2b1e1f86c3e91149e8eebe."
     },
     "08": {
       "status": "completed",
@@ -369,7 +370,7 @@
         "API and browser tests plus live embedding evidence"
       ],
       "finished_at_utc": "2026-10-25T09:15:31Z",
-      "ci": "not_checked",
+      "ci": "passed",
       "tests": {
         "make_test": "PASS (API 127; web 24)",
         "e2e": "27/27 PASS",
@@ -382,10 +383,11 @@
         "model_revision": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
         "dimension": 768
       },
-      "blockers": []
+      "blockers": [],
+      "ci_note": "Observed GitHub Detect secrets completed/success for 5fad65fe952f15748ffb4be3c2c6f1ba8240a5d5."
     },
     "09": {
-      "status": "blocked",
+      "status": "completed",
       "agent": "codex",
       "prompt_id": "FRAY-CODEX-09",
       "started_at_utc": "2026-10-25T09:16:38Z",
@@ -397,21 +399,22 @@
         "Versioned JSON export and previewed additive import",
         "History identities and deterministic portability roundtrip tests"
       ],
-      "finished_at_utc": "2026-10-25T09:32:17Z",
+      "finished_at_utc": "2026-10-25T09:41:09Z",
       "ci": "not_checked",
       "tests": {
-        "make_test": "FAIL: unexpected external Phase 11 prompt files are outside frozen manifest",
+        "make_test": "PASS",
         "workspace_typecheck": "PASS",
-        "unit_integration": "PASS, including independent-database portability roundtrip",
+        "unit_integration": "PASS including HTTP null-preservation, legacy seasonal choices and independent-database roundtrip",
         "infra_static": "PASS",
         "secret_scan": "PASS",
-        "live_phase09_deploy": "NOT RUN: quality gate stopped chained deployment",
-        "phase09_browser": "NOT RUN"
+        "live_phase09_deploy": "PASS; migration 0003; idempotent configure changed=0",
+        "phase09_browser": "28/28 PASS (31.7s)",
+        "health": "PASS",
+        "manual_backup": "PASS host archive; no independent copy claim"
       },
-      "blockers": [
-        "External writer introduced Phase 11 prompts during Phase 09. Operator will pause the writer; exclusive ownership and a coherent documentation baseline must be confirmed before resuming."
-      ],
-      "notes": "Application implementation preserved locally; commit only blocked state and report. Live deployment remains Phase 08. Tailscale deferred per ADR-009."
+      "blockers": [],
+      "notes": "External writer finished; future Phase 11 prompts preserved as explicitly registered deferred drafts. Strict import validation fixed after browser evidence. Live apply stays disabled until independent recovery.",
+      "resume_head": "bed67d02e8f7b6817945906fa1302f4b5acca1eb"
     }
   },
   "accepted_adrs": [
@@ -434,5 +437,5 @@
       "status": "deferred_by_operator"
     }
   ],
-  "updated_at_utc": "2026-10-25T09:32:17Z"
+  "updated_at_utc": "2026-10-25T09:41:09Z"
 }

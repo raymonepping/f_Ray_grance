@@ -14,6 +14,7 @@ import json
 import re
 import sys
 from pathlib import Path
+from prompt_catalog import accepted_prompts
 
 r = Path(__file__).resolve().parents[1]
 spec = r / "spec"
@@ -83,7 +84,7 @@ for p in r.rglob("*.md"):
             broken.append((str(p.relative_to(r)), target))
         n += 1
 for agent in ["Claude", "Codex", "IBM_Bob"]:
-    prompts = list((r / "prompts" / agent).glob("*.md"))
+    prompts = accepted_prompts(agent)
     assert len(prompts) == 11
     for f in prompts:
         s = f.read_text()

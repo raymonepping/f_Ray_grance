@@ -46,3 +46,7 @@ Use one master launcher instead of manually selecting a phase: `prompts/launcher
 
 ## Important `commit_gh` behavior
 `./scripts/commit_gh --message "fray: 00 preflight" --paths state/BUILD_STATE.json reports/00_preflight.md` is an example. Use actual changed files, avoid directories with unrelated modifications, and inspect all staged changes. The helper uses the existing authenticated GitHub `origin`; it does **not** create a repo, resolve merge conflicts or bypass branch protections. `--retry-push` is for a committed-but-not-pushed local HEAD. Where branch protection forbids direct pushes to `main`, leave the phase blocked until the operator adjusts the policy or explicitly chooses a compliant workflow. Never circumvent protection.
+
+## Deferred future drafts
+
+The Claude and Codex `11_scent_academy_and_tutor.md` files are preserved future drafts, hash-verified alongside the accepted documentation. They are explicitly registered in `scripts/prompt_catalog.py`; unknown additional phase files still fail validation. They do not extend the accepted Phase 00–10 sequence or the build-state schema. The referenced `SCENT_ACADEMY_SPEC.md` and Phase 11 addendum are not yet present. Accept that specification and update the phase/state/validation contracts before executing Phase 11, after Phase 10 genuinely completes. Tailscale remains deferred by the operator under ADR-009.

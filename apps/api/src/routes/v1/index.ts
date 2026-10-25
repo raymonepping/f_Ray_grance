@@ -13,11 +13,13 @@ import { collectionRoutes } from './collection.js';
 import { compareRoutes } from './compare.js';
 import { discoveryRoutes } from './discovery.js';
 import type { OllamaClient } from '../../providers/ollama.js';
+import { seasonRoutes } from './seasons.js';
+import { portabilityRoutes } from './portability.js';
 
 const Uuid = Type.String({ format: 'uuid' });
 
 // Registered inside its own encapsulated context so requireOwner applies to these routes only.
-export async function v1Routes(base: FastifyInstance, deps: { pool: RotatingPool; scento: ScentoClient; ollama: OllamaClient }): Promise<void> {
+export async function v1Routes(base: FastifyInstance, deps: { pool: RotatingPool; scento: ScentoClient; ollama: OllamaClient; importEnabled: boolean }): Promise<void> {
   const app = base.withTypeProvider<TypeBoxTypeProvider>();
   // onRequest (not preHandler): anonymous callers get 401 before body validation can reveal schemas.
   app.addHook('onRequest', requireOwner);
@@ -26,6 +28,8 @@ export async function v1Routes(base: FastifyInstance, deps: { pool: RotatingPool
   await app.register(collectionRoutes, { pool: deps.pool });
   await app.register(compareRoutes, { pool: deps.pool });
   await app.register(discoveryRoutes, { pool: deps.pool, ollama: deps.ollama });
+  await app.register(seasonRoutes, { pool: deps.pool });
+  await app.register(portabilityRoutes, { pool: deps.pool, importEnabled: deps.importEnabled });
   const db = () => deps.pool.get();
 
   app.get('/session', async (req) => ({ owner: req.session!.owner }));

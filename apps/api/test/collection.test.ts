@@ -1,3 +1,4 @@
+import { EXPECTED_SCHEMA_VERSION } from './helpers.js';
 // Collection CRUD + history + variants over HTTP (disposable PG18, synthetic data).
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { randomUUID } from 'node:crypto';
@@ -35,7 +36,7 @@ beforeAll(async () => {
   rp = await runtimePool();
   // Scento is never needed for the collection: a client that always fails proves it.
   const scento = new ScentoClient({ fetch: async () => { throw new TypeError('offline'); }, sleep: async () => {} });
-  app = await buildApp({ config: testConfig(), pool: rp, key, scento, expectedSchemaVersion: 2, logger: false });
+  app = await buildApp({ config: testConfig(), pool: rp, key, scento, expectedSchemaVersion: EXPECTED_SCHEMA_VERSION, logger: false });
   A = await headersFor(await seedOwner(rp.get()));
   B = await headersFor(await seedOwner(rp.get()));
   const brand = await upsertBrand(rp.get(), uniq('Chanel'));

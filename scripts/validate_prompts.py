@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 from pathlib import Path
+from prompt_catalog import accepted_prompts
 
 root = Path(__file__).resolve().parents[1]
 phases = {"00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10"}
 for agent in ("Codex", "Claude", "IBM_Bob"):
-    docs = sorted((root / "prompts" / agent).glob("*.md"))
+    docs = accepted_prompts(agent)
     assert len(docs) == 11, (agent, len(docs))
     assert {p.name.split("_")[0] for p in docs} == phases
     for doc in docs:

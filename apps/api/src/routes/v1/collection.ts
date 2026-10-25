@@ -17,6 +17,7 @@ import {
   updateEntry,
 } from '../../repo/collection.js';
 import type { RotatingPool } from '../../db/pool.js';
+import { SeasonSchema } from '../../domain/seasons.js';
 
 const Uuid = Type.String({ format: 'uuid' });
 const State = Type.Union(COLLECTION_STATES.map((s) => Type.Literal(s)));
@@ -43,13 +44,14 @@ export async function collectionRoutes(base: FastifyInstance, deps: { pool: Rota
           {
             state: Type.Optional(State),
             q: Type.Optional(Type.String({ maxLength: 120 })),
+            season: Type.Optional(SeasonSchema),
             sort: Type.Optional(Type.Union([Type.Literal('recent'), Type.Literal('name'), Type.Literal('brand'), Type.Literal('rating')])),
           },
           { additionalProperties: false },
         ),
       },
     },
-    async (req) => ({ items: await listEntries(db(), req.session!.owner.id, req.query.state, { q: req.query.q ?? '', sort: req.query.sort ?? 'recent' }) }),
+    async (req) => ({ items: await listEntries(db(), req.session!.owner.id, req.query.state, { q: req.query.q ?? '', sort: req.query.sort ?? 'recent', ...(req.query.season ? {season:req.query.season} : {}) }) }),
   );
 
   app.post(

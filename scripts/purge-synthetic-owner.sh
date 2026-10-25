@@ -20,7 +20,8 @@ WITH o AS (SELECT id FROM app.owners WHERE username = :'u'),
      d3 AS (DELETE FROM app.seasonal_preferences WHERE owner_id IN (SELECT id FROM o) RETURNING 1),
      d4 AS (DELETE FROM app.season_fragrances WHERE owner_id IN (SELECT id FROM o) RETURNING 1),
      d5 AS (DELETE FROM app.sessions WHERE owner_id IN (SELECT id FROM o) RETURNING 1),
-     d6 AS (DELETE FROM app.owner_credentials WHERE owner_id IN (SELECT id FROM o) RETURNING 1)
+     d6 AS (DELETE FROM app.owner_credentials WHERE owner_id IN (SELECT id FROM o) RETURNING 1),
+     d7 AS (UPDATE app.source_claims SET corrected_by_owner=NULL WHERE corrected_by_owner IN (SELECT id FROM o) RETURNING 1)
 SELECT (SELECT count(*) FROM d1) AS events, (SELECT count(*) FROM d2) AS entries,
        (SELECT count(*) FROM d3) + (SELECT count(*) FROM d4) AS season_rows, (SELECT count(*) FROM d5) AS sessions;
 DELETE FROM app.login_attempts WHERE username = :'u';
