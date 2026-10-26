@@ -19,15 +19,29 @@ interface Spectrum {
 const scope = ref<'owned' | 'owned_and_samples'>('owned');
 const data = ref<Spectrum | null>(null);
 const error = ref('');
+// Only the latest request may update the page: a slower response for a scope the owner has already
+// left (or one arriving after navigation) is discarded, and its request is aborted.
+let generation = 0;
+let inflight: AbortController | null = null;
 async function load() {
+  const mine = ++generation;
+  inflight?.abort();
+  const ctrl = (inflight = new AbortController());
+  const want = scope.value;
   error.value = '';
+  data.value = null; // the loading state, never counts from the previous scope
   try {
-    data.value = await apiFetch<Spectrum>(`/api/v1/profile/spectrum?scope=${scope.value}`);
+    const got = await apiFetch<Spectrum>(`/api/v1/profile/spectrum?scope=${want}`, { signal: ctrl.signal });
+    if (mine === generation && got.scope === want) data.value = got;
   } catch (e) {
-    error.value = e instanceof ApiFailure ? e.message : 'Spectrum unavailable';
+    if (mine === generation && !ctrl.signal.aborted) error.value = e instanceof ApiFailure ? e.message : 'Spectrum unavailable';
   }
 }
 watch(scope, load, { immediate: true });
+onBeforeUnmount(() => {
+  generation++;
+  inflight?.abort();
+});
 const pad = (n: number) => String(n).padStart(2, '0');
 const maxFamily = computed(() => Math.max(1, ...(data.value?.families.map((f) => f.count) ?? [1])));
 </script>

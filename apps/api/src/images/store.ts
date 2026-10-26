@@ -1,7 +1,9 @@
 // Persistent asset store on the mounted volume (outside Git and outside the disposable container).
 // Files are content-addressed: <first two hex>/<sha256> for the original and <...>.display.webp for
-// the derivative. Writes are atomic (temp file + rename) and idempotent for identical bytes.
-import { mkdir, rename, rm, stat, writeFile } from 'node:fs/promises';
+// the derivative. Writes are atomic (temp file + rename) and idempotent for identical bytes. The app
+// never deletes files: unreferenced files are collected by `make backup` under its lock, and only
+// after a grace period, so a file being (re)stored is never collected (ADR-016).
+import { mkdir, rename, stat, utimes, writeFile } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 
@@ -29,11 +31,6 @@ export class AssetStore {
     return rel;
   }
 
-  async remove(rel: string): Promise<void> {
-    await rm(this.resolve(rel, 'original'), { force: true });
-    await rm(this.resolve(rel, 'display'), { force: true });
-  }
-
   async ready(): Promise<boolean> {
     try {
       return (await stat(this.root)).isDirectory();
@@ -44,7 +41,13 @@ export class AssetStore {
 
   private async write(target: string, bytes: Buffer): Promise<void> {
     try {
-      if ((await stat(target)).size === bytes.length) return; // same content address already stored
+      if ((await stat(target)).size === bytes.length) {
+        // Same content address already stored: refresh its time so the backup-time collector's grace
+        // period starts again before the new record references it.
+        const now = new Date();
+        await utimes(target, now, now);
+        return;
+      }
     } catch {
       /* not stored yet */
     }

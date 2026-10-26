@@ -9,7 +9,8 @@
 // never be used to make the server fetch a caller-supplied URL.
 import { randomUUID } from 'node:crypto';
 import { normalizeGtin } from '../domain/gtin.js';
-import { namesExactly } from '../domain/research.js';
+import { mapConcentration } from '../domain/concentration.js';
+import { checkExactIdentity } from '../domain/exact-identity.js';
 import type { TinyFishClient } from '../providers/tinyfish.js';
 
 export interface Candidate {
@@ -144,7 +145,8 @@ export async function lookupBarcode(input: string, http: typeof fetch = fetch): 
 /** Web search candidates: exact-name result pages and the image each page declares. */
 export async function searchImageCandidates(tf: TinyFishClient, q: { brand: string; name: string; concentration: string | null }) {
   const results = await tf.search(`${q.brand} ${q.name}${q.concentration ? ` ${q.concentration.replace(/_/g, ' ')}` : ''} perfume bottle`);
-  const pages = results.filter((r) => namesExactly(r.title, q.name) && !/(youtube|tiktok|instagram|facebook|reddit)\./i.test(r.url)).slice(0, 8);
+  const id = { brand: q.brand, name: q.name, concentration: mapConcentration(q.concentration) };
+  const pages = results.filter((r) => checkExactIdentity(r.title, id).exact && !/(youtube|tiktok|instagram|facebook|reddit)\./i.test(r.url)).slice(0, 8);
   const fetched = await tf.fetchSelected(
     pages.map((p) => p.url),
     ['meta[property="og:image"]', 'meta[property="og:image:secure_url"]', 'meta[name="twitter:image"]', 'link[rel="image_src"]'],

@@ -4,6 +4,7 @@
 // every proposal and saved values carry origin "research", below every other source.
 import { brandKey } from './brands.js';
 import { mapConcentration, type Concentration } from './concentration.js';
+import { checkExactIdentity } from './exact-identity.js';
 import { normalizeIdentity } from './identity.js';
 import type { SearchResult } from '../providers/tinyfish.js';
 
@@ -16,7 +17,10 @@ export function researchQuery(brand: string, name: string, concentration: string
   return `${brand} ${name}${concentration ? ` ${concentration.replace(/_/g, ' ')}` : ''} perfume notes`.replace(/\s+/g, ' ').trim();
 }
 
-/** True when the text names exactly this fragrance: the full normalized name as a contiguous phrase. */
+/**
+ * True when the text contains the full normalized name as a contiguous phrase. A phrase match is NOT
+ * exact identity ("Sauvage Very Cool Spray" contains "Sauvage"); use checkExactIdentity for that.
+ */
 export function namesExactly(text: string, name: string): boolean {
   const t = ` ${normalizeIdentity(text) ?? ''} `;
   const n = normalizeIdentity(name);
@@ -54,7 +58,7 @@ export function selectPages(results: SearchResult[], brand: string, name: string
     }
   };
   return results
-    .filter((r) => host(r.url) && !SKIP_SITES.test(host(r.url)) && namesExactly(r.title, name) && sameProduct(r.title, knownConcentration, name))
+    .filter((r) => host(r.url) && !SKIP_SITES.test(host(r.url)) && checkExactIdentity(r.title, { brand, name, concentration: knownConcentration }).exact)
     .map((r) => ({ r, official: bk.length > 2 && host(r.url).replace(/[^a-z0-9]/g, '').includes(bk) }))
     .sort((a, b) => Number(b.official) - Number(a.official) || a.r.position - b.r.position)
     .slice(0, max)
@@ -112,14 +116,18 @@ const cleanList = (v: unknown): string[] =>
 const text = (v: unknown, max: number) => (typeof v === 'string' ? v.replace(/[\u0000-\u001f<>]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max) : '');
 
 /** Validate one agent result. Anything unverifiable is dropped, never repaired or guessed. */
-export function validateFinding(raw: Record<string, unknown>, page: { url: string; siteName: string }, name: string, knownConcentration: Concentration | null = null): Finding {
+export function validateFinding(raw: Record<string, unknown>, page: { url: string; siteName: string }, identity: { brand: string; name: string; concentration: Concentration | null }): Finding {
+  const { name } = identity;
   const productNameOnPage = text(raw.product_name_on_page, 200);
   const base = { pageUrl: page.url, siteName: page.siteName, productNameOnPage, evidence: text(raw.evidence, 400) || null };
-  if (raw.exact_match !== true || !namesExactly(productNameOnPage, name)) {
+  // The agent's exact_match flag is necessary but never sufficient: the product name it read must
+  // pass the same exact-identity rule as page selection (brand, name, concentration, no extra words).
+  if (raw.exact_match !== true) {
     return { ...base, proposals: [], rejected: `The page is not about exactly "${name}" (it names "${productNameOnPage || 'something else'}").` };
   }
-  if (!sameProduct(productNameOnPage, knownConcentration, name)) {
-    return { ...base, proposals: [], rejected: `The page is about "${productNameOnPage}", a different concentration from yours, so it is a different product.` };
+  const check = checkExactIdentity(productNameOnPage, identity);
+  if (!check.exact) {
+    return { ...base, proposals: [], rejected: `The page is about "${productNameOnPage || 'something else'}", which ${check.reason}; its details are not used for "${name}".` };
   }
   const proposals: Proposal[] = [];
   const seen = cleanList(raw.concentrations_seen);

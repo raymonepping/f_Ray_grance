@@ -114,16 +114,14 @@ DELETE FROM app.sessions WHERE owner_id IN (SELECT id FROM purge_owner);
 DELETE FROM app.login_attempts WHERE username = :'u';
 COMMIT;
 SQL
-  n=0
-  for rel in $images; do
-    [[ "$rel" =~ ^[0-9a-f]{2}/[0-9a-f]{64}$ ]] || continue
-    "$PODMAN" exec fray-api rm -f "/var/lib/fray/images/$rel" "/var/lib/fray/images/$rel.display.webp" && n=$((n + 1))
-  done
+  # Image files are not removed here: they are content-addressed and may be shared with another
+  # owner. `make backup` collects unreferenced files under its lock (ADR-016).
+  n=$(wc -w <<<"$images" | tr -d ' ')
   left="$(summary "$u")"
   echo "$left"
   [[ "$left" =~ entries=0\ history=0\ seasons=0\ academy=0\ practice=0\ images=0\ corrections=0\ sessions=0 ]] || {
     echo "PURGE_INCOMPLETE: $u still has rows (see above)" >&2
     exit 1
   }
-  echo "PURGE_OK $u (account kept; image files removed: $n; sign in again)"
+  echo "PURGE_OK $u (account kept; image records removed: $n, files collected by the next make backup; sign in again)"
 done

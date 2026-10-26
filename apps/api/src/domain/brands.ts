@@ -31,3 +31,11 @@ export function canonicalBrand(name: string): string {
 }
 
 export const FOCUS_BRANDS = Object.keys(FOCUS);
+
+/** Every normalised way of writing this house (longest first); unknown brands give themselves. */
+export function brandAliases(name: string): string[] {
+  const key = brandKey(name);
+  const out = new Set<string>([key, normalizeIdentity(name) ?? '']);
+  for (const [alias, canonical] of INDEX) if (normalizeIdentity(canonical) === key) out.add(alias);
+  return [...out].filter(Boolean).sort((a, b) => b.length - a.length);
+}

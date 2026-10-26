@@ -13,7 +13,8 @@ import type { ImageSources, SourceKind } from '../../images/sources.js';
 import type { AssetStore } from '../../images/store.js';
 import sharp from 'sharp';
 import { fetchImage as defaultFetchImage, type FetchOptions } from '../../images/net.js';
-import { namesExactly } from '../../domain/research.js';
+import { mapConcentration } from '../../domain/concentration.js';
+import { checkExactIdentity } from '../../domain/exact-identity.js';
 import { CandidateStore, lookupBarcode, publicCandidate, searchImageCandidates, type Candidate } from '../../images/lookup.js';
 import { TinyFishError, type TinyFishClient } from '../../providers/tinyfish.js';
 
@@ -298,7 +299,8 @@ export async function imageRoutes(base: FastifyInstance, deps: { pool: RotatingP
           continue;
         }
         // The barcode decides the product; the name check only flags a mismatch for the owner to see.
-        const exactName = namesExactly(`${o.brands} ${o.productName}`, f.name) || namesExactly(o.productName, f.name);
+        const id = { brand: f.brand, name: f.name, concentration: mapConcentration(f.concentration) };
+        const exactName = checkExactIdentity(`${o.brands} ${o.productName}`, id).exact || checkExactIdentity(o.productName, id).exact;
         const c = o.imageUrl
           ? candidates.add({
               ownerId: owner,
@@ -448,12 +450,10 @@ export async function imageRoutes(base: FastifyInstance, deps: { pool: RotatingP
   app.delete('/images/:id', { schema: { params: Obj({ id: Uuid }) } }, async (req) => {
     const owner = req.session!.owner.id;
     const row = await owned(owner, req.params.id);
+    // Only the record goes. Files are content-addressed, may be shared, and must stay until the next
+    // `make backup` collects unreferenced files under its lock, before its snapshot (ADR-016): so a
+    // backup's image archive always holds every file its database snapshot references.
     await db().query('DELETE FROM app.image_assets WHERE id = $1', [row.id]);
-    // Files are content-addressed and may be shared by another record; remove only when unreferenced.
-    if (row.storage_path) {
-      const still = await db().query('SELECT 1 FROM app.image_assets WHERE storage_path = $1 LIMIT 1', [row.storage_path]);
-      if (!still.rowCount) await deps.store.remove(row.storage_path);
-    }
     return { deleted: true, primaryId: await effective(owner, row.fragrance_id, row.variant_id) };
   });
 

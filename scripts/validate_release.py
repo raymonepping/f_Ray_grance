@@ -15,7 +15,8 @@ import re
 import sys
 from pathlib import Path
 
-from prompt_catalog import accepted_inventory, accepted_prompts, expected_phases
+from prompt_catalog import (accepted_inventory, accepted_prompts,
+                            expected_phases)
 
 r = Path(__file__).resolve().parents[1]
 spec = r / "spec"

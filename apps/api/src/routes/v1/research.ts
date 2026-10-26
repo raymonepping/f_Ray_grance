@@ -82,7 +82,7 @@ export async function researchRoutes(base: FastifyInstance, deps: { pool: Rotati
         const page = { url: pages[i]!.url, siteName: pages[i]!.siteName || new URL(pages[i]!.url).hostname };
         const finding: Finding =
           s.status === 'fulfilled'
-            ? validateFinding(s.value, page, f.name, knownConc)
+            ? validateFinding(s.value, page, { brand: f.brand, name: f.name, concentration: knownConc })
             : { pageUrl: page.url, siteName: page.siteName, productNameOnPage: '', evidence: null, proposals: [], rejected: s.reason instanceof TinyFishError ? s.reason.message : 'The research run failed' };
         const stored: Stored = { ...finding, id: randomUUID(), ownerId: owner, fragranceId, checkedAt: new Date(), expiresAt: now + TTL_MS };
         findings.set(stored.id, stored);

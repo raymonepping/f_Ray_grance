@@ -46,7 +46,7 @@ The app is then served on `http://localhost:8470` (loopback only). Use `localhos
 
 ## Starting from scratch: `make purge`
 
-`make purge USERNAME=<name>` empties one owner's personal data; `make purge ALL=YES` does it for every owner. It removes collection entries with their history, ratings, private notes, seasons, Academy progress, Train My Nose practice, perfume images (and files no other owner uses), the owner's own catalogue corrections, sessions and login counters. It **keeps** the owner account and password, the schema, the shared catalogue (verified fragrances, Scento observations, embeddings) and Vault. Nothing is dropped or recreated.
+`make purge USERNAME=<name>` empties one owner's personal data; `make purge ALL=YES` does it for every owner. It removes collection entries with their history, ratings, private notes, seasons, Academy progress, Train My Nose practice, perfume image records (the files themselves are collected by the next `make backup` once no record uses them, ADR-016), the owner's own catalogue corrections, sessions and login counters. It **keeps** the owner account and password, the schema, the shared catalogue (verified fragrances, Scento observations, embeddings) and Vault. Nothing is dropped or recreated.
 
 It prints what will be emptied, asks you to type `EMPTY <name>` (or `EMPTY ALL OWNERS`), then takes a fresh `make backup` and stops if that fails. Undo is a restore from that backup through the recovery procedure (`docs/recovery.md`). Sign in again afterwards.
 

@@ -56,3 +56,7 @@ The positions are a descriptive heuristic over indicative, method-versioned trai
 
 - With only a few owned fragrances, ticks can overlap. The sorted list below each track always shows the exact values.
 - Phase 10 recovery gates remain operator-dependent. There are no further accepted phases.
+
+## Correction (Phase 15)
+
+The [independent review](review_01_14.md) found that this report overstated the plotted ticks: they were decorative, inside an `aria-hidden` track, and only the list below the track linked to detail. The "based on one fragrance" qualification required by the spec was also missing, and a slower response for a scope the owner had already left could replace the current one. All three are fixed and tested in [Phase 15](15_revisions.md) (R6, R7). The text above is left as originally reported.

@@ -610,7 +610,7 @@
       "next_phase": null
     },
     "15": {
-      "status": "in_progress",
+      "status": "completed",
       "agent": "claude-opus-5-5",
       "prompt_id": "FRAY-CLAUDE-15",
       "started_at_utc": "2026-10-26T20:08:38Z",
@@ -625,7 +625,34 @@
         "R5 prompt registry, validators, README",
         "R6 Spectrum stale-scope race",
         "R7 Spectrum linked ticks, overlap, single-fragrance qualification"
-      ]
+      ],
+      "completed_at_utc": "2026-10-26T20:38:17Z",
+      "evidence": {
+        "make_test": "PASS (API 210/210, web 35/35)",
+        "make_test_e2e": "56/56 PASS",
+        "p15_recovery_matrix": "18/18 PASS",
+        "legacy_schema3_private_copy": "PASS (upgraded 3->7)",
+        "validate_docs": "PASS (81 frozen docs, 45 prompts)",
+        "unregistered_prompt_negative": "FAIL as intended",
+        "impeccable_detect": "[]",
+        "health": "PASS",
+        "drift": "NO_DRIFT data + app"
+      },
+      "revisions": {
+        "R1": "fixed_verified",
+        "R2": "fixed_verified",
+        "R3": "fixed_verified",
+        "R4": "fixed_verified (no active real research claims or images affected)",
+        "R5": "fixed_verified",
+        "R6": "fixed_verified",
+        "R7": "fixed_verified",
+        "B1": "pending_operator"
+      },
+      "residual": [
+        "Phase 10 remains blocked: DR-OFFDEVICE, DR-INDEPENDENT (B1)",
+        "Existing real backups are legacy sets; next manual make backup produces a complete set"
+      ],
+      "next_phase": null
     }
   },
   "accepted_adrs": [
@@ -669,7 +696,7 @@
       "detail": "No approved separate environment supplied for a full recovery drill outside the original Podman VM."
     }
   ],
-  "updated_at_utc": "2026-10-26T20:08:38Z",
+  "updated_at_utc": "2026-10-26T20:38:18Z",
   "reviews": {
     "2026-10-26_prompts_01_14": {
       "status": "completed_with_findings",
@@ -679,7 +706,7 @@
       "scope": "Prompts 01 through 14; code, accepted ADRs/specs, state, reports, current tests and targeted negative reproductions",
       "report_path": "reports/review_01_14.md",
       "revision_prompt_path": "prompts/Claude/15_revisions.md",
-      "phase_15_execution": "in_progress by Claude (see phases.15)",
+      "phase_15_execution": "completed by Claude (phases.15, reports/15_revisions.md); B1 pending operator",
       "phase_assessment": {
         "01": "implemented",
         "02": "implemented; legacy restore regression tracked in R3",

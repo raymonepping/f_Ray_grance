@@ -2,7 +2,7 @@
 // processing, and the owner-protected API (upload, remote attach, dedupe, primary, refresh,
 // authorization, delete, serving). Disposable PG18; remote hosts are faked, never contacted.
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { existsSync, mkdtempSync } from 'node:fs';
+import { existsSync, mkdtempSync, statSync, utimesSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import sharp from 'sharp';
@@ -261,15 +261,21 @@ describe('images API', () => {
     expect((await upload(A, '00000000-0000-4000-8000-000000000000', await png())).statusCode).toBe(404);
   });
 
-  it('deletes metadata and removes the file only when no record still references it', async () => {
+  it('deletes metadata only; files stay for the backup-time collector (ADR-016), re-storing refreshes them', async () => {
     const bytes = await png(500, 600, 12);
     const a = (await upload(A, frag, bytes)).json().image;
     const b = (await upload(A, other, bytes)).json().image; // same bytes, other context
     const rel = (await rp.get().query('SELECT storage_path FROM app.image_assets WHERE id = $1', [a.id])).rows[0].storage_path;
     expect((await call(A, 'DELETE', `/api/v1/images/${a.id}`)).json().deleted).toBe(true);
-    expect(existsSync(store.resolve(rel, 'original'))).toBe(true); // still used by b
     await call(A, 'DELETE', `/api/v1/images/${b.id}`);
-    expect(existsSync(store.resolve(rel, 'original'))).toBe(false);
+    // No record references the file any more, but it is not removed between a backup's snapshot and archive.
+    expect(existsSync(store.resolve(rel, 'original'))).toBe(true);
+    expect(existsSync(store.resolve(rel, 'display'))).toBe(true);
     expect((await app.inject({ method: 'GET', url: `/api/v1/images/${a.id}/display`, headers: A })).statusCode).toBe(404);
+    // Storing identical bytes again refreshes the file time, restarting the collector's grace period.
+    const old = new Date(Date.now() - 3 * 3600_000);
+    utimesSync(store.resolve(rel, 'original'), old, old);
+    await upload(A, frag, bytes);
+    expect(Date.now() - statSync(store.resolve(rel, 'original')).mtimeMs).toBeLessThan(60_000);
   });
 });

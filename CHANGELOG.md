@@ -8,6 +8,17 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ## [Unreleased]
 
+### Fixed (Phase 15, evidence-backed revisions, [ADR-016](docs/adr/ADR-016-phase15-revisions.md))
+
+Resolves the findings of the [independent review of prompts 01–14](reports/review_01_14.md); see [the Phase 15 report](reports/15_revisions.md).
+
+- **Restore receipts (R1):** one receipt per restore attempt, written after every stage; `PASS` only for a complete run, otherwise `FAIL` with the failed stage. `make backup-status` and off-device records cover the complete recovery set (dump, image archive, sidecar), not the dump alone.
+- **Consistent database + image backups (R2):** the app no longer deletes image files; `make backup` collects unreferenced files under its lock before the snapshot, verifies every referenced original and derivative before publishing, and `make restore-test` extracts images into a fresh isolated volume, checks and decodes every file and checks owner scoping. Purges no longer remove files another owner may share.
+- **Older backups (R3):** a backup from an older schema is brought forward inside the isolated target with the checked-in migrations, after verifying its migration ledger; a backup from a newer build is refused before anything is created.
+- **Exact identity (R4):** web research, web image search and barcode name labels accept a page only when, apart from the house, the exact name, a non-contradicting concentration, size and packaging words, nothing is left ("Sauvage Very Cool Spray" is not "Sauvage"). The agent's `exact_match` flag is no longer sufficient.
+- **Prompt registry (R5):** Codex prompts 13 and 14 are registered; Phase 15 is registered for Claude; validators derive prompt counts from the registry; README updated.
+- **My Spectrum (R6, R7):** a slower response for a scope you already left can no longer replace the current one; plotted ticks open their fragrance, with coinciding fragrances grouped in a short list (pointer, touch and keyboard); a marker based on one fragrance says so.
+
 ### Added
 
 - **Phase 14: sidebar order and dividers** ([ADR-015](docs/adr/ADR-015-sidebar-order.md)). Navigation is grouped by purpose, with dividers on the sidebar, rail and mobile drawer: Collection and Samples; Discover and Compare; My DNA and My Spectrum; Academy; Settings at the bottom. The mobile bottom bar is unchanged.

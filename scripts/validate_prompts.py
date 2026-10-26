@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 from pathlib import Path
 
-from prompt_catalog import accepted_inventory, accepted_prompts, expected_phases
+from prompt_catalog import (accepted_inventory, accepted_prompts,
+                            expected_phases)
 
 root = Path(__file__).resolve().parents[1]
 phases = {"00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10"}

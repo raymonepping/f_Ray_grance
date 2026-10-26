@@ -13,6 +13,7 @@ import { createFragrance, upsertBrand } from '../src/repo/catalog.js';
 import { effectiveProfile, enrichExact } from '../src/repo/enrichment.js';
 import { ScentoClient, type Fetcher } from '../src/providers/scento.js';
 import { TinyFishClient, type HttpFetch } from '../src/providers/tinyfish.js';
+import { checkExactIdentity } from '../src/domain/exact-identity.js';
 import { namesExactly, selectPages, validateFinding, researchQuery, sameProduct, statedConcentration } from '../src/domain/research.js';
 import { lookupBarcode, pageImage } from '../src/images/lookup.js';
 import { buildSources } from '../src/images/sources.js';
@@ -66,7 +67,7 @@ describe('research rules', () => {
         evidence: 'warm incense top notes, an enticing vetiver heart',
       },
       page,
-      'Boss Bottled Elixir',
+      { brand: 'Hugo Boss', name: 'Boss Bottled Elixir', concentration: null },
     );
     expect(ok.rejected).toBeNull();
     const by = Object.fromEntries(ok.proposals.map((p) => [p.field, p]));
@@ -74,11 +75,11 @@ describe('research rules', () => {
     expect(by.launch_year?.value).toBe(2023);
     expect(by.pyramid?.value).toEqual({ top: ['Incense', 'bx/b'], heart: ['Vetiver'], base: null }); // markup stripped, 1-char noise dropped
     expect(by.listed_notes?.value).toEqual(['Cedarwood']);
-    const conflict = validateFinding({ exact_match: true, product_name_on_page: 'BOSS Bottled Elixir', concentrations_seen: ['eau de toilette', 'Eau de Parfum'] }, page, 'Boss Bottled Elixir');
+    const conflict = validateFinding({ exact_match: true, product_name_on_page: 'BOSS Bottled Elixir', concentrations_seen: ['eau de toilette', 'Eau de Parfum'] }, page, { brand: 'Hugo Boss', name: 'Boss Bottled Elixir', concentration: null });
     expect(conflict.proposals[0]).toMatchObject({ field: 'concentration', value: null });
     expect(conflict.proposals[0]!.note).toMatch(/conflicting/);
-    expect(validateFinding({ exact_match: true, product_name_on_page: 'Boss Bottled Triumph Elixir', launch_year: 2020 }, page, 'Boss Bottled Elixir').rejected).toMatch(/not about exactly/);
-    expect(validateFinding({ exact_match: false, product_name_on_page: 'Boss Bottled Elixir', launch_year: 2020 }, page, 'Boss Bottled Elixir').proposals).toEqual([]);
+    expect(validateFinding({ exact_match: true, product_name_on_page: 'Boss Bottled Triumph Elixir', launch_year: 2020 }, page, { brand: 'Hugo Boss', name: 'Boss Bottled Elixir', concentration: null }).rejected).toMatch(/not used for/);
+    expect(validateFinding({ exact_match: false, product_name_on_page: 'Boss Bottled Elixir', launch_year: 2020 }, page, { brand: 'Hugo Boss', name: 'Boss Bottled Elixir', concentration: null }).proposals).toEqual([]);
   });
 });
 
@@ -98,9 +99,68 @@ describe('concentration-aware research (regression: Sauvage EDT fed by the Sauva
       'Dior', 'Sauvage', 2, 'eau_de_toilette',
     );
     expect(pages.map((p) => p.title)).toEqual(['Sauvage Eau de Toilette']);
-    const f = validateFinding({ exact_match: true, product_name_on_page: 'Sauvage Eau de Parfum', concentrations_seen: ['Eau de Parfum'] }, { url: 'https://www.dior.com/x', siteName: 'dior.com' }, 'Sauvage', 'eau_de_toilette');
+    const f = validateFinding({ exact_match: true, product_name_on_page: 'Sauvage Eau de Parfum', concentrations_seen: ['Eau de Parfum'] }, { url: 'https://www.dior.com/x', siteName: 'dior.com' }, { brand: 'Dior', name: 'Sauvage', concentration: 'eau_de_toilette' });
     expect(f.proposals).toEqual([]);
     expect(f.rejected).toMatch(/different concentration/);
+  });
+});
+
+describe('exact identity for web research and image lookup (review R4)', () => {
+  const sauvage = { brand: 'Dior', name: 'Sauvage', concentration: 'eau_de_toilette' as const };
+  const bbe = { brand: 'Hugo Boss', name: 'Boss Bottled Elixir', concentration: null };
+  const invictus = { brand: 'Rabanne', name: 'Invictus', concentration: 'eau_de_toilette' as const };
+  const exact = (t: string, id: Parameters<typeof checkExactIdentity>[1]) => checkExactIdentity(t, id).exact;
+
+  it('rejects flankers and extra product words that a phrase match accepts', () => {
+    expect(namesExactly('Dior Sauvage Very Cool Spray', 'Sauvage')).toBe(true); // the reproduced bypass
+    expect(exact('Dior Sauvage Very Cool Spray', sauvage)).toBe(false);
+    expect(checkExactIdentity('Dior Sauvage Very Cool Spray', sauvage).residue).toEqual(['very', 'cool']);
+    expect(exact('Invictus Victory Elixir', invictus)).toBe(false);
+    expect(exact('Invictus Intense', invictus)).toBe(false);
+    expect(exact('Invictus Aqua Eau de Toilette', invictus)).toBe(false);
+    expect(exact('Paco Rabanne Invictus Eau de Toilette Spray 100 ml', invictus)).toBe(true);
+  });
+  it('rejects a different concentration, including Elixir as a flanker, for Sauvage EDT', () => {
+    expect(exact('Sauvage Eau de Parfum', sauvage)).toBe(false);
+    expect(exact('Dior Sauvage Elixir', sauvage)).toBe(false);
+    expect(exact('Dior Sauvage Parfum', sauvage)).toBe(false);
+    expect(exact('Dior Sauvage Eau de Toilette 100ml', sauvage)).toBe(true);
+    expect(exact("Sauvage Dior cologne - a fragrance for men 2015", { ...sauvage, concentration: 'eau_de_cologne' })).toBe(true);
+  });
+  it('rejects the same name under a different house', () => {
+    expect(exact('Versace Eros Eau de Toilette', { brand: 'Dior', name: 'Eros', concentration: null })).toBe(false);
+    expect(exact('Versace Eros Eau de Toilette', { brand: 'Versace', name: 'Eros', concentration: null })).toBe(true);
+    expect(exact('Gianni Versace Eros', { brand: 'Versace', name: 'Eros', concentration: null })).toBe(true);
+  });
+  it('keeps "Elixir" when it belongs to the proper name (Boss Bottled Elixir)', () => {
+    expect(exact('Hugo Boss Boss Bottled Elixir Parfum Intense', bbe)).toBe(false); // "intense": conservative
+    expect(exact('BOSS Bottled Elixir 100ml', bbe)).toBe(true);
+    expect(exact('Boss Bottled Elixir Hugo Boss for men', bbe)).toBe(true);
+    expect(exact('Boss Bottled Triumph Elixir', bbe)).toBe(false);
+    expect(exact('Boss Bottled', bbe)).toBe(false);
+  });
+  it('treats missing or ambiguous names as not exact', () => {
+    expect(exact('', sauvage)).toBe(false);
+    expect(exact('Dior men fragrance', sauvage)).toBe(false);
+    expect(exact('Sauvage gift set', sauvage)).toBe(false);
+    // A title with a store suffix is judged on the segment that names the fragrance.
+    expect(exact('Dior Sauvage Eau de Toilette | Example Store', sauvage)).toBe(true);
+  });
+  it('a spoofed exact_match from the agent cannot turn a flanker into fact proposals', () => {
+    const page = { url: 'https://shop.example/x', siteName: 'shop.example' };
+    const f = validateFinding(
+      { exact_match: true, product_name_on_page: 'Dior Sauvage Very Cool Spray', launch_year: 1999, top_notes: ['Mint'], notes_without_tiers: ['Ginger'] },
+      page,
+      sauvage,
+    );
+    expect(f.proposals).toEqual([]);
+    expect(f.rejected).toMatch(/very cool/);
+    const legit = validateFinding({ exact_match: true, product_name_on_page: 'Dior Sauvage Eau de Toilette', launch_year: 2015 }, page, sauvage);
+    expect(legit.rejected).toBeNull();
+    expect(legit.proposals.find((x) => x.field === 'launch_year')?.value).toBe(2015);
+    expect(selectPages([sr(1, 'https://shop.example/vc', 'Dior Sauvage Very Cool Spray'), sr(2, 'https://shop.example/edt', 'Dior Sauvage Eau de Toilette')], 'Dior', 'Sauvage', 2, 'eau_de_toilette').map((x) => x.url)).toEqual([
+      'https://shop.example/edt',
+    ]);
   });
 });
 

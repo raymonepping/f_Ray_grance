@@ -18,11 +18,12 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def capture(dump_path, manifest_path, filename, timestamp):
     podman = os.environ.get("PODMAN", "podman")
+    pg = os.environ.get("FRAY_PG_CONTAINER", "fray-postgres")
     psql = [
         podman,
         "exec",
         "-i",
-        "fray-postgres",
+        pg,
         "psql",
         "-XqAt",
         "-v",
@@ -53,7 +54,7 @@ def capture(dump_path, manifest_path, filename, timestamp):
                 [
                     podman,
                     "exec",
-                    "fray-postgres",
+                    pg,
                     "pg_dump",
                     "-U",
                     "fray_backup",
@@ -68,7 +69,7 @@ def capture(dump_path, manifest_path, filename, timestamp):
             )
         with open(dump_path, "rb") as source:
             subprocess.run(
-                [podman, "exec", "-i", "fray-postgres", "pg_restore", "--list"],
+                [podman, "exec", "-i", pg, "pg_restore", "--list"],
                 stdin=source,
                 stdout=subprocess.DEVNULL,
                 check=True,
@@ -91,10 +92,19 @@ def capture(dump_path, manifest_path, filename, timestamp):
                 ["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True
             ).strip(),
             "TOOL": subprocess.check_output(
-                [podman, "exec", "fray-postgres", "pg_dump", "--version"], text=True
+                [podman, "exec", pg, "pg_dump", "--version"], text=True
             ).strip(),
             "TABLES": query((ROOT / "scripts/sql/table_fingerprints.sql").read_text()),
             "SNAPSHOT": snapshot,
+            # Image files this snapshot references, from the same snapshot (ADR-016): the image
+            # archive taken afterwards must contain every one of them before the backup is published.
+            # A CASE cannot guard a static reference to a missing table, so check first (schema < 5).
+            "IMAGE_REFS": "[]"
+            if query("SELECT to_regclass('app.image_assets') IS NULL;") == "t"
+            else query(
+                "SELECT coalesce(json_agg(json_build_object('path', storage_path, 'checksum', checksum) ORDER BY storage_path), '[]')::text "
+                "FROM (SELECT DISTINCT storage_path, checksum FROM app.image_assets WHERE storage_path IS NOT NULL) r;"
+            ),
         }
         os.environ.update({f"FRAY_M_{k}": v for k, v in values.items()})
         write(manifest_path)

@@ -44,9 +44,7 @@ DELETE FROM app.login_attempts WHERE username = :'u';
 DELETE FROM app.owners WHERE username = :'u';
 COMMIT;
 SQL
-n=0
-for rel in $images; do
-  [[ "$rel" =~ ^[0-9a-f]{2}/[0-9a-f]{64}$ ]] || continue
-  podman exec fray-api rm -f "/var/lib/fray/images/$rel" "/var/lib/fray/images/$rel.display.webp" && n=$((n + 1))
-done
-echo "PURGED synthetic owner $user (image files removed: $n)"
+# Image files are not removed here: they are content-addressed and may be shared with another
+# owner. `make backup` collects unreferenced files under its lock (ADR-016).
+n=$(wc -w <<<"$images" | tr -d ' ')
+echo "PURGED synthetic owner $user (image records removed: $n; unreferenced files are collected by the next make backup)"
