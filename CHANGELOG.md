@@ -10,6 +10,7 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Added
 
+- `make purge USERNAME=<name>` / `make purge ALL=YES`: empties (never deletes) personal data so the app can start from scratch, keeping accounts, passwords, schema, shared catalogue and Vault. It shows a summary, requires a typed confirmation and takes a fresh backup first.
 - **Phase 12: Perfume images.** Typed image source chain (owner upload > approved provider > Scento > manual external URL). Scento documents no image field, so that slot reports unsupported. Remote hosts are off until approved. SSRF-safe server-side fetching (https, allowlist, public-DNS guard, re-validated redirects, size/time caps, signature and decode checks). Migration `0005_perfume_images` adds metadata, a single explicit primary and checksum dedupe. A protected `fraygrance_image_assets` volume holds originals and EXIF-free WebP derivatives. Owner image manager plus a resilient image component in Collection, detail, Compare, Discover and Academy practice. `make backup` archives the image volume and `make restore-test` checks every referenced file.
 - Untiered Scento notes and signature materials (e.g. Boss Bottled Elixir, which has no pyramid) are kept as provenance-labelled facts and shown as "Listed notes" without inventing tiers; traits and Compare use them.
 

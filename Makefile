@@ -38,7 +38,7 @@ APPROVE := $(if $(filter YES,$(AUTO_APPROVE)),-auto-approve,)
 .PHONY: help toolchain deps validate-docs doctor check-socket smoke-init smoke-plan smoke-up smoke-down images build bootstrap \
  init plan drift recreate provision configure up start stop down restart status logs clock-sync heal health test test-e2e \
  owner-create owner-reset-password owner-revoke-sessions vault-init vault-unseal vault-bootstrap vault-status vault-snapshot \
- backup backup-status backup-record-copy restore-test restore upgrade destroy danger-destroy-data check-app check-ansible
+ backup backup-status backup-record-copy purge restore-test restore upgrade destroy danger-destroy-data check-app check-ansible
 
 help: ## Show command catalog
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z0-9_-]+:.*## / { printf "  %-19s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
@@ -206,6 +206,11 @@ vault-snapshot: ## MANUAL Raft snapshot of fray-vault to the backup directory
 # ---------------------------------------------------------------- manual backups (ADR-007)
 backup: ## MANUAL pg_dump -Fc to $(FRAY_BACKUP_DIR) with checksum + manifest
 	@bash scripts/backup.sh
+
+purge: ## EMPTY (not delete) personal data, keep accounts: USERNAME=<name> | ALL=YES (backs up first, typed confirmation)
+	@if [[ "$(ALL)" == YES ]]; then bash scripts/purge-owner-data.sh --all; \
+	 elif [[ -n "$(USERNAME)" ]]; then bash scripts/purge-owner-data.sh "$(USERNAME)"; \
+	 else echo 'Use make purge USERNAME=<name> or make purge ALL=YES' >&2; exit 2; fi
 
 backup-status: ## Report last verified manual backup and recorded off-device copy
 	@bash scripts/backup-status.sh

@@ -40,7 +40,14 @@ The app is then served on `http://localhost:8470` (loopback only). Use `localhos
 | Idempotency / drift check | `make drift` |
 | Forgot password | `make owner-reset-password USERNAME=<you>` (also signs out all sessions) |
 | Sign out everywhere | `make owner-revoke-sessions USERNAME=<you>` |
+| Start from scratch (empty personal data, keep the account) | `make purge USERNAME=<you>` or `make purge ALL=YES` |
 | Manual backup + rehearsal | `make backup`, copy off-device, `make backup-record-copy BACKUP=… LOCATION="…"`, `make restore-test`, `make backup-status` |
+
+## Starting from scratch: `make purge`
+
+`make purge USERNAME=<name>` empties one owner's personal data; `make purge ALL=YES` does it for every owner. It removes collection entries with their history, ratings, private notes, seasons, Academy progress, Train My Nose practice, perfume images (and files no other owner uses), the owner's own catalogue corrections, sessions and login counters. It **keeps** the owner account and password, the schema, the shared catalogue (verified fragrances, Scento observations, embeddings) and Vault. Nothing is dropped or recreated.
+
+It prints what will be emptied, asks you to type `EMPTY <name>` (or `EMPTY ALL OWNERS`), then takes a fresh `make backup` and stops if that fails. Undo is a restore from that backup through the recovery procedure (`docs/recovery.md`). Sign in again afterwards.
 
 ## Why `make heal` exists
 
