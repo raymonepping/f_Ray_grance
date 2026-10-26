@@ -96,6 +96,33 @@ json.dump(d, open(p, "w"), indent=2)
 PY
   echo "BOOTSTRAP_OK: fray-operator token at $OP (0600, periodic 768h); initial root token revoked."
   ;;
+tinyfish-key)
+  # Store (or clear with an empty line) the TinyFish API key at kv/fray/tinyfish (ADR-013).
+  # The key is read from stdin or a hidden prompt and travels only in the request body; the
+  # operator token only in a header from a pipe. Vault Agent re-renders it within 5 minutes.
+  wait_up
+  OP="${FRAY_CONFIG_DIR:?}/operator-token"
+  [[ -s "$OP" ]] || {
+    echo "BLOCKED: $OP missing; run make vault-bootstrap first." >&2
+    exit 2
+  }
+  if [[ -t 0 ]]; then
+    read -rs -p 'TinyFish API key (empty clears it): ' key
+    echo
+  else
+    IFS= read -r key || true
+  fi
+  key="${key//[$'\r\n\t ']/}"
+  # Length checked separately: macOS regex caps repetition counts at 255.
+  [[ -z "$key" || (${#key} -ge 8 && ${#key} -le 512 && "$key" =~ ^[[:graph:]]+$) ]] || {
+    echo 'REFUSED: that does not look like an API key (8-512 printable characters, no spaces).' >&2
+    exit 2
+  }
+  printf '%s' "$key" | python3 -c 'import json,sys;print(json.dumps({"data":{"api_key":sys.stdin.read()}}))' |
+    curl -sf --max-time 10 -X POST -H @<(printf 'X-Vault-Token: %s\n' "$(cat "$OP")") "$ADDR/v1/kv/data/fray/tinyfish" -d @- >/dev/null
+  unset key
+  echo 'TINYFISH_KEY_OK: stored in fray-vault kv/fray/tinyfish; Vault Agent renders it for the API within 5 minutes (make recreate SERVICE=vault-agent applies it now).'
+  ;;
 snapshot)
   wait_up
   : "${VAULT_TOKEN:?export a token with sys/storage/raft/snapshot read (never the app token)}"

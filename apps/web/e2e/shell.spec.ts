@@ -134,7 +134,7 @@ test('⌘K search → Discover → verified local identity → detail page with 
   await page.keyboard.press('Escape');
   await expect(dialog).toBeHidden();
   await page.goto('/discover');
-  await page.getByLabel('Brand').fill('Rabanne');
+  await page.getByLabel('Brand', { exact: true }).fill('Rabanne');
   await page.getByLabel('Fragrance name').fill('Phantom in Red');
   await page.getByRole('button', { name: 'Search', exact: true }).click();
   await expect(page.getByText(/Already in your library|Exact match verified/)).toBeVisible();
@@ -156,7 +156,7 @@ test('⌘K search → Discover → verified local identity → detail page with 
 
 test('Invictus Elixir is shown for review, never substituted', async ({ page }) => {
   await login(page, '/discover');
-  await page.getByLabel('Brand').fill('Rabanne');
+  await page.getByLabel('Brand', { exact: true }).fill('Rabanne');
   await page.getByLabel('Fragrance name').fill('Invictus Elixir');
   await page.getByRole('button', { name: 'Search', exact: true }).click();
   await expect(page.getByText(/No exact match: review similar names|Not found|Partly unavailable/)).toBeVisible({ timeout: 15_000 });

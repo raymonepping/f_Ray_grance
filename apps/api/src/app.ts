@@ -2,6 +2,8 @@
 import { randomUUID } from 'node:crypto';
 import { buildSources, type ImageSources } from './images/sources.js';
 import { AssetStore } from './images/store.js';
+import { TinyFishClient } from './providers/tinyfish.js';
+import type { ImageLookupDeps } from './routes/v1/images.js';
 import Fastify, { type FastifyInstance, type FastifyServerOptions } from 'fastify';
 import cookie from '@fastify/cookie';
 import addFormats from 'ajv-formats';
@@ -27,6 +29,8 @@ export interface AppDeps {
   ollama?: OllamaClient;
   imageSources?: ImageSources;
   assetStore?: AssetStore;
+  tinyfish?: TinyFishClient;
+  imageLookup?: Partial<ImageLookupDeps>;
   logger?: boolean | object;
 }
 
@@ -68,6 +72,9 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     if (e.statusCode === 429) {
       return reply.code(429).header('retry-after', '60').send(envelope('RATE_LIMITED', 'Too many requests', req.id));
     }
+    if (e.statusCode === 400 && typeof e.code === 'string' && e.code.startsWith('FST_ERR_')) {
+      return reply.code(400).send(envelope('VALIDATION_FAILED', 'Malformed request body', req.id));
+    }
     if (e.statusCode === 415 || e.code === 'FST_ERR_CTP_INVALID_MEDIA_TYPE') {
       return reply.code(415).send(envelope('VALIDATION_FAILED', 'Unsupported content type', req.id));
     }
@@ -107,6 +114,6 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     lockout: deps.config.lockout,
     loginRatePerMinute: deps.config.loginRatePerMinute,
   });
-  await app.register(v1Routes, { prefix: '/api/v1', pool: deps.pool, scento: deps.scento ?? new ScentoClient(), ollama: deps.ollama ?? new OllamaClient(fetch, 'http://fray-ollama:11434', deps.config.tutorModel), importEnabled: deps.config.importEnabled, imageSources: deps.imageSources ?? buildSources(deps.config.images), assetStore: deps.assetStore ?? new AssetStore(deps.config.images.dir) });
+  await app.register(v1Routes, { prefix: '/api/v1', pool: deps.pool, scento: deps.scento ?? new ScentoClient(), ollama: deps.ollama ?? new OllamaClient(fetch, 'http://fray-ollama:11434', deps.config.tutorModel), importEnabled: deps.config.importEnabled, imageSources: deps.imageSources ?? buildSources(deps.config.images), assetStore: deps.assetStore ?? new AssetStore(deps.config.images.dir), tinyfish: deps.tinyfish ?? new TinyFishClient(deps.config.tinyfishKeyFile), imageLookup: deps.imageLookup ?? {} });
   return app;
 }

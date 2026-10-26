@@ -10,6 +10,14 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Added
 
+- **Quick find in Discover:** one box for a name, part of a name, a brand, or a barcode (EAN/UPC), like ISBN for books. A barcode is checked against your verified barcodes first, then Open Beauty Facts (or a web search) for the product title; that title is cleaned into a Scento search. Similar names are never substituted. The barcode is saved to the fragrance you add, so scanning it again finds it straight away.
+- **Web research and image lookups** ([ADR-013](docs/adr/ADR-013-web-research-and-image-lookup.md)):
+  - fills Scento's gaps (concentration, launch year, note pyramid, listed notes) from pages that name exactly the fragrance, through TinyFish;
+  - you review each proposal with its page and quote, and saved values are labelled "Web research" at the lowest precedence;
+  - image lookup by barcode through Open Beauty Facts (CC BY-SA, attributed);
+  - web image search through TinyFish, where you pick the result;
+  - the TinyFish key lives in Vault (`make tinyfish-key`), rendered by Vault Agent;
+  - migration `0006` adds the new constraints.
 - `make purge USERNAME=<name>` / `make purge ALL=YES`: empties (never deletes) personal data so the app can start from scratch, keeping accounts, passwords, schema, shared catalogue and Vault. It shows a summary, requires a typed confirmation and takes a fresh backup first.
 - **Phase 12: Perfume images.** Typed image source chain (owner upload > approved provider > Scento > manual external URL). Scento documents no image field, so that slot reports unsupported. Remote hosts are off until approved. SSRF-safe server-side fetching (https, allowlist, public-DNS guard, re-validated redirects, size/time caps, signature and decode checks). Migration `0005_perfume_images` adds metadata, a single explicit primary and checksum dedupe. A protected `fraygrance_image_assets` volume holds originals and EXIF-free WebP derivatives. Owner image manager plus a resilient image component in Collection, detail, Compare, Discover and Academy practice. `make backup` archives the image volume and `make restore-test` checks every referenced file.
 - Untiered Scento notes and signature materials (e.g. Boss Bottled Elixir, which has no pyramid) are kept as provenance-labelled facts and shown as "Listed notes" without inventing tiers; traits and Compare use them.
@@ -49,6 +57,9 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Changed
 
+- Scento search listings that link only a brand page (seen for Calvin Klein CK One) now get the profile id from Scento's `<name>-<house>` slug pattern, and the fetched profile is still verified exactly. "CK One" now resolves as an exact match instead of "needs review".
+- Web research runs as a background job. TinyFish agent runs are started asynchronously and cancelled on TinyFish's side after 120 s. Every outbound call uses a strongly referenced timeout (`AbortSignal.timeout` was observed never firing, which left a request hanging 19 minutes).
+- Malformed request bodies (Fastify 400s) return a validation error instead of a 500.
 - Collection list API returns each entry's effective pyramid (same precedence as the profile) for the note-profile readout.
 - `spec/DESIGN.md` visual tokens superseded by ADR-012; its IA, behaviour and accessibility rules stay authoritative.
 - TypeScript pinned to 6.0.3 across workspaces (TypeScript 7's native compiler does not support `vue-tsc`).

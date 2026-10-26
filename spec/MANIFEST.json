@@ -67,6 +67,11 @@
       "sha256": "cc570707f2edc0dea5c704c9c0df7c720e94c63d15473de46714acc054e877e3"
     },
     {
+      "path": "docs/adr/ADR-013-web-research-and-image-lookup.md",
+      "bytes": 4422,
+      "sha256": "a5c11335a4229ff21aa7a874b47c83db2229dc125742c1de071370eaf977c5ab"
+    },
+    {
       "path": "prompts/Claude/00_preflight_and_state.md",
       "bytes": 9960,
       "sha256": "531818921778e52bfaa9da6d4a4bedd922539c79488744f8b12449337ad947f8"
@@ -318,8 +323,8 @@
     },
     {
       "path": "spec/PERFUME_IMAGE_SPEC.md",
-      "bytes": 6927,
-      "sha256": "63f3ce7a10311b9926c3411417a5c2c6380be53912931532862525506830aeaf"
+      "bytes": 7980,
+      "sha256": "36316e8320e21e3f89c2e473598f5482784e4d659d2205235aafeed8abbeee3b"
     },
     {
       "path": "spec/PHASE_00.md",

@@ -70,7 +70,10 @@ const ProfileSchema = Type.Object({
 });
 
 export interface SearchCandidate {
-  providerId: string | null; // slug from /perfumes/{slug} page URL; null when the link is not a perfume page
+  providerId: string | null; // slug from /perfumes/{slug} page URL (or derived, see derivedId); null when unknown
+  /** True when the listing linked a brand page and the id was derived from Scento's name-house slug pattern.
+   *  A derived id is only a lookup key: the resolver still verifies the fetched profile exactly. */
+  derivedId?: boolean;
   name: string;
   house: string;
   family: string | null;
@@ -118,6 +121,13 @@ const MAX_BODY_CHARS = 256 * 1024;
 const MAX_CACHE_ENTRIES = 300;
 
 const SLUG_RE = /^https:\/\/www\.scento\.com\/perfumes\/([a-z0-9-]{1,120})$/;
+const BRAND_PAGE_RE = /^https:\/\/www\.scento\.com\/brand\/[a-z0-9-]{1,120}$/;
+/** Scento profile slugs follow "<name>-<house>" (e.g. boss-bottled-elixir-hugo-boss). */
+export function scentoSlug(name: string, house: string): string | null {
+  const part = (x: string) => x.normalize('NFKD').replace(/\p{M}+/gu, '').toLowerCase().replace(/[’'&]/g, ' ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  const slug = `${part(name)}-${part(house)}`;
+  return /^[a-z0-9][a-z0-9-]{0,119}$/.test(slug) ? slug : null;
+}
 
 export class ScentoClient {
   private readonly base: string;
@@ -233,7 +243,11 @@ export class ScentoClient {
     const data = body as Static<typeof SearchSchema>;
     return data.detail.matches
       .filter((m) => m.kind === 'perfume')
-      .map((m) => ({ providerId: SLUG_RE.exec(m.page)?.[1] ?? null, name: m.name, house: m.house, family: m.family, sourceUrl: m.page }));
+      .map((m) => {
+        const direct = SLUG_RE.exec(m.page)?.[1] ?? null;
+        const derived = !direct && BRAND_PAGE_RE.test(m.page) ? scentoSlug(m.name, m.house) : null;
+        return { providerId: direct ?? derived, ...(derived ? { derivedId: true } : {}), name: m.name, house: m.house, family: m.family, sourceUrl: m.page };
+      });
   }
 
   async fetchProfile(providerId: string): Promise<SourceProfile> {

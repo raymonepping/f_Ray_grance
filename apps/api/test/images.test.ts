@@ -94,7 +94,7 @@ describe('processing and precedence', () => {
     await expect(processImage(Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.alloc(64)]))).rejects.toMatchObject({ code: 'DECODE_FAILED' });
   });
   it('ranks explicit primary first, then upload > approved remote > Scento > manual external, newest first', () => {
-    expect(SOURCE_PRECEDENCE).toEqual(['user_upload', 'approved_remote', 'scento', 'manual_external']);
+    expect(SOURCE_PRECEDENCE).toEqual(['user_upload', 'approved_remote', 'scento', 'manual_external', 'web_search']);
     const t = (s: string) => new Date(`2026-10-25T${s}:00Z`);
     const imgs = [
       { id: 'ext', source_kind: 'manual_external' as const, is_primary: false, status: 'available', created_at: t('12:00') },
@@ -167,7 +167,7 @@ describe('images API', () => {
     const b = r.json();
     expect(b.images).toEqual([]);
     expect(b.primaryId).toBeNull();
-    expect(b.sources.precedence).toEqual(['user_upload', 'approved_remote', 'scento', 'manual_external']);
+    expect(b.sources.precedence).toEqual(['user_upload', 'approved_remote', 'scento', 'manual_external', 'web_search']);
     expect(b.sources.scento.enabled).toBe(false);
     expect(b.sources.approved_remote.hosts).toEqual(['images.provider.example']);
   });

@@ -4,12 +4,14 @@
 //   2 approved_remote  operator-approved provider hosts (FRAY_IMAGE_PROVIDER_HOSTS)
 //   3 scento           only if Scento documents an image source; v1.0.0 does not, so it is unsupported
 //   4 manual_external  owner-entered URL on an operator-approved host (FRAY_IMAGE_EXTERNAL_HOSTS)
-// There is no search, crawler or catalogue mirroring: remote adapters fetch exactly one given URL.
+//   5 web_search       an image the owner picked from an owner-started web search (ADR-013)
+// Open Beauty Facts barcode lookups are approved_remote (approved by ADR-013, fixed host).
+// There is no crawler or catalogue mirroring: every fetch is one URL the owner chose or confirmed.
 import { ImageError } from './errors.js';
 import { fetchImage, type FetchOptions } from './net.js';
 
-export type SourceKind = 'user_upload' | 'approved_remote' | 'scento' | 'manual_external';
-export const SOURCE_PRECEDENCE: readonly SourceKind[] = ['user_upload', 'approved_remote', 'scento', 'manual_external'];
+export type SourceKind = 'user_upload' | 'approved_remote' | 'scento' | 'manual_external' | 'web_search';
+export const SOURCE_PRECEDENCE: readonly SourceKind[] = ['user_upload', 'approved_remote', 'scento', 'manual_external', 'web_search'];
 
 export interface Acquired {
   bytes: Buffer;

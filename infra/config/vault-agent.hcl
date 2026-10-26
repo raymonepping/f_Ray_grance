@@ -47,3 +47,15 @@ template {
   {{- end -}}
   EOT
 }
+
+# TinyFish key for web research and image search (ADR-013). Written by `make tinyfish-key`;
+# Ansible creates an empty placeholder so this template always renders. Empty key = feature off.
+template {
+  destination = "/vault/rendered/tinyfish.json"
+  perms       = "0640"
+  contents    = <<-EOT
+  {{- with secret "kv/data/fray/tinyfish" -}}
+  {"api_key":{{ .Data.data.api_key | toJSON }},"version":{{ .Data.metadata.version }}}
+  {{- end -}}
+  EOT
+}

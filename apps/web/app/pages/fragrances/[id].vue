@@ -50,6 +50,20 @@ const family = computed(() => data.value?.fields.family?.value as string | undef
 const strings = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []);
 const listedNotes = computed(() => strings(data.value?.fields.listed_notes?.value));
 const materials = computed(() => strings(data.value?.fields.signature_materials?.value));
+const conc = computed(() => {
+  const f = data.value?.fragrance;
+  if (f?.concentration) return { label: CONCENTRATION_LABEL[f.concentration] ?? f.concentration, origin: null as string | null };
+  const c = data.value?.fields.concentration;
+  const v = c?.value as { raw?: string | null; normalized?: string | null } | undefined;
+  if (c && (v?.normalized || v?.raw)) return { label: v.normalized ? (CONCENTRATION_LABEL[v.normalized] ?? v.normalized) : v.raw!, origin: ORIGIN_LABEL[c.origin] };
+  return null;
+});
+const year = computed(() => {
+  const f = data.value?.fragrance;
+  if (f?.launch_year) return { label: String(f.launch_year), origin: null as string | null };
+  const y = data.value?.fields.launch_year;
+  return y && typeof y.value === 'number' ? { label: String(y.value), origin: ORIGIN_LABEL[y.origin] } : null;
+});
 const tierCount = computed(() => (['top', 'heart', 'base'] as const).reduce((n, k) => n + (pyramid.value?.[k]?.length ?? 0), 0));
 const subfamily = computed(() => data.value?.fields.subfamily?.value as string | undefined);
 </script>
@@ -75,8 +89,8 @@ const subfamily = computed(() => data.value?.fields.subfamily?.value as string |
             <p class="m-0 mt-2 flex flex-wrap items-center gap-x-2 text-[15px] text-ink-2">
               <span class="text-ink">{{ data.fragrance.brand }}</span>
               <span aria-hidden="true" class="text-ink-3">/</span>
-              <span>{{ data.fragrance.concentration ? CONCENTRATION_LABEL[data.fragrance.concentration] : 'Concentration not recorded' }}</span>
-              <template v-if="data.fragrance.launch_year"><span aria-hidden="true" class="text-ink-3">/</span><span class="readout">{{ data.fragrance.launch_year }}</span></template>
+              <span>{{ conc ? conc.label : 'Concentration not recorded' }}<span v-if="conc?.origin" class="ml-1 text-[12px] text-ink-3">({{ conc.origin }})</span></span>
+              <template v-if="year"><span aria-hidden="true" class="text-ink-3">/</span><span class="readout">{{ year.label }}</span><span v-if="year.origin" class="ml-1 text-[12px] text-ink-3">({{ year.origin }})</span></template>
             </p>
             <p v-if="data.fragrance.identity_status !== 'verified'" class="m-0 mt-3 text-[13px] text-warn">Unverified draft. Facts below are only what you entered.</p>
           </div>
@@ -123,6 +137,7 @@ const subfamily = computed(() => data.value?.fields.subfamily?.value as string |
             </div>
             <FragranceScentTraitBars :rows="dna.traits.map(t => ({ code: t.code, label: t.label, values: [t.score] }))" :series="[data.fragrance.canonical_name]" :method="dna.method" />
           </div>
+          <FragranceResearchPanel :fragrance-id="data.fragrance.id" @saved="load" />
           <CollectionVariantList :fragrance-id="data.fragrance.id" :variants="variants" @changed="loadRelationship" />
         </div>
         <div class="order-first flex min-w-0 flex-col gap-5 xl:order-none">

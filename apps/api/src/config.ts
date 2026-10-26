@@ -13,6 +13,8 @@ export interface Config {
   tutorModel: string | null;
   importEnabled: boolean;
   images: { dir: string; providerHosts: string[]; externalHosts: string[] };
+  /** File Vault Agent renders with the TinyFish key ({"api_key": ...}); empty or missing = off. */
+  tinyfishKeyFile: string | null;
 }
 
 export class ConfigError extends Error {}
@@ -87,5 +89,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
       providerHosts: hosts(env, 'FRAY_IMAGE_PROVIDER_HOSTS'),
       externalHosts: hosts(env, 'FRAY_IMAGE_EXTERNAL_HOSTS'),
     },
+    tinyfishKeyFile: env.FRAY_TINYFISH_KEY_FILE === '' ? null : (env.FRAY_TINYFISH_KEY_FILE ?? '/vault/rendered/tinyfish.json'),
   };
 }

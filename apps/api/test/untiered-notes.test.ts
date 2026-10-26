@@ -32,8 +32,9 @@ describe('untiered Scento notes', () => {
     const fields = await effectiveProfile(rp.get(), fragranceId);
     expect(fields.listed_notes).toMatchObject({ value: ['Incense', 'Vetiver', 'Cedarwood'], origin: 'provider', source: { provider: 'scento' } });
     expect(fields.signature_materials?.value).toEqual(['Vetiver', 'Cedarwood']);
-    expect(fields.pyramid?.value).toEqual({ top: null, heart: null, base: null }); // no tier is invented
-    expect((await rp.get().query("SELECT count(*)::int AS n FROM app.fragrance_notes WHERE fragrance_id = $1", [fragranceId])).rows[0].n).toBe(0);
+    expect(fields.pyramid?.origin).not.toBe('provider'); // the all-unknown Scento pyramid states nothing; no tier is invented
+    // (another test may have saved a web-research pyramid for this same real fragrance)
+    expect((await rp.get().query("SELECT count(*)::int AS n FROM app.fragrance_notes n JOIN app.source_claims c ON c.id = n.source_claim_id WHERE n.fragrance_id = $1 AND c.origin = 'provider'", [fragranceId])).rows[0].n).toBe(0);
 
     // An observation stored before this field existed gains it on the next identical fetch.
     await rp.get().query("DELETE FROM app.source_claims WHERE fragrance_id = $1 AND field_name IN ('listed_notes','signature_materials')", [fragranceId]);

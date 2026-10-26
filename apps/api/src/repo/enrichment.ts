@@ -2,6 +2,7 @@
 // - Raw provider observations are reduced to permitted mapped fields + a response hash.
 // - Every field is a claim with an origin; user corrections are never superseded by a refresh.
 // - The effective value of a field is chosen by origin priority: user > official > provider > derived.
+import { createHash } from 'node:crypto';
 import type pg from 'pg';
 import { canonicalBrand } from '../domain/brands.js';
 import { mapConcentration } from '../domain/concentration.js';
@@ -232,12 +233,26 @@ export async function createDraft(db: Db, input: { brand: string; name: string; 
 
 export interface EffectiveField {
   value: unknown;
-  origin: 'user' | 'official' | 'provider' | 'derived';
+  origin: 'user' | 'official' | 'provider' | 'derived' | 'research';
   claimedAt: string;
   source: { provider: string; url: string | null; attribution: string | null; checkedAt: string } | null;
 }
 
-const PRIORITY = { user: 1, official: 2, provider: 3, derived: 4 } as const;
+const PRIORITY = { user: 1, official: 2, provider: 3, derived: 4, research: 5 } as const;
+
+/** A claim that states nothing (all-unknown pyramid, empty list, null concentration) never hides a lower source. */
+export function isEmptyClaim(field: string, value: unknown): boolean {
+  if (value === null || value === undefined) return true;
+  if (typeof value === 'string') return value.trim() === '';
+  if (Array.isArray(value)) return value.length === 0;
+  if (typeof value === 'object') {
+    const v = value as Record<string, unknown>;
+    if (field === 'pyramid') return (['top', 'heart', 'base'] as const).every((k) => !Array.isArray(v[k]) || (v[k] as unknown[]).length === 0);
+    if (field === 'concentration') return !v.raw && !v.normalized;
+    if (field === 'wears') return (!Array.isArray(v.seasons) || !v.seasons.length) && (!Array.isArray(v.hours) || !v.hours.length);
+  }
+  return false;
+}
 
 /** Effective, provenance-labelled profile (what the UI shows). Unknown fields are simply absent. */
 export async function effectiveProfile(db: Db, fragranceId: string): Promise<Record<string, EffectiveField>> {
@@ -251,17 +266,18 @@ export async function effectiveProfile(db: Db, fragranceId: string): Promise<Rec
     attribution: string | null;
     checked_at: Date | null;
   }>(
-    `SELECT DISTINCT ON (c.field_name) c.field_name, c.value, c.origin, c.claimed_at,
-            r.provider, r.source_url, r.attribution, r.checked_at
+    `SELECT c.field_name, c.value, c.origin, c.claimed_at, r.provider, r.source_url, r.attribution, r.checked_at
        FROM app.source_claims c LEFT JOIN app.source_records r ON r.id = c.source_record_id
       WHERE c.fragrance_id = $1 AND c.superseded_at IS NULL
       ORDER BY c.field_name,
-               CASE c.origin WHEN 'user' THEN 1 WHEN 'official' THEN 2 WHEN 'provider' THEN 3 ELSE 4 END,
+               CASE c.origin WHEN 'user' THEN 1 WHEN 'official' THEN 2 WHEN 'provider' THEN 3 WHEN 'derived' THEN 4 ELSE 5 END,
                c.claimed_at DESC`,
     [fragranceId],
   );
   const out: Record<string, EffectiveField> = {};
   for (const r of rows) {
+    if (out[r.field_name]) continue; // a higher-precedence, non-empty claim already won
+    if (isEmptyClaim(r.field_name, r.value)) continue;
     out[r.field_name] = {
       value: r.value,
       origin: r.origin,
@@ -270,6 +286,40 @@ export async function effectiveProfile(db: Db, fragranceId: string): Promise<Rec
     };
   }
   return out;
+}
+
+/** Store owner-accepted web-research proposals as origin "research", citing the page they came from. */
+export async function addResearchClaims(
+  db: Db,
+  fragranceId: string,
+  page: { url: string; siteName: string; checkedAt: Date; evidence: string | null; productNameOnPage: string },
+  claims: { field: 'concentration' | 'launch_year' | 'pyramid' | 'listed_notes'; value: unknown }[],
+): Promise<number> {
+  return tx(db, async (c) => {
+    const mappedObs = { page: page.url, site: page.siteName, productNameOnPage: page.productNameOnPage, evidence: page.evidence, claims };
+    const hash = createHash('sha256').update(JSON.stringify(mappedObs)).digest('hex');
+    // external_id: a stable hash of the page URL (the URL itself is kept in source_url).
+    const pageId = createHash('sha256').update(page.url).digest('hex');
+    const existing = await c.query<{ id: string }>(`SELECT id FROM app.source_records WHERE provider = 'tinyfish' AND external_id = $1 AND response_hash = $2`, [pageId, hash]);
+    const sr =
+      existing.rows[0]?.id ??
+      (
+        await c.query<{ id: string }>(
+          `INSERT INTO app.source_records (provider, external_id, source_url, attribution, checked_at, response_hash, permitted_cache_class, mapped)
+           VALUES ('tinyfish', $1, $6, $2, $3, $4, 'user_lookup', $5) RETURNING id`,
+          [pageId, `Web research via TinyFish: ${page.siteName}`.slice(0, 200), page.checkedAt, hash, JSON.stringify(mappedObs), page.url.slice(0, 2000)],
+        )
+      ).rows[0]!.id;
+    for (const claim of claims) {
+      await c.query(`UPDATE app.source_claims SET superseded_at = now() WHERE fragrance_id = $1 AND origin = 'research' AND field_name = $2 AND superseded_at IS NULL`, [fragranceId, claim.field]);
+      const { rows } = await c.query<{ id: string }>(
+        `INSERT INTO app.source_claims (fragrance_id, source_record_id, origin, field_name, value) VALUES ($1, $2, 'research', $3, $4) RETURNING id`,
+        [fragranceId, sr, claim.field, JSON.stringify(claim.value)],
+      );
+      if (claim.field === 'pyramid') await writePyramid(c, fragranceId, rows[0]!.id, claim.value as SourceProfile['pyramid']);
+    }
+    return claims.length;
+  });
 }
 
 /** Local exact identity lookup for the resolver. */

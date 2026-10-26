@@ -17,13 +17,16 @@ import { seasonRoutes } from './seasons.js';
 import { academyRoutes } from './academy.js';
 import { portabilityRoutes } from './portability.js';
 import { imageRoutes } from './images.js';
+import { researchRoutes } from './research.js';
+import { lookupRoutes } from './lookup.js';
+import type { TinyFishClient } from '../../providers/tinyfish.js';
 import type { ImageSources } from '../../images/sources.js';
 import type { AssetStore } from '../../images/store.js';
 
 const Uuid = Type.String({ format: 'uuid' });
 
 // Registered inside its own encapsulated context so requireOwner applies to these routes only.
-export async function v1Routes(base: FastifyInstance, deps: { pool: RotatingPool; scento: ScentoClient; ollama: OllamaClient; importEnabled: boolean; imageSources: ImageSources; assetStore: AssetStore }): Promise<void> {
+export async function v1Routes(base: FastifyInstance, deps: { pool: RotatingPool; scento: ScentoClient; ollama: OllamaClient; importEnabled: boolean; imageSources: ImageSources; assetStore: AssetStore; tinyfish: TinyFishClient; imageLookup?: Partial<import('./images.js').ImageLookupDeps> }): Promise<void> {
   const app = base.withTypeProvider<TypeBoxTypeProvider>();
   // onRequest (not preHandler): anonymous callers get 401 before body validation can reveal schemas.
   app.addHook('onRequest', requireOwner);
@@ -35,7 +38,9 @@ export async function v1Routes(base: FastifyInstance, deps: { pool: RotatingPool
   await app.register(seasonRoutes, { pool: deps.pool });
   await app.register(academyRoutes, { pool: deps.pool, scento: deps.scento, ollama: deps.ollama });
   await app.register(portabilityRoutes, { pool: deps.pool, importEnabled: deps.importEnabled });
-  await app.register(imageRoutes, { pool: deps.pool, sources: deps.imageSources, store: deps.assetStore });
+  await app.register(imageRoutes, { pool: deps.pool, sources: deps.imageSources, store: deps.assetStore, tinyfish: deps.tinyfish, ...deps.imageLookup });
+  await app.register(researchRoutes, { pool: deps.pool, tinyfish: deps.tinyfish });
+  await app.register(lookupRoutes, { pool: deps.pool, scento: deps.scento, tinyfish: deps.tinyfish, ...(deps.imageLookup?.http ? { http: deps.imageLookup.http } : {}) });
   const db = () => deps.pool.get();
 
   app.get('/session', async (req) => ({ owner: req.session!.owner }));

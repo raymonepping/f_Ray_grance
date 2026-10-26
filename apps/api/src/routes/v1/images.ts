@@ -11,6 +11,11 @@ import { ImageError } from '../../images/errors.js';
 import { processImage } from '../../images/process.js';
 import type { ImageSources, SourceKind } from '../../images/sources.js';
 import type { AssetStore } from '../../images/store.js';
+import sharp from 'sharp';
+import { fetchImage as defaultFetchImage, type FetchOptions } from '../../images/net.js';
+import { namesExactly } from '../../domain/research.js';
+import { CandidateStore, lookupBarcode, publicCandidate, searchImageCandidates, type Candidate } from '../../images/lookup.js';
+import { TinyFishError, type TinyFishClient } from '../../providers/tinyfish.js';
 
 const Obj = <T extends Parameters<typeof Type.Object>[0]>(p: T) => Type.Object(p, { additionalProperties: false });
 const Uuid = Type.String({ format: 'uuid' });
@@ -70,9 +75,22 @@ export function publicImage(r: Row, effectivePrimary: string | null) {
   };
 }
 
-export async function imageRoutes(base: FastifyInstance, deps: { pool: RotatingPool; sources: ImageSources; store: AssetStore }): Promise<void> {
+export interface ImageLookupDeps {
+  tinyfish: TinyFishClient;
+  candidates?: CandidateStore;
+  /** Image downloader (injectable for tests); always called with the candidate's own host only. */
+  fetchImage?: (url: string, opts: FetchOptions) => Promise<{ bytes: Buffer; finalUrl: string }>;
+  /** HTTP client for the Open Beauty Facts product API (injectable for tests). */
+  http?: typeof fetch;
+}
+
+export async function imageRoutes(base: FastifyInstance, deps: { pool: RotatingPool; sources: ImageSources; store: AssetStore } & ImageLookupDeps): Promise<void> {
   const app = base.withTypeProvider<TypeBoxTypeProvider>();
   const db = () => deps.pool.get();
+  const candidates = deps.candidates ?? new CandidateStore();
+  const download = deps.fetchImage ?? defaultFetchImage;
+  const previews = new Map<string, Buffer>();
+  const fromCandidate = (c: Candidate) => download(c.imageUrl, { allowedHosts: [new URL(c.imageUrl).hostname], maxBytes: 10 * 1024 * 1024, timeoutMs: 10_000 });
 
   // Raw image bodies only on the upload route (everything else stays JSON with the 64 KB limit).
   app.addContentTypeParser(UPLOAD_TYPES, { parseAs: 'buffer', bodyLimit: MAX_UPLOAD_BYTES }, (_req, body, done) => done(null, body));
@@ -174,15 +192,21 @@ export async function imageRoutes(base: FastifyInstance, deps: { pool: RotatingP
       );
       const primary = await effective(owner, req.params.id, req.query.variantId ?? null);
       const s = deps.sources;
+      const codes = (await db().query<{ gtin14: string }>('SELECT DISTINCT gtin14 FROM app.product_variants WHERE fragrance_id = $1 AND gtin14 IS NOT NULL ORDER BY gtin14 LIMIT 5', [req.params.id])).rows.map((r) => r.gtin14);
       return {
         images: rows.map((r) => publicImage(r, primary)),
         primaryId: primary,
+        lookups: {
+          barcode: { enabled: true, barcodes: codes, note: 'Open Beauty Facts (open product database; photos CC BY-SA, attribution kept).' },
+          webSearch: { enabled: await deps.tinyfish.enabled(), note: 'TinyFish web search for this exact fragrance; you pick the image.' },
+        },
         sources: {
-          precedence: ['user_upload', 'approved_remote', 'scento', 'manual_external'],
+          precedence: ['user_upload', 'approved_remote', 'scento', 'manual_external', 'web_search'],
           user_upload: { enabled: s.upload.enabled, note: s.upload.note, maxBytes: MAX_UPLOAD_BYTES },
           approved_remote: { enabled: s.approvedRemote.enabled, note: s.approvedRemote.note, hosts: s.approvedRemote.hosts },
           scento: { enabled: s.scento.enabled, note: s.scento.note },
           manual_external: { enabled: s.manualExternal.enabled, note: s.manualExternal.note, hosts: s.manualExternal.hosts },
+          web_search: { enabled: await deps.tinyfish.enabled(), note: 'Images you pick from an owner-started web search (lowest precedence).' },
         },
       };
     },
@@ -242,6 +266,135 @@ export async function imageRoutes(base: FastifyInstance, deps: { pool: RotatingP
         b.url,
       );
       const primary = await effective(owner, req.params.id, b.variantId ?? null);
+      return reply.code(r.deduplicated ? 200 : 201).send({ image: publicImage(r.row, primary), deduplicated: r.deduplicated });
+    },
+  );
+
+  async function fragranceFor(id: string) {
+    const { rows } = await db().query<{ brand: string; name: string; concentration: string | null }>(
+      'SELECT b.canonical_name AS brand, f.canonical_name AS name, f.concentration FROM app.fragrances f JOIN app.brands b ON b.id = f.brand_id WHERE f.id = $1',
+      [id],
+    );
+    if (!rows[0]) throw new ApiError('NOT_FOUND', 'Fragrance not found');
+    return rows[0];
+  }
+
+  // Barcode lookup in Open Beauty Facts: the given barcode, or this fragrance's known barcodes.
+  app.post(
+    '/fragrances/:id/images/barcode',
+    { config: { rateLimit: { max: 10, timeWindow: '1 minute' } }, schema: { params: Obj({ id: Uuid }), body: Obj({ barcode: Type.Optional(Type.String({ minLength: 8, maxLength: 20, pattern: '^[0-9 -]+$' })) }) } },
+    async (req) => {
+      const owner = req.session!.owner.id;
+      const f = await fragranceFor(req.params.id);
+      const codes = req.body.barcode
+        ? [req.body.barcode]
+        : (await db().query<{ gtin14: string }>('SELECT DISTINCT gtin14 FROM app.product_variants WHERE fragrance_id = $1 AND gtin14 IS NOT NULL ORDER BY gtin14 LIMIT 5', [req.params.id])).rows.map((r) => r.gtin14);
+      if (!codes.length) return { results: [], message: 'No barcode is recorded for this fragrance yet. Enter the barcode from your bottle or box.' };
+      const results = [];
+      for (const code of codes) {
+        const o = await lookupBarcode(code, deps.http);
+        if (!o.found) {
+          results.push({ ...o, candidate: null });
+          continue;
+        }
+        // The barcode decides the product; the name check only flags a mismatch for the owner to see.
+        const exactName = namesExactly(`${o.brands} ${o.productName}`, f.name) || namesExactly(o.productName, f.name);
+        const c = o.imageUrl
+          ? candidates.add({
+              ownerId: owner,
+              fragranceId: req.params.id,
+              kind: 'approved_remote',
+              imageUrl: o.imageUrl,
+              pageUrl: o.productUrl,
+              siteName: 'Open Beauty Facts',
+              title: [o.brands, o.productName].filter(Boolean).join(' · ') || `Product ${o.barcode}`,
+              attribution: 'Open Beauty Facts contributors (CC BY-SA)',
+              licenseNotes: `Open Beauty Facts product ${o.barcode}: ${o.productUrl}. Photo licence CC BY-SA; attribution required.`,
+              barcode: o.barcode,
+              exactName,
+            })
+          : null;
+        results.push({ ...o, candidate: c ? publicCandidate(c) : null });
+      }
+      return { results };
+    },
+  );
+
+  // Web image search (TinyFish): owner-started, exact-name result pages only, owner picks one.
+  app.post(
+    '/fragrances/:id/images/search',
+    { config: { rateLimit: { max: 6, timeWindow: '1 minute' } }, schema: { params: Obj({ id: Uuid }) } },
+    async (req) => {
+      const owner = req.session!.owner.id;
+      const f = await fragranceFor(req.params.id);
+      try {
+        const found = await searchImageCandidates(deps.tinyfish, f);
+        const list = found.map((x) =>
+          publicCandidate(
+            candidates.add({
+              ownerId: owner,
+              fragranceId: req.params.id,
+              kind: 'web_search',
+              imageUrl: x.imageUrl,
+              pageUrl: x.pageUrl,
+              siteName: x.siteName,
+              title: x.title,
+              attribution: `${x.siteName} (found by web search)`.slice(0, 200),
+              licenseNotes: `Found by an owner-started web search on ${x.pageUrl}. Personal-use copy for this private collection.`.slice(0, 1000),
+              barcode: null,
+              exactName: true,
+            }),
+          ),
+        );
+        return { available: true, candidates: list };
+      } catch (e) {
+        if (!(e instanceof TinyFishError)) throw e;
+        return { available: false, code: e.code, message: e.message, candidates: [] };
+      }
+    },
+  );
+
+  // Downscaled preview of a candidate, fetched server-side with the SSRF guards; never stored.
+  app.get(
+    '/images/candidates/:cid/preview',
+    { config: { rateLimit: { max: 60, timeWindow: '1 minute' } }, schema: { params: Obj({ cid: Uuid }) } },
+    async (req, reply) => {
+      const c = candidates.get(req.params.cid, req.session!.owner.id);
+      if (!c) throw new ApiError('NOT_FOUND', 'Candidate expired; search again');
+      let buf = previews.get(c.id);
+      if (!buf) {
+        try {
+          const got = await fromCandidate(c);
+          buf = await sharp(got.bytes, { limitInputPixels: 50_000_000, failOn: 'error' }).rotate().resize({ width: 320, height: 400, fit: 'inside', withoutEnlargement: true }).webp({ quality: 75 }).toBuffer();
+        } catch {
+          throw new ApiError('NOT_FOUND', 'The image could not be loaded from its site');
+        }
+        if (previews.size > 200) previews.delete(previews.keys().next().value!);
+        previews.set(c.id, buf);
+      }
+      return reply.header('content-type', 'image/webp').header('cache-control', 'private, max-age=1800').header('x-content-type-options', 'nosniff').send(buf);
+    },
+  );
+
+  // Attach a reviewed candidate through the normal validated ingestion.
+  app.post(
+    '/fragrances/:id/images/candidates/:cid',
+    { config: { rateLimit: { max: 20, timeWindow: '1 minute' } }, schema: { params: Obj({ id: Uuid, cid: Uuid }), body: Obj({ makePrimary: Type.Optional(Type.Boolean()) }) } },
+    async (req, reply) => {
+      const owner = req.session!.owner.id;
+      const c = candidates.get(req.params.cid, owner);
+      if (!c || c.fragranceId !== req.params.id) throw new ApiError('NOT_FOUND', 'Candidate expired; search again');
+      await context(owner, req.params.id, null);
+      const r = await ingest(
+        owner,
+        { fragranceId: req.params.id, variantId: null, kind: c.kind, attribution: c.attribution, licenseNotes: c.licenseNotes, makePrimary: req.body.makePrimary ?? false },
+        async () => {
+          const got = await fromCandidate(c);
+          return { bytes: got.bytes, sourceRef: got.finalUrl };
+        },
+        c.imageUrl,
+      );
+      const primary = await effective(owner, req.params.id, null);
       return reply.code(r.deduplicated ? 200 : 201).send({ image: publicImage(r.row, primary), deduplicated: r.deduplicated });
     },
   );

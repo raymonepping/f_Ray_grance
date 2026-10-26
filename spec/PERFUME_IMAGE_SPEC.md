@@ -119,3 +119,11 @@ Recorded from the built system; see `reports/12_perfume_images.md` for evidence.
 - **Failures:** rejected uploads (`rejected`) and failed remote imports (`failed`) are stored with `failure_code` and `failure_detail`. No binary is kept for either.
 - **Ownership:** every image belongs to the owner who attached it. Binaries are served only through owner-authenticated `/api/v1/images/:id/display|original`. Another owner's id behaves as missing.
 - **Portability:** the JSON export does not carry image binaries or image metadata. Images are protected by the manual backup's image archive (`docs/recovery.md`).
+
+## Amendment (ADR-013, 2026-10-26)
+
+- Source chain, in precedence order: owner upload > approved provider (including **Open Beauty Facts by barcode**, `images.openbeautyfacts.org`, CC BY-SA with attribution) > Scento (unsupported) > manual external URL > **web search** (`web_search`).
+- **Barcode lookup:** you enter or reuse a bottle GTIN, and the Open Beauty Facts product API returns the product name and front image. You see the product name before picking.
+- **Web search:** you start a TinyFish search for one fragrance. Only result pages that contain the exact name are used. Each page's `og:image` becomes a candidate, and you pick one. This is not crawling or mirroring, because each search covers one fragrance and you start it.
+- Candidates are held server-side for 30 minutes under an opaque id; the client never supplies a fetch URL. Previews and downloads use the SSRF-guarded fetcher restricted to the candidate's own host.
+- The TinyFish key lives in Vault (`kv/fray/tinyfish`, `make tinyfish-key`). An empty key turns web search off.

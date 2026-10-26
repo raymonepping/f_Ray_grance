@@ -13,7 +13,7 @@ test.use({ viewport: { width: 390, height: 844 } });
 
 async function openPhantom(page: Page): Promise<void> {
   await login(page, '/discover');
-  await page.getByLabel('Brand').fill('Rabanne');
+  await page.getByLabel('Brand', { exact: true }).fill('Rabanne');
   await page.getByLabel('Fragrance name').fill('Phantom in Red');
   await page.getByRole('button', { name: 'Search', exact: true }).click();
   await page.getByRole('link', { name: /Open details|Saved: open details/ }).click();

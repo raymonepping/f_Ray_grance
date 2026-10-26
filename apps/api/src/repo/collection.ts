@@ -155,7 +155,7 @@ export interface CollectionListRow extends CollectionEntryRow {
   concentration: string | null;
   identity_status: string;
   pyramid?: { top?: string[]; heart?: string[]; base?: string[] } | null;
-  pyramid_origin?: 'user' | 'official' | 'provider' | 'derived' | null;
+  pyramid_origin?: 'user' | 'official' | 'provider' | 'derived' | 'research' | null;
   primary_image_id?: string | null;
 }
 
@@ -175,15 +175,20 @@ export async function listEntries(
 ): Promise<CollectionListRow[]> {
   const { rows } = await pool.query<CollectionListRow>(
     `SELECT e.*, b.canonical_name AS brand, f.canonical_name, f.concentration, f.identity_status,
-            -- Effective pyramid with the same precedence as effectiveProfile (user > official > provider > derived);
+            -- Effective pyramid with the same precedence as effectiveProfile (user > official > provider > derived > research,
+            -- skipping claims that list no notes);
             -- powers the list's note-profile readout. NULL when no source lists one.
             (SELECT c.value FROM app.source_claims c
               WHERE c.fragrance_id = f.id AND c.field_name = 'pyramid' AND c.superseded_at IS NULL
-              ORDER BY CASE c.origin WHEN 'user' THEN 1 WHEN 'official' THEN 2 WHEN 'provider' THEN 3 ELSE 4 END, c.claimed_at DESC
+                AND jsonb_typeof(c.value) = 'object'
+                AND (SELECT count(*) FROM jsonb_each(c.value) t WHERE jsonb_typeof(t.value) = 'array' AND jsonb_array_length(t.value) > 0) > 0
+              ORDER BY CASE c.origin WHEN 'user' THEN 1 WHEN 'official' THEN 2 WHEN 'provider' THEN 3 WHEN 'derived' THEN 4 ELSE 5 END, c.claimed_at DESC
               LIMIT 1) AS pyramid,
             (SELECT c.origin FROM app.source_claims c
               WHERE c.fragrance_id = f.id AND c.field_name = 'pyramid' AND c.superseded_at IS NULL
-              ORDER BY CASE c.origin WHEN 'user' THEN 1 WHEN 'official' THEN 2 WHEN 'provider' THEN 3 ELSE 4 END, c.claimed_at DESC
+                AND jsonb_typeof(c.value) = 'object'
+                AND (SELECT count(*) FROM jsonb_each(c.value) t WHERE jsonb_typeof(t.value) = 'array' AND jsonb_array_length(t.value) > 0) > 0
+              ORDER BY CASE c.origin WHEN 'user' THEN 1 WHEN 'official' THEN 2 WHEN 'provider' THEN 3 WHEN 'derived' THEN 4 ELSE 5 END, c.claimed_at DESC
               LIMIT 1) AS pyramid_origin,
             app.primary_image(e.owner_id, f.id, NULL) AS primary_image_id
        FROM app.collection_entries e

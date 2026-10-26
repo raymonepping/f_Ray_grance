@@ -22,6 +22,7 @@ export interface CandidateView {
   sourceUrl: string;
   match: 'exact_name' | 'near_match' | 'other';
   reason: string;
+  derivedId?: boolean;
 }
 
 export interface Resolution {
@@ -68,9 +69,9 @@ function describe(input: ResolveInput, c: SearchCandidate, match: CandidateView[
     const have = tokens(c.name);
     const extra = [...have].filter((t) => !want.has(t));
     const missing = [...want].filter((t) => !have.has(t));
-    reason = `distinct identity: ${extra.length ? `extra "${extra.join(' ')}"` : ''}${extra.length && missing.length ? ', ' : ''}${missing.length ? `missing "${missing.join(' ')}"` : ''} — not the same fragrance`;
+    reason = `distinct identity: ${extra.length ? `extra "${extra.join(' ')}"` : ''}${extra.length && missing.length ? ', ' : ''}${missing.length ? `missing "${missing.join(' ')}"` : ''}, not the same fragrance`;
   }
-  return { providerId: c.providerId, name: c.name, house: c.house, sourceUrl: c.sourceUrl, match, reason };
+  return { providerId: c.providerId, name: c.name, house: c.house, sourceUrl: c.sourceUrl, match, reason, ...(c.derivedId ? { derivedId: true } : {}) };
 }
 
 export function preview(p: SourceProfile): ProfilePreview {
@@ -139,12 +140,17 @@ export async function resolve(deps: ResolverDeps, input: ResolveInput): Promise<
       p = await deps.scento.fetchProfile(c.providerId!);
     } catch (err) {
       const code = err instanceof SourceError ? err.code : 'SOURCE_UNAVAILABLE';
+      // A derived id (listing linked only a brand page) may simply not exist: not verifiable, keep going.
+      if (code === 'NOT_FOUND' && c.derivedId) {
+        mismatched.push({ ...c, match: 'near_match', reason: 'Scento lists this name but has no profile page for it, so it cannot be verified' });
+        continue;
+      }
       return { state: 'candidate_needs_review', errorCode: code, reason: `profile fetch failed (${code})`, local: local[0], candidates };
     }
     if (brandKey(p.house) === brandKey(input.brand) && normalizeIdentity(p.name) === normalizeIdentity(input.name)) {
       verified.push({ c, p });
     } else {
-      mismatched.push({ ...c, match: 'near_match', reason: `listing says "${c.name}" but the profile is "${p.name}" (${p.concentrationRaw ?? 'concentration unknown'}) — source inconsistency, needs review` });
+      mismatched.push({ ...c, match: 'near_match', reason: `listing says "${c.name}" but the profile is "${p.name}" (${p.concentrationRaw ?? 'concentration unknown'}) so the source is inconsistent and needs review` });
     }
   }
 

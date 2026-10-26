@@ -1,6 +1,6 @@
 // API models consumed by the UI (validated server-side; the client never invents values).
 export type CollectionState = 'owned' | 'previously_owned' | 'sampled' | 'wishlist' | 'rejected';
-export type Origin = 'user' | 'official' | 'provider' | 'derived';
+export type Origin = 'user' | 'official' | 'provider' | 'derived' | 'research';
 
 export interface Pyramid {
   top: string[] | null;
@@ -45,7 +45,7 @@ export const CONCENTRATION_LABEL: Record<string, string> = {
   other: 'Other',
 };
 
-export const ORIGIN_LABEL: Record<Origin, string> = { user: 'Personal', official: 'Official', provider: 'Scento', derived: 'Derived' };
+export const ORIGIN_LABEL: Record<Origin, string> = { user: 'Personal', official: 'Official', provider: 'Scento', derived: 'Derived', research: 'Web research' };
 
 export interface HistoryEvent {
   id: string;
@@ -79,7 +79,7 @@ export interface Variant {
 export const STATES: CollectionState[] = ['owned', 'previously_owned', 'sampled', 'wishlist', 'rejected'];
 
 // Perfume images (Phase 12).
-export type ImageSourceKind = 'user_upload' | 'approved_remote' | 'scento' | 'manual_external';
+export type ImageSourceKind = 'user_upload' | 'approved_remote' | 'scento' | 'manual_external' | 'web_search';
 export interface ImageAsset {
   id: string;
   fragranceId: string;
@@ -105,9 +105,23 @@ export interface ImageAsset {
   url: string | null;
 }
 export interface ImageSourceInfo { enabled: boolean; note: string; hosts?: string[]; maxBytes?: number }
+export interface ImageCandidate {
+  id: string;
+  fragranceId: string;
+  kind: 'approved_remote' | 'web_search';
+  pageUrl: string;
+  siteName: string;
+  title: string;
+  attribution: string;
+  licenseNotes: string;
+  barcode: string | null;
+  exactName: boolean;
+  previewUrl: string;
+}
 export interface ImagesResponse {
   images: ImageAsset[];
   primaryId: string | null;
+  lookups: { barcode: { enabled: boolean; barcodes: string[]; note: string }; webSearch: { enabled: boolean; note: string } };
   sources: { precedence: ImageSourceKind[] } & Record<ImageSourceKind, ImageSourceInfo>;
 }
 export const IMAGE_SOURCE_LABEL: Record<ImageSourceKind, string> = {
@@ -115,4 +129,5 @@ export const IMAGE_SOURCE_LABEL: Record<ImageSourceKind, string> = {
   approved_remote: 'Approved provider',
   scento: 'Scento',
   manual_external: 'External URL',
+  web_search: 'Web search',
 };
