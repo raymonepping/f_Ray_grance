@@ -1,9 +1,9 @@
-# F-Ray-grance | Prompt 15 | Evidence-backed revisions
+# F-Ray-grance | Claude Prompt 15 | Evidence-backed revisions
 
-**Prompt ID:** FRAY-15-REVISIONS  
+**Prompt ID:** FRAY-CLAUDE-15  
 **Prepared:** 2026-10-26  
-**Status:** Prepared for implementation; this file does not mean Phase 15 has run.  
-**Prerequisites:** Read the [independent review](reports/review_01_14.md), current state and accepted ADRs; verify the actual repository HEAD and origin before acting. Review baseline: `08ee5364c49f121128e708d4af48657f3ea1d5cf` on `origin/main`.
+**Status:** Accepted for Claude under [ADR-016](../../docs/adr/ADR-016-phase15-revisions.md) and the [phase manifest](../../spec/PHASE_MANIFEST.md) Phase 15 addendum (PHASE_MANIFEST.md). Prepared by Codex; this file does not by itself mean Phase 15 has run.  
+**Prerequisites:** Read the [independent review](../../reports/review_01_14.md), current state and accepted ADRs; verify the actual repository HEAD and origin before acting. Review baseline: `08ee5364c49f121128e708d4af48657f3ea1d5cf` on `origin/main`.
 
 ## Assignment and outcome
 

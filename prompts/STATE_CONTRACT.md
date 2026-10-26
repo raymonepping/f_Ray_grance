@@ -54,3 +54,7 @@ ADR-014 accepts Phase 13 (My Spectrum) for Claude on the same terms. It requires
 ## Phase 14 local-development exception
 
 ADR-015 accepts Phase 14 (sidebar order and dividers) for Claude on the same terms. It requires Phase 13 completed and pushed, and leaves Phase 10 and `last_successful_phase` unchanged.
+
+## Phase 15 local-development exception
+
+ADR-016 accepts Phase 15 (evidence-backed revisions from `reports/review_01_14.md`) for Claude on the same terms. It requires Phase 14 completed and pushed, and records its own local results under phase 15. It leaves Phase 10, its blockers and `last_successful_phase` unchanged. Codex prompts 13 and 14 are accepted alternatives to the Claude prompts.

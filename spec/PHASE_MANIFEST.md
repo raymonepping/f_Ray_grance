@@ -44,3 +44,7 @@ Phase 12: source-attributed perfume images, defined in [PERFUME_IMAGE_SPEC.md](P
 ## Phase 14 addendum (ADR-015)
 
 **Phase 14: Sidebar order and dividers** (Claude). Navigation is grouped by purpose, with dividers on every surface: Collection and Samples; Discover and Compare; My DNA and My Spectrum; Academy; Settings in the utility area. The primary routes and the mobile bottom navigation are unchanged. Prompt: `prompts/Claude/14_reorder_sidebar.md`. It requires Phase 13.
+
+## Phase 15 addendum (ADR-016)
+
+**Phase 15: Evidence-backed revisions** (Claude). Resolves findings R1–R7 of the [independent review](../reports/review_01_14.md): one authoritative restore receipt for the complete database-plus-images set, a consistent database/image backup, restore of older-schema backups, exact identity in web research and image lookup, a coherent prompt registry, and the Spectrum race and presentation items. Prompt: `prompts/Claude/15_revisions.md`. It requires Phase 14. B1 (independent off-device recovery) remains an operator gate; Phase 10 stays blocked. The Codex copies of prompts 13 and 14 are accepted alternatives to the Claude prompts.

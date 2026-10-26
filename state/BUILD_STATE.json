@@ -608,6 +608,24 @@
         "Phase 10 remains blocked"
       ],
       "next_phase": null
+    },
+    "15": {
+      "status": "in_progress",
+      "agent": "claude-opus-5-5",
+      "prompt_id": "FRAY-CLAUDE-15",
+      "started_at_utc": "2026-10-26T20:08:38Z",
+      "baseline_head": "2a4540796811115ea6ea15d8473a13d9985cb420",
+      "report_path": "reports/15_revisions.md",
+      "authorization": "ADR-016: operator asked Claude to execute the Codex-prepared revision prompt (2026-10-26).",
+      "planned_scope": [
+        "R1 one authoritative receipt for the complete DB+images recovery set",
+        "R2 consistent DB+images backup (deferred file collection under the backup lock) and isolated asset restore",
+        "R3 restore older-schema backups via forward migration of the isolated target",
+        "R4 exact identity in web research and image lookup",
+        "R5 prompt registry, validators, README",
+        "R6 Spectrum stale-scope race",
+        "R7 Spectrum linked ticks, overlap, single-fragrance qualification"
+      ]
     }
   },
   "accepted_adrs": [
@@ -625,7 +643,8 @@
     "ADR-012",
     "ADR-013",
     "ADR-014",
-    "ADR-015"
+    "ADR-015",
+    "ADR-016"
   ],
   "unresolved_blockers": [
     {
@@ -650,7 +669,7 @@
       "detail": "No approved separate environment supplied for a full recovery drill outside the original Podman VM."
     }
   ],
-  "updated_at_utc": "2026-10-26T18:12:08Z",
+  "updated_at_utc": "2026-10-26T20:08:38Z",
   "reviews": {
     "2026-10-26_prompts_01_14": {
       "status": "completed_with_findings",
@@ -659,8 +678,8 @@
       "reviewed_head": "08ee5364c49f121128e708d4af48657f3ea1d5cf",
       "scope": "Prompts 01 through 14; code, accepted ADRs/specs, state, reports, current tests and targeted negative reproductions",
       "report_path": "reports/review_01_14.md",
-      "revision_prompt_path": "15_revisions.md",
-      "phase_15_execution": "not_started; user requested review and a revision prompt only",
+      "revision_prompt_path": "prompts/Claude/15_revisions.md",
+      "phase_15_execution": "in_progress by Claude (see phases.15)",
       "phase_assessment": {
         "01": "implemented",
         "02": "implemented; legacy restore regression tracked in R3",

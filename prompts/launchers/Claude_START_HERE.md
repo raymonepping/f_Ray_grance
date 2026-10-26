@@ -38,3 +38,7 @@
 ## Accepted local Phase 11 override
 
 ADR-010 records explicit operator authorization to develop Phase 11 while Phase 10 recovery remains blocked. For this authorized run, select/resume Phase 11 and read `spec/SCENT_ACADEMY_SPEC.md`; preserve Phase 10 blockers and keep import disabled. This exception overrides the generic next-lowest-blocked-phase rule only for the authorized Academy development. The contiguous successful-phase marker stays 09.
+
+## Accepted local Phases 12–15
+
+ADR-011, ADR-014, ADR-015 and ADR-016 extend the same operator authorization to Phases 12–15. Phase 15 (`prompts/Claude/15_revisions.md`) is the current revision pass. Preserve Phase 10 blockers, keep import disabled, and keep the contiguous successful-phase marker at 09.

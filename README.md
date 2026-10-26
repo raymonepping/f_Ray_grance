@@ -25,7 +25,7 @@ All authoritative specification documents live in [`spec/`](spec); `spec/MANIFES
 | [`PHASE_00.md`](spec/PHASE_00.md) | Phase 00 environment validation |
 | [`PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md) | **Authoritative 00–10 sequence** for all agents and release stages |
 | [`RELEASE_NOTES.md`](RELEASE_NOTES.md) | v0.1.6 accepted changes, verification limits and start guide |
-| [`docs/adr/`](docs/adr) | Accepted ADR-001 through ADR-009, including project Vault, direct-main commits, manual backups and the operator’s Tailscale deferral |
+| [`docs/adr/`](docs/adr) | Accepted ADR-001 through ADR-016, including project Vault, direct-main commits, manual backups, the operator’s Tailscale deferral and the accepted add-on phases 11–15 |
 
 ## Locked decisions
 
@@ -34,7 +34,7 @@ All authoritative specification documents live in [`spec/`](spec); `spec/MANIFES
 - **Services:** Node.js 24 LTS / Fastify; local Ollama embeddings; Scento-first read-only enrichment.
 - **Security:** local Mac loopback access with independent owner login and route authorization; project-owned HashiCorp Vault with scoped dynamic PostgreSQL credentials via Vault Agent. Remote Tailscale access is deferred by the operator under ADR-009.
 - **Operations:** Terraform provisions, Ansible configures, Make controls, Podman runs; no dual resource ownership. **Manual** backup/restore checks only; no backup scheduler.
-- **UX:** Dark-navy / warm-gold premium glass shell, collapsible left sidebar, sticky header, normal-flow footer and accessible mobile bottom bar/drawer.
+- **UX:** "Scent Spectrometer" console (ADR-012 superseded the original navy/gold glass), collapsible left sidebar, sticky header, normal-flow footer and accessible mobile bottom bar/drawer.
 - **Main workflows:** Collection, Discover, **Compare (2 in v0.1)**, My DNA by season. 4-up comparison reserved for v0.2.
 - **Data:** collection history is authoritative and durable; model outputs may be regenerated; no blind reseeding, no default destructive command. `commit_gh` pushes **only `main`** and Git is not a collection backup.
 
@@ -44,7 +44,7 @@ Phases 00–09 are implemented and pushed to the verified GitHub `main`. The app
 
 Local Phase 10 security, lifecycle and recovery checks pass, including 39 security checks and the final 28 browser tests. Host backups and restores into disposable containers work. The release remains blocked on independent recovery evidence. Independent off-device protection, a restore outside the original Podman VM, and production recovery promotion still require operator verification. Real-data import stays disabled. iPhone/tailnet access is deferred by operator instruction because of enterprise network policy; it has not been verified. No production-ready release is claimed.
 
-The v0.1.6 specification remains the accepted documentation baseline. The Phase 11 Scent Academy prompts are preserved deferred drafts; their required accepted specification/addendum is absent, so they do not advance the execution plan.
+The v0.1.6 specification remains the accepted documentation baseline. Phases 11–14 were accepted as local-development add-ons (ADR-010, ADR-011, ADR-014, ADR-015), built and pushed: the Scent Academy and Spectrometer redesign, perfume images, My Spectrum and the grouped sidebar. Phase 15 (ADR-016) resolves the findings of the [independent review of prompts 01–14](reports/review_01_14.md). None of these advances the contiguous successful-phase marker past 09 while Phase 10 is blocked.
 
 ## Operating the stack
 

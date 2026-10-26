@@ -50,3 +50,7 @@ Use one master launcher instead of manually selecting a phase: `prompts/launcher
 ## Accepted Phase 11 local-development addendum
 
 Codex/Claude Phase 11 Scent Academy prompts are accepted under ADR-010 and `spec/SCENT_ACADEMY_SPEC.md`. The operator expressly authorized continuing local development while Phase 10 recovery remains blocked. Preserve its release blockers, import guard and Tailscale deferral. Phase 11 does not advance the contiguous successful-phase marker past 09. IBM Bob remains on its accepted 00–10 suite.
+
+## Accepted Phases 12–15
+
+Phase 12 (perfume images, ADR-011) is accepted for Codex and Claude. Phases 13 (My Spectrum, ADR-014) and 14 (sidebar order, ADR-015) are accepted for Claude, with Codex copies registered as alternatives. Phase 15 (evidence-backed revisions, ADR-016) is accepted for Claude. All of them run on the ADR-010 local-development terms: Phase 10 stays blocked and the contiguous successful-phase marker stays 09. IBM Bob remains on its accepted 00–10 suite. `scripts/prompt_catalog.py` is the authoritative registry; the validators derive their counts from it.

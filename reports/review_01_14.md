@@ -4,7 +4,7 @@ Reviewer: Codex. Date: 2026-10-26 (Europe/Amsterdam). Reviewed `main` at **08ee5
 
 ## Conclusion
 
-Most requested functionality is implemented by Claude and Codex and is running. **“All prompts successfully finished” is not supported.** Phase 10 is explicitly blocked, and targeted checks found recovery and identity defects outside the passing regression suite. Phase 13 also has a reproduced UI race and incomplete presentation requirements. Phase 14's navigation behavior passes. A new [15_revisions.md](../15_revisions.md) defines the fixes and acceptance evidence.
+Most requested functionality is implemented by Claude and Codex and is running. **“All prompts successfully finished” is not supported.** Phase 10 is explicitly blocked, and targeted checks found recovery and identity defects outside the passing regression suite. Phase 13 also has a reproduced UI race and incomplete presentation requirements. Phase 14's navigation behavior passes. A new [15_revisions.md](../prompts/Claude/15_revisions.md) defines the fixes and acceptance evidence.
 
 Existing phase completion markers describe historical acceptance. This review records current findings separately instead of rewriting those historical results or claiming Phase 15 has run. `last_successful_phase` correctly remains 09 while Phase 10 is open.
 

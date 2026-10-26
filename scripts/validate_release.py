@@ -15,7 +15,7 @@ import re
 import sys
 from pathlib import Path
 
-from prompt_catalog import accepted_prompts, expected_phases
+from prompt_catalog import accepted_inventory, accepted_prompts, expected_phases
 
 r = Path(__file__).resolve().parents[1]
 spec = r / "spec"
@@ -57,7 +57,9 @@ unlisted = [
 ]
 assert not unlisted, f"frozen docs not in manifest: {unlisted}"
 
+# article/ holds drafts for external publication (some link to other projects); not part of this bundle.
 SKIP_DIRS = {
+    "article",
     "node_modules",
     ".git",
     ".nuxt",
@@ -125,6 +127,8 @@ for f in [
 ]:
     assert "manual" in (spec / f).read_text().lower(), f
 assert not broken, broken
+stages, launchers = accepted_inventory()
+n_prompts = sum(len(d) for d in stages.values()) + len(launchers)
 print(
-    f"PASS: {len(manifest['files'])} frozen docs hash-verified, 38 prompts, required hardening references and {n} local Markdown links"
+    f"PASS: {len(manifest['files'])} frozen docs hash-verified, {n_prompts} prompts, required hardening references and {n} local Markdown links"
 )

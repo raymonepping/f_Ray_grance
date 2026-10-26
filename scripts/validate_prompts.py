@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from pathlib import Path
 
-from prompt_catalog import accepted_prompts, expected_phases
+from prompt_catalog import accepted_inventory, accepted_prompts, expected_phases
 
 root = Path(__file__).resolve().parents[1]
 phases = {"00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10"}
@@ -45,11 +45,13 @@ for path in (root / "prompts" / "launchers").glob("*.md"):
         and "If it exists" in txt
     )
 assert len(list((root / "prompts" / "launchers").glob("*.md"))) == 3
+stages, launchers = accepted_inventory()
+n_stage = sum(len(d) for d in stages.values())
 print(
-    "PASS: 35 independent stage prompts + 3 launchers, state recovery and mandatory commit_gh requirements"
+    f"PASS: {n_stage} independent stage prompts + {len(launchers)} launchers, state recovery and mandatory commit_gh requirements"
 )
 
 assert (root / "spec" / "PHASE_MANIFEST.md").exists()
 print(
-    "PASS: v0.1.6 tailnet/private-auth, direct-main and manual backup contracts present in 38 prompts"
+    f"PASS: v0.1.6 tailnet/private-auth, direct-main and manual backup contracts present in {n_stage + len(launchers)} prompts"
 )

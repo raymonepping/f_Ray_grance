@@ -82,6 +82,11 @@
       "sha256": "4847569151291b11b9f945016a2622ef415a2ff9893210f315e1e818db11fa11"
     },
     {
+      "path": "docs/adr/ADR-016-phase15-revisions.md",
+      "bytes": 2388,
+      "sha256": "48d9595ca6e7917423b3da315b8998e7f0f8fe69332bdd522b0d625b7dd43247"
+    },
+    {
       "path": "prompts/Claude/00_preflight_and_state.md",
       "bytes": 9960,
       "sha256": "531818921778e52bfaa9da6d4a4bedd922539c79488744f8b12449337ad947f8"
@@ -157,6 +162,11 @@
       "sha256": "fb43c7ab8fe2d596c37cc5392d10331dca30081e40bdefe8ffece3e519cf03ad"
     },
     {
+      "path": "prompts/Claude/15_revisions.md",
+      "bytes": 15885,
+      "sha256": "dd1914232cb4814cebebc5ce8aed1d0807a1f0ac79db2bbe1713003f60dc7145"
+    },
+    {
       "path": "prompts/Codex/00_preflight_and_state.md",
       "bytes": 9889,
       "sha256": "8f7560c10787350bb5f1372825431ffaccde422494ebdde169d6aa008d2a1e72"
@@ -222,6 +232,16 @@
       "sha256": "95f104c0facdae95252719d9abb3ebd83958c136e1b9704a7e06c159c9e7a842"
     },
     {
+      "path": "prompts/Codex/13_add_spectrum.md",
+      "bytes": 6818,
+      "sha256": "e6421ceffd537c43d75160d72793966b537a8e1f3d80ba3fe6bd37250b0ad648"
+    },
+    {
+      "path": "prompts/Codex/14_reorder_sidebar.md",
+      "bytes": 4769,
+      "sha256": "0e11cbfd7170a47b91cc7bbfb53f56dbdcaa7937910f142936d00a16671c78dd"
+    },
+    {
       "path": "prompts/IBM_Bob/00_preflight_and_state.md",
       "bytes": 9911,
       "sha256": "d75fd10370e9db33f5cbc06e216748d1289b3412a158e9130e2331a8983decde"
@@ -278,18 +298,18 @@
     },
     {
       "path": "prompts/README.md",
-      "bytes": 6599,
-      "sha256": "b0b687c90d4bf659c3f2a967859c25fff9c7a085d172cbe8f84b8bdd72514117"
+      "bytes": 7185,
+      "sha256": "27a3456a86bb2a06e861eabfc5b1dbb385d702b8ebdb68b7ad38f2e964e56ed8"
     },
     {
       "path": "prompts/STATE_CONTRACT.md",
-      "bytes": 4699,
-      "sha256": "ecc8b6bb3908fd54071f8923151ee316a1bc1f486b698c3f9ddf8e3f15463dec"
+      "bytes": 5093,
+      "sha256": "a635cb6c46dc195d983f61f7310597b61153909819851c7ae913741ea8fc2a7b"
     },
     {
       "path": "prompts/launchers/Claude_START_HERE.md",
-      "bytes": 9009,
-      "sha256": "548f9b4331d02fc203143d2394e3c2970a1f99287ed5e1516d6186a1a3e4b7dc"
+      "bytes": 9319,
+      "sha256": "b88b9520a3a7cfcba323843a9e530ca1cd31d492aef6d7c4d248f30dc07df5f0"
     },
     {
       "path": "prompts/launchers/Codex_START_HERE.md",
@@ -353,8 +373,8 @@
     },
     {
       "path": "spec/PHASE_MANIFEST.md",
-      "bytes": 5235,
-      "sha256": "2318ab7da0b4bdc5208e295d5918f3f7fd88f94248f3ea05768406b1e4e7d736"
+      "bytes": 5908,
+      "sha256": "92f7aa7752435b17422a75b644e4301f05902049245a2168cd3a124aaa196b53"
     },
     {
       "path": "spec/PRODUCT_SPEC.md",
