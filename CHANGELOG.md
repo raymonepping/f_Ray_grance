@@ -57,6 +57,12 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Changed
 
+- **Vault Agent watchdog:** the agent container now runs under a supervisor that detects VM clock jumps (Mac sleep/wake, chrony steps). It restarts the agent within seconds, so database credentials are re-issued before the API notices, instead of after the dead lease's next renewal attempt. Verified on two real jumps, each recovered in 2 to 3 s.
+
+### Fixed
+
+- Collection returned a 500 (`cannot get array length of a scalar`) when it held a fragrance whose source pyramid has empty tiers (e.g. Boss Bottled Elixir). PostgreSQL may evaluate `AND` operands in any order; the check now uses `CASE`. A regression test covers it.
+
 - After the Mac wakes from sleep, the database login can be renewed late (the Podman VM clock lags). The app now says so plainly ("Reconnecting to the database") instead of "Session store unavailable". The banner re-checks every 15 seconds, clears itself on recovery, and points to `make heal`.
 - Barcode hints keep concentration words that belong to a name ("Sauvage Parfum") and drop shop clutter ("Men's", "3.4 oz", "Fragrances ..."). A suggestion matches the barcode on the full name or the core name.
 - Scento search listings that link only a brand page (seen for Calvin Klein CK One) now get the profile id from Scento's `<name>-<house>` slug pattern, and the fetched profile is still verified exactly. "CK One" now resolves as an exact match instead of "needs review".

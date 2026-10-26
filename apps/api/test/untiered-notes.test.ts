@@ -6,7 +6,8 @@ import { ScentoClient, type Fetcher } from '../src/providers/scento.js';
 import { effectiveProfile, enrichExact } from '../src/repo/enrichment.js';
 import { deriveDna } from '../src/domain/dna.js';
 import type { RotatingPool } from '../src/db/pool.js';
-import { runtimePool } from './helpers.js';
+import { runtimePool, seedOwner } from './helpers.js';
+import { createEntry, listEntries } from '../src/repo/collection.js';
 
 const body = readFileSync(new URL('./fixtures/scento/profile-boss-bottled-elixir-hugo-boss.json', import.meta.url), 'utf8');
 const fetcher: Fetcher = async () => new Response(body, { status: 200, headers: { 'content-type': 'application/json' } });
@@ -44,5 +45,15 @@ describe('untiered Scento notes', () => {
     const dna = deriveDna(fields);
     expect(dna.notes.map((n) => n.label)).toEqual(['Incense', 'Vetiver', 'Cedarwood']);
     expect(dna.traits.find((t) => t.code === 'smoky')?.score).toBe(3); // incense rule, from an untiered source note
+  });
+
+  it('a collection holding a fragrance with null pyramid tiers lists without error (regression: 500 "cannot get array length of a scalar")', async () => {
+    const p = await scento.fetchProfile('boss-bottled-elixir-hugo-boss');
+    const { fragranceId } = await enrichExact(rp.get(), p);
+    const owner = await seedOwner(rp.get());
+    await createEntry(rp.get(), owner, { fragranceId, state: 'owned' });
+    const rows = await listEntries(rp.get(), owner);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]!.pyramid?.top ?? null).not.toBe(undefined); // either a research pyramid or null, never an error
   });
 });

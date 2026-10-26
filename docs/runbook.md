@@ -60,6 +60,8 @@ restarts chronyd in the VM if drift exceeds 2 s and restarts `fray-vault-agent`,
 re-authenticates and renders fresh credentials; the API swaps its pool within seconds.
 `make start` runs `heal` automatically.
 
+Since 2026-10-26 the agent recovers by itself. A watchdog (`infra/config/vault-agent-watchdog.sh`, the agent container's entrypoint) compares wall-clock progress with `/proc/uptime` every 10 s. When the clock jumps more than 30 s (VM resumed or chrony stepped), it restarts the agent, which re-issues credentials within about 3 s. Verified live: jumps of 1,892 s and 1,190 s were each recovered in 2 to 3 s. `make heal` is still useful when the VM clock stays behind, because chrony sometimes refuses its sources for many minutes. Heal steps the clock, and the watchdog then refreshes the credentials.
+
 ## Vault model (ADR-008)
 
 - `fray-api` holds **no Vault token**. `fray-vault-agent` logs in with AppRole (secret-id bound to

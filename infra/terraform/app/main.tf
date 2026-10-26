@@ -172,12 +172,13 @@ resource "docker_volume" "agent_rendered" {
 }
 
 resource "docker_container" "vault_agent" {
-  count        = local.agent_enabled ? 1 : 0
-  name         = "fray-vault-agent"
-  image        = data.docker_image.vault.id
-  restart      = "unless-stopped"
-  entrypoint   = ["vault"]
-  command      = ["agent", "-config=/vault/agent/agent.hcl"]
+  count   = local.agent_enabled ? 1 : 0
+  name    = "fray-vault-agent"
+  image   = data.docker_image.vault.id
+  restart = "unless-stopped"
+  # Supervisor: restarts the agent at once when the VM clock jumps (Mac sleep/wake), so credentials
+  # are re-issued before the API notices; see infra/config/vault-agent-watchdog.sh.
+  entrypoint   = ["/bin/sh", "/vault/agent/watchdog.sh"]
   user         = "100:1000"
   network_mode = "bridge"
   networks_advanced {
@@ -191,6 +192,10 @@ resource "docker_container" "vault_agent" {
   upload {
     file    = "/vault/agent/agent.hcl"
     content = file("${path.module}/../../config/vault-agent.hcl")
+  }
+  upload {
+    file    = "/vault/agent/watchdog.sh"
+    content = file("${path.module}/../../config/vault-agent-watchdog.sh")
   }
   # AppRole credentials are delivered by Ansible (no_log) into this volume.
   volumes {
