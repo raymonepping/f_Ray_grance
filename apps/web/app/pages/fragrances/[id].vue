@@ -25,6 +25,11 @@ function onUpdated(e: CollectionEntry) {
 async function onAdded() {
   await loadRelationship();
 }
+const removedNote = ref('');
+async function onRemoved() {
+  await loadRelationship();
+  removedNote.value = 'Removed from your collection. The fragrance stays in your library.';
+}
 async function load() {
   error.value = null;
   try {
@@ -143,6 +148,7 @@ const subfamily = computed(() => data.value?.fields.subfamily?.value as string |
         <div class="order-first flex min-w-0 flex-col gap-5 xl:order-none">
           <GlassPanel id="relationship" variant="solid" as="section" class="flex scroll-mt-24 flex-col gap-5 p-5" aria-labelledby="rel-h">
             <h2 id="rel-h">Your collection</h2>
+            <p v-if="removedNote" role="status" class="m-0 text-[13px] text-ink-2">{{ removedNote }}</p>
             <p v-if="!entries.length" class="m-0 text-ink-2">Not in your collection yet.</p>
             <article v-for="(e, i) in entries" :key="e.id" class="flex flex-col gap-4 border-t border-line pt-4 first:border-0 first:pt-0" :aria-label="`Collection entry ${i + 1}`">
               <div class="flex flex-wrap items-center gap-3">
@@ -155,6 +161,7 @@ const subfamily = computed(() => data.value?.fields.subfamily?.value as string |
                 <summary class="tap flex cursor-pointer items-center text-[13px] font-medium">History ({{ e.history.length }})</summary>
                 <div class="mt-2"><CollectionHistoryTimeline :events="e.history" /></div>
               </details>
+              <CollectionRemoveEntry :entry="e" :name="data.fragrance.canonical_name" @removed="onRemoved" />
             </article>
             <div class="border-t border-line pt-4">
               <CollectionAddToCollection :fragrance-id="data.fragrance.id" :label="entries.length ? 'Add another bottle or sample as' : 'Add to collection as'" @added="onAdded" />

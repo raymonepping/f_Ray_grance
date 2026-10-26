@@ -10,6 +10,7 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Added
 
+- **Remove from collection:** on a fragrance's page, each collection entry can be removed permanently. It shows a preview first: what goes (entry, status history, rating, note) and what stays (the fragrance, images, season choices; linked practice becomes generic). Then it needs an explicit confirmation, and the removal is logged with counts only. Migration `0007` adds `app.remove_collection_entry()` and `app.deletion_log`. History stays append-only on every other path.
 - **Phase 13: My Spectrum** ([ADR-014](docs/adr/ADR-014-my-spectrum.md)). Shows where the fragrances you own sit on Fresh ↔ Warm and Dry ↔ Sweet, with a trait readout and a family breakdown, computed from the existing indicative traits. Coverage is stated, unknown stays unknown, and it describes the collection rather than what you like.
 - **Quick find in Discover:** one box for a name, part of a name, a brand, or a barcode (EAN/UPC), like ISBN for books. A barcode is checked against your verified barcodes first, then Open Beauty Facts (or a web search) for the product title; that title is cleaned into a Scento search. Similar names are never substituted. The barcode is saved to the fragrance you add, so scanning it again finds it straight away.
 - **Web research and image lookups** ([ADR-013](docs/adr/ADR-013-web-research-and-image-lookup.md)):

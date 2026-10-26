@@ -39,6 +39,7 @@ SELECT (SELECT count(*) FROM d1) AS events, (SELECT count(*) FROM d2) AS entries
 -- Exercises after their observations (data-modifying CTEs share one snapshot).
 DELETE FROM app.training_exercises WHERE owner_id IN (SELECT id FROM app.owners WHERE username = :'u');
 DELETE FROM app.image_assets WHERE owner_id IN (SELECT id FROM app.owners WHERE username = :'u');
+DELETE FROM app.deletion_log WHERE owner_id IN (SELECT id FROM app.owners WHERE username = :'u');
 DELETE FROM app.login_attempts WHERE username = :'u';
 DELETE FROM app.owners WHERE username = :'u';
 COMMIT;

@@ -152,6 +152,28 @@ export async function collectionRoutes(base: FastifyInstance, deps: { pool: Rota
     return { entries: withHistory, variants: variants.rows };
   });
 
+  // Permanent removal (DATA_PERSISTENCE: explicit, previewed and logged). Preview first; the removal
+  // itself needs confirm: "REMOVE". Another owner's entry behaves as missing.
+  app.get('/collection/:id/removal-preview', { schema: { params: Type.Object({ id: Uuid }, { additionalProperties: false }) } }, async (req) => {
+    const { rows } = await db().query<{ p: Record<string, unknown> | null }>('SELECT app.collection_entry_removal_preview($1, $2) AS p', [req.session!.owner.id, req.params.id]);
+    if (!rows[0]?.p) throw new ApiError('NOT_FOUND', 'Collection entry not found');
+    return rows[0].p;
+  });
+
+  app.delete(
+    '/collection/:id',
+    {
+      config: { rateLimit: { max: 20, timeWindow: '1 minute' } },
+      schema: { params: Type.Object({ id: Uuid }, { additionalProperties: false }), body: Type.Object({ confirm: Type.Literal('REMOVE') }, { additionalProperties: false }) },
+    },
+    async (req) => {
+      const { rows } = await db().query<{ r: Record<string, unknown> | null }>('SELECT app.remove_collection_entry($1, $2) AS r', [req.session!.owner.id, req.params.id]);
+      if (!rows[0]?.r) throw new ApiError('NOT_FOUND', 'Collection entry not found');
+      req.log.info({ entryId: req.params.id }, 'collection entry removed by owner');
+      return { removed: true, summary: rows[0].r };
+    },
+  );
+
   /** Record a package size / barcode for a fragrance. Owner-confirmed barcodes become verified mappings. */
   app.post(
     '/fragrances/:id/variants',

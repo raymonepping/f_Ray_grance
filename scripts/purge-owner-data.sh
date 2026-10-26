@@ -5,7 +5,7 @@
 #
 # Emptied per owner: collection entries and their append-only history, ratings and private notes,
 # seasonal profiles and fragrance seasons, Academy progress, Train My Nose exercises and
-# observations, perfume images (metadata and files used only by that owner), the owner's own
+# observations, perfume images (metadata and files used only by that owner), the removal log, the owner's own
 # catalogue corrections, sessions (sign in again afterwards) and login-attempt counters.
 #
 # Safety: prints what will be emptied, requires typing the confirmation phrase, then takes a fresh
@@ -106,6 +106,7 @@ DELETE FROM app.collection_entries WHERE id IN (SELECT id FROM purge_entries);
 DELETE FROM app.seasonal_preferences WHERE owner_id IN (SELECT id FROM purge_owner);
 DELETE FROM app.season_fragrances WHERE owner_id IN (SELECT id FROM purge_owner);
 DELETE FROM app.image_assets WHERE owner_id IN (SELECT id FROM purge_owner);
+DELETE FROM app.deletion_log WHERE owner_id IN (SELECT id FROM purge_owner);
 -- The owner's own catalogue corrections (and the pyramid notes they produced); provider data stays.
 DELETE FROM app.fragrance_notes WHERE source_claim_id IN (SELECT id FROM purge_claims);
 DELETE FROM app.source_claims WHERE id IN (SELECT id FROM purge_claims);
