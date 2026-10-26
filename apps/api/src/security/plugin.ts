@@ -5,6 +5,7 @@
 //   header matching the session's double-submit token.
 import fp from './fp.js';
 import type { FastifyReply, FastifyRequest } from 'fastify';
+import { DB_RECONNECTING } from '../errors.js';
 import { ApiError } from '../errors.js';
 import { csrfMatches, resolveSession, SESSION_COOKIE, type ResolvedSession } from './sessions.js';
 import type { SessionKey } from './session-key.js';
@@ -75,7 +76,7 @@ export const securityPlugin = fp<SecurityOptions>(async (app, opts) => {
 });
 
 export async function requireOwner(req: FastifyRequest, _reply: FastifyReply): Promise<void> {
-  if (req.sessionLookupFailed) throw new ApiError('DEPENDENCY_UNAVAILABLE', 'Session store unavailable');
+  if (req.sessionLookupFailed) throw new ApiError('DEPENDENCY_UNAVAILABLE', DB_RECONNECTING, { source: 'database' });
   if (!req.session) throw new ApiError('UNAUTHENTICATED', 'Sign in required');
 }
 

@@ -47,8 +47,11 @@ describe('brand-page listings', () => {
 describe('barcode title hints', () => {
   it('cleans a barcode-database title into brand, name, size and concentration', () => {
     expect(hintFromProductTitle('Calvin Klein Ck One Essence Parfum - Eau de Parfum    100ml', '', ['Calvin Klein'])).toEqual({
-      brand: 'Calvin Klein', name: 'Ck One Essence', sizeMl: 100, concentration: null, query: 'Calvin Klein Ck One Essence',
+      brand: 'Calvin Klein', name: 'Ck One Essence Parfum', core: 'Ck One Essence', sizeMl: 100, concentration: null, query: 'Calvin Klein Ck One Essence Parfum',
     });
-    expect(hintFromProductTitle('Boss Bottled Parfum 100 ml', 'Hugo Boss')).toMatchObject({ brand: 'Hugo Boss', name: 'Boss Bottled', sizeMl: 100, concentration: 'parfum' });
+    expect(hintFromProductTitle('Boss Bottled Parfum 100 ml', 'Hugo Boss')).toMatchObject({ brand: 'Hugo Boss', name: 'Boss Bottled Parfum', core: 'Boss Bottled', sizeMl: 100, concentration: 'parfum' });
+    // Seen live (web-search fallback for EAN 3348901486385): shop clutter goes, the identity stays.
+    expect(hintFromProductTitle("Dior Men's Sauvage Parfum 3.4 oz Fragrances ...", '', ['Dior'])).toMatchObject({ brand: 'Dior', name: 'Sauvage Parfum', core: 'Sauvage', query: 'Dior Sauvage Parfum' });
+    expect(hintFromProductTitle('Jean Paul Gaultier Le Male Pour Homme Eau de Toilette 125 ml', '', ['Jean Paul Gaultier']).name).toBe('Le Male Pour Homme Eau de Toilette');
   });
 });

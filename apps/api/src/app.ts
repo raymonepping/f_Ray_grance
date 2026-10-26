@@ -7,7 +7,7 @@ import type { ImageLookupDeps } from './routes/v1/images.js';
 import Fastify, { type FastifyInstance, type FastifyServerOptions } from 'fastify';
 import cookie from '@fastify/cookie';
 import addFormats from 'ajv-formats';
-import { ApiError, envelope, statusFor } from './errors.js';
+import { ApiError, DB_RECONNECTING, envelope, statusFor } from './errors.js';
 import { securityPlugin } from './security/plugin.js';
 import { healthRoutes } from './routes/health.js';
 import { v1Routes } from './routes/v1/index.js';
@@ -85,12 +85,12 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     if (e.code && ['28P01', '28000', '57P01', '57P02', '57P03', '08006'].includes(e.code)) {
       void deps.pool.refresh();
       req.log.warn({ pgcode: e.code }, 'database credentials rejected or connection terminated');
-      return reply.code(503).send(envelope('DEPENDENCY_UNAVAILABLE', 'Database temporarily unavailable', req.id));
+      return reply.code(503).send(envelope('DEPENDENCY_UNAVAILABLE', DB_RECONNECTING, req.id, { source: 'database' }));
     }
     if (typeof e.message === 'string' && /pool not initialised|credentials|ECONNREFUSED|terminating connection|password authentication/i.test(e.message)) {
       void deps.pool.refresh();
       req.log.warn({ err: e.message }, 'dependency unavailable');
-      return reply.code(503).send(envelope('DEPENDENCY_UNAVAILABLE', 'Database temporarily unavailable', req.id));
+      return reply.code(503).send(envelope('DEPENDENCY_UNAVAILABLE', DB_RECONNECTING, req.id, { source: 'database' }));
     }
     req.log.error({ err }, 'unhandled error');
     return reply.code(statusFor('INTERNAL')).send(envelope('INTERNAL', 'Internal error', req.id));

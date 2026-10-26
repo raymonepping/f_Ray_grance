@@ -1,12 +1,16 @@
 // Turns a barcode database's product title into a search hint (brand, name, size, concentration).
 // It is a hint only: identity is still decided by the exact Scento resolver or by the owner
-// (manual draft). Nothing here guesses beyond removing size, packaging and concentration wording.
+// (manual draft). Nothing here guesses: it removes size and shop clutter, and keeps concentration words
+// in the name (they can be part of it, as in "Sauvage Parfum") while also offering a core name for matching.
 import { mapConcentration, type Concentration } from './concentration.js';
 import { normalizeIdentity } from './identity.js';
 
 export interface BarcodeHint {
   brand: string | null;
+  /** Cleaned name, keeping concentration words that may be part of the identity ("Sauvage Parfum"). */
   name: string;
+  /** The name without trailing concentration words ("Sauvage"); used only for matching. */
+  core: string;
   sizeMl: number | null;
   concentration: Concentration | null;
   query: string;
@@ -31,8 +35,13 @@ export function hintFromProductTitle(title: string, brands: string, knownHouses:
   }
   t = t.split(/\s+[-–|]\s+/)[0]!; // "Name Parfum - Eau de Parfum 100ml" -> "Name Parfum"
   t = t.replace(/\d+(?:[.,]\d+)?\s*(ml|millilit(?:er|re)s?|fl\.?\s*oz|oz)\b/gi, ' ');
-  // Trailing concentration / packaging words are labels, not part of the name.
-  for (let i = 0; i < 4; i++) t = t.replace(/\s+(eau\s+de\s+parfum|eau\s+de\s+toilette|eau\s+de\s+cologne|extrait|parfum|perfume|spray|vaporisateur|edp|edt|edc)\s*$/i, '');
+  // Shop clutter: gender labels, "fragrance(s)", "spray", "tester", ellipses. "Pour Homme" stays (it is part of names).
+  t = t
+    .replace(/(\.\.\.|…)/g, ' ')
+    .replace(/\b(men'?s|women'?s|ladies|unisex|for\s+(?:men|women|him|her))\b/gi, ' ')
+    .replace(/\b(fragrances?|spray|vaporisateur|tester|gift\s*set|new|authentic)\b/gi, ' ');
   const name = t.replace(/\s+/g, ' ').trim();
-  return { brand: house, name, sizeMl: sizeMl && sizeMl > 0 && sizeMl < 5000 ? sizeMl : null, concentration: concs.length === 1 ? concs[0]! : null, query: [house, name].filter(Boolean).join(' ') };
+  let core = name;
+  for (let i = 0; i < 4; i++) core = core.replace(/\s+(eau\s+de\s+parfum|eau\s+de\s+toilette|eau\s+de\s+cologne|extrait|parfum|perfume|edp|edt|edc)\s*$/i, '');
+  return { brand: house, name, core: core.trim() || name, sizeMl: sizeMl && sizeMl > 0 && sizeMl < 5000 ? sizeMl : null, concentration: concs.length === 1 ? concs[0]! : null, query: [house, name].filter(Boolean).join(' ') };
 }

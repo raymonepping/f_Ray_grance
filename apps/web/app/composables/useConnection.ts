@@ -3,6 +3,9 @@
 // degraded dependency (e.g. Scento) — and claims nothing it has not observed.
 export type ConnectionState = 'checking' | 'private_https' | 'local' | 'unreachable' | 'degraded';
 
+// While degraded, re-check readiness every 15 s so the banner clears by itself on recovery.
+let recheck: ReturnType<typeof setInterval> | null = null;
+
 export function useConnection() {
   const state = useState<ConnectionState>('conn:state', () => 'checking');
   const degradedSource = useState<string | null>('conn:degraded', () => null);
@@ -21,6 +24,21 @@ export function useConnection() {
     markDegraded(source: string) {
       state.value = 'degraded';
       degradedSource.value = source;
+      if (!recheck && typeof window !== 'undefined') {
+        recheck = setInterval(async () => {
+          try {
+            const r = await fetch('/api/health/ready', { credentials: 'same-origin' });
+            if (r.ok) {
+              degradedSource.value = null;
+              state.value = reachable();
+              clearInterval(recheck!);
+              recheck = null;
+            }
+          } catch {
+            /* still unreachable; keep checking */
+          }
+        }, 15_000);
+      }
     },
     clearDegraded() {
       degradedSource.value = null;
@@ -33,8 +51,7 @@ export function useConnection() {
           degradedSource.value = null;
           state.value = reachable();
         } else {
-          state.value = 'degraded';
-          degradedSource.value = 'database';
+          this.markDegraded('database');
         }
       } catch {
         state.value = 'unreachable';

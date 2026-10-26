@@ -82,7 +82,7 @@ export async function lookupRoutes(base: FastifyInstance, deps: { pool: Rotating
         hint,
         webTitles,
         ...r,
-        suggestions: r.suggestions.map((s) => ({ ...s, exactToHint: sameName(s.name, hint!.name) && (!hint!.brand || sameName(s.house, hint!.brand)) })),
+        suggestions: r.suggestions.map((s) => ({ ...s, exactToHint: (sameName(s.name, hint!.name) || sameName(s.name, hint!.core)) && (!hint!.brand || sameName(s.house, hint!.brand)) })),
       };
     },
   );

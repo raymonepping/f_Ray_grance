@@ -59,8 +59,8 @@ describe('quick find', () => {
   });
   it('an EAN in Open Beauty Facts becomes a cleaned hint, then Scento suggestions; nothing is substituted', async () => {
     const r = (await find('3616303473396')).json();
-    expect(r).toMatchObject({ kind: 'barcode', gtin14: '03616303473396', hint: { source: 'Open Beauty Facts', brand: 'Calvin Klein', name: 'Ck One Essence', sizeMl: 100 } });
-    expect(scentoQueries.at(-1)).toBe('Calvin Klein Ck One Essence');
+    expect(r).toMatchObject({ kind: 'barcode', gtin14: '03616303473396', hint: { source: 'Open Beauty Facts', brand: 'Calvin Klein', name: 'Ck One Essence Parfum', core: 'Ck One Essence', sizeMl: 100 } });
+    expect(scentoQueries.at(-1)).toBe('Calvin Klein Ck One Essence Parfum');
     expect(r.suggestions.every((s: { exactToHint: boolean }) => s.exactToHint === false)).toBe(true); // "CK One" is not "CK One Essence"
   });
   it('a barcode already linked to a verified fragrance finds it directly', async () => {

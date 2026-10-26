@@ -37,9 +37,12 @@ watch(() => route.fullPath, () => nextTick(() => (announce.value = `${header.val
           <StatusBanner v-if="conn.state.value === 'unreachable'" tone="error" title="Mac unreachable">
             F-Ray-grance runs on your Mac. It may be asleep or off the network; nothing you saved is lost. Retry when it is back.
           </StatusBanner>
+          <StatusBanner v-else-if="conn.state.value === 'degraded' && conn.degradedSource.value === 'database'" tone="warning" title="Reconnecting to the database">
+            This usually happens right after your Mac wakes from sleep and clears by itself within a few minutes; nothing you saved is lost.
+            This message disappears when the connection is back. To fix it at once, run <code class="readout">make heal</code> on the Mac.
+          </StatusBanner>
           <StatusBanner v-else-if="conn.state.value === 'degraded'" tone="warning" title="Partly unavailable">
-            {{ conn.degradedSource.value === 'database' ? 'The data service is temporarily unavailable.' : 'Enrichment is temporarily unavailable.' }}
-            Stored fragrances stay readable.
+            Enrichment is temporarily unavailable. Stored fragrances stay readable.
           </StatusBanner>
         </div>
       </div>

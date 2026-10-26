@@ -57,6 +57,8 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Changed
 
+- After the Mac wakes from sleep, the database login can be renewed late (the Podman VM clock lags). The app now says so plainly ("Reconnecting to the database") instead of "Session store unavailable". The banner re-checks every 15 seconds, clears itself on recovery, and points to `make heal`.
+- Barcode hints keep concentration words that belong to a name ("Sauvage Parfum") and drop shop clutter ("Men's", "3.4 oz", "Fragrances ..."). A suggestion matches the barcode on the full name or the core name.
 - Scento search listings that link only a brand page (seen for Calvin Klein CK One) now get the profile id from Scento's `<name>-<house>` slug pattern, and the fetched profile is still verified exactly. "CK One" now resolves as an exact match instead of "needs review".
 - Web research runs as a background job. TinyFish agent runs are started asynchronously and cancelled on TinyFish's side after 120 s. Every outbound call uses a strongly referenced timeout (`AbortSignal.timeout` was observed never firing, which left a request hanging 19 minutes).
 - Malformed request bodies (Fastify 400s) return a validation error instead of a 500.

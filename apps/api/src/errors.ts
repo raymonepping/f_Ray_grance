@@ -23,6 +23,9 @@ const STATUS: Record<ErrorCode, number> = {
   INTERNAL: 500,
 };
 
+/** Shown when the database login is being renewed (typically right after the Mac wakes from sleep). */
+export const DB_RECONNECTING = 'The database connection is being renewed, usually right after the Mac wakes from sleep. Try again in a minute.';
+
 export class ApiError extends Error {
   readonly status: number;
   constructor(
