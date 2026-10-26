@@ -583,6 +583,31 @@
         "Phase 10 remains blocked"
       ],
       "next_phase": null
+    },
+    "14": {
+      "status": "completed",
+      "agent": "claude-opus-5-5",
+      "prompt_id": "FRAY-CLAUDE-14",
+      "started_at_utc": "2026-10-26T15:17:52Z",
+      "baseline_head": "1afd62080eea9f369a9f48992443be93c6dd09a3",
+      "report_path": "reports/14_reorder_sidebar.md",
+      "authorization": "ADR-015: operator asked for prompt 14_reorder_sidebar.md with dividers and a logical order (2026-10-26).",
+      "planned_scope": [
+        "Grouped single navigation source",
+        "Sidebar (expanded + rail) and drawer with dividers; bottom nav unchanged",
+        "Unit + e2e tests, report, state"
+      ],
+      "completed_at_utc": "2026-10-26T15:23:42Z",
+      "evidence": {
+        "make_test": "PASS",
+        "make_test_e2e": "49/49 PASS",
+        "validate_docs": "PASS (77 frozen docs)",
+        "impeccable_detect": "[]"
+      },
+      "residual": [
+        "Phase 10 remains blocked"
+      ],
+      "next_phase": null
     }
   },
   "accepted_adrs": [
@@ -599,7 +624,8 @@
     "ADR-011",
     "ADR-012",
     "ADR-013",
-    "ADR-014"
+    "ADR-014",
+    "ADR-015"
   ],
   "unresolved_blockers": [
     {
@@ -624,5 +650,5 @@
       "detail": "No approved separate environment supplied for a full recovery drill outside the original Podman VM."
     }
   ],
-  "updated_at_utc": "2026-10-26T14:44:46Z"
+  "updated_at_utc": "2026-10-26T15:23:42Z"
 }

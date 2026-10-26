@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Accessible drawer (DESIGN §4.3): focus trap, Escape, backdrop close, scroll lock,
 // focus restored to the trigger.
-import { NAVIGATION, isActive } from '~~/shared/navigation';
+import { MAIN_GROUPS, UTILITY_NAV, isActive } from '~~/shared/navigation';
 
 const open = defineModel<boolean>({ required: true });
 const route = useRoute();
@@ -69,18 +69,23 @@ onBeforeUnmount(() => {
           <BrandSpectralMark :size="30" title="F-Ray-grance" />
           <IconButton label="Close menu" icon="close" @click="open = false" />
         </div>
-        <nav aria-label="Menu" class="mt-3 flex flex-col gap-0.5">
-          <NuxtLink
-            v-for="item in NAVIGATION"
-            :key="item.to"
-            :to="item.to"
-            class="tap flex items-center gap-3 rounded-control px-3 py-2 no-underline"
-            :class="isActive(item, route.path, route.query) ? 'bg-raised font-medium text-ink' : 'text-ink-2'"
-            :aria-current="isActive(item, route.path, route.query) ? 'page' : undefined"
-          >
-            <AppIcon :name="item.icon" />
-            <span class="flex flex-col"><span>{{ item.label }}</span><span class="text-[12px] text-ink-3">{{ item.description }}</span></span>
-          </NuxtLink>
+        <nav aria-label="Menu" class="mt-3 flex flex-col">
+          <template v-for="(g, gi) in [...MAIN_GROUPS, { key: 'utility', label: 'Settings', items: UTILITY_NAV }]" :key="g.key">
+            <div v-if="gi > 0" class="mx-3 my-2 h-px bg-line" aria-hidden="true" />
+            <ul class="m-0 flex list-none flex-col gap-0.5 p-0" :aria-label="g.label">
+              <li v-for="item in g.items" :key="item.to">
+                <NuxtLink
+                  :to="item.to"
+                  class="tap flex items-center gap-3 rounded-control px-3 py-2 no-underline"
+                  :class="isActive(item, route.path, route.query) ? 'bg-raised font-medium text-ink' : 'text-ink-2'"
+                  :aria-current="isActive(item, route.path, route.query) ? 'page' : undefined"
+                >
+                  <AppIcon :name="item.icon" />
+                  <span class="flex flex-col"><span>{{ item.label }}</span><span class="text-[12px] text-ink-3">{{ item.description }}</span></span>
+                </NuxtLink>
+              </li>
+            </ul>
+          </template>
         </nav>
         <div class="mt-auto flex items-center justify-between border-t border-line pt-3">
           <span class="text-sm text-ink-2">{{ owner?.displayName }}</span>

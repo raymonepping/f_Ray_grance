@@ -8,10 +8,10 @@ PHASES = {f"{i:02d}" for i in range(11)}
 
 def expected_phases(agent):
     # Phases 11 (ADR-010) and 12 (ADR-011) are accepted add-ons for Claude and Codex only;
-    # Phase 13 (ADR-014, My Spectrum) for Claude only.
+    # Phases 13 (ADR-014, My Spectrum) and 14 (ADR-015, sidebar order) for Claude only.
     extra = {"11", "12"} if agent in {"Claude", "Codex"} else set()
     if agent == "Claude":
-        extra |= {"13"}
+        extra |= {"13", "14"}
     return PHASES | extra
 
 

@@ -4,7 +4,7 @@ import NotePyramid from '../app/components/fragrance/NotePyramid.vue';
 import ScentTraitBars from '../app/components/fragrance/ScentTraitBars.vue';
 import Chromatogram from '../app/components/fragrance/Chromatogram.vue';
 import FragranceImage from '../app/components/fragrance/FragranceImage.vue';
-import { NAVIGATION, PRIMARY_NAV, SECONDARY_NAV, isActive } from '../shared/navigation';
+import { MAIN_GROUPS, NAVIGATION, PRIMARY_NAV, UTILITY_NAV, isActive } from '../shared/navigation';
 
 const stubs = { AppIcon: true };
 
@@ -42,9 +42,18 @@ describe('ScentTraitBars', () => {
 });
 
 describe('navigation is defined once', () => {
-  it('has the four primary journeys in DESIGN order plus secondary items', () => {
+  it('has the four primary journeys in DESIGN order and the ADR-015 groups', () => {
     expect(PRIMARY_NAV.map((n) => n.label)).toEqual(['Collection', 'Discover', 'Compare', 'My DNA']);
-    expect(SECONDARY_NAV.map((n) => n.label)).toEqual(['Samples', 'My Spectrum', 'Academy', 'Settings']);
+    expect(NAVIGATION.map((n) => n.label)).toEqual(['Collection', 'Samples', 'Discover', 'Compare', 'My DNA', 'My Spectrum', 'Academy', 'Settings']);
+    expect(MAIN_GROUPS.map((g) => [g.key, g.items.map((i) => i.label)])).toEqual([
+      ['collection', ['Collection', 'Samples']],
+      ['explore', ['Discover', 'Compare']],
+      ['profile', ['My DNA', 'My Spectrum']],
+      ['learn', ['Academy']],
+    ]);
+    expect(UTILITY_NAV.map((n) => n.label)).toEqual(['Settings']);
+    // Every item is in exactly one group, and every route is unique.
+    expect(MAIN_GROUPS.flatMap((g) => g.items).length + UTILITY_NAV.length).toBe(NAVIGATION.length);
     expect(new Set(NAVIGATION.map((n) => n.to)).size).toBe(NAVIGATION.length);
   });
   it('marks Samples (not Collection) active for the sampled filter', () => {

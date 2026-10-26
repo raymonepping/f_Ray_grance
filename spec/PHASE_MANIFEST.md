@@ -40,3 +40,7 @@ Phase 12: source-attributed perfume images, defined in [PERFUME_IMAGE_SPEC.md](P
 ## Phase 13 addendum (ADR-014)
 
 **Phase 13: My Spectrum** (Claude). An owner-scoped, read-only view of where the owned collection sits on two scent spectrums (Fresh ↔ Warm, Dry ↔ Sweet), plus a trait readout and a family breakdown, as specified in [SPECTRUM_SPEC.md](SPECTRUM_SPEC.md). Prompt: `prompts/Claude/13_add_spectrum.md`. It requires Phase 12. No schema change.
+
+## Phase 14 addendum (ADR-015)
+
+**Phase 14: Sidebar order and dividers** (Claude). Navigation is grouped by purpose, with dividers on every surface: Collection and Samples; Discover and Compare; My DNA and My Spectrum; Academy; Settings in the utility area. The primary routes and the mobile bottom navigation are unchanged. Prompt: `prompts/Claude/14_reorder_sidebar.md`. It requires Phase 13.
