@@ -70,7 +70,8 @@ want="$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["sha256"]
 [[ "$(shasum -a 256 "$dump" | cut -d' ' -f1)" == "$want" ]] || fail 'database dump checksum mismatch'
 # The image archive is the one the manifest's recovery set names (legacy: beside the dump).
 itar="$(python3 -c 'import json,sys,os;m=json.load(open(sys.argv[1]));e=(m.get("recovery_set") or {}).get("images_tar");print(os.path.join(os.path.dirname(sys.argv[1]),e["file"]) if e else sys.argv[2])' "$man" "${dump%.dump}.images.tar")"
-set_kind="$(python3 - "$man" "$DIR" 2>&1 <<'PYSET'
+set_kind="$(
+  python3 - "$man" "$DIR" 2>&1 <<'PYSET'
 import hashlib,json,pathlib,sys
 m=json.load(open(sys.argv[1])); d=pathlib.Path(sys.argv[2])
 sha=lambda p: hashlib.file_digest(open(p,'rb'),'sha256').hexdigest()

@@ -27,14 +27,22 @@ before_rt="$("$PODMAN" ps -a --filter label=io.fraygrance.tier=restore-test --fo
 before_rv="$("$PODMAN" volume ls --filter label=io.fraygrance.tier=restore-test --format '{{.Name}}' | sort)"
 pass=0
 failn=0
-ok() { echo "  PASS $*"; pass=$((pass + 1)); }
-bad() { echo "  FAIL $*"; failn=$((failn + 1)); }
+ok() {
+  echo "  PASS $*"
+  pass=$((pass + 1))
+}
+bad() {
+  echo "  FAIL $*"
+  failn=$((failn + 1))
+}
 
 live_fp() {
-  { "$PODMAN" exec -i fray-postgres psql -XqAt -U fray_backup -d fray <"$repo/scripts/sql/table_fingerprints.sql"
+  {
+    "$PODMAN" exec -i fray-postgres psql -XqAt -U fray_backup -d fray <"$repo/scripts/sql/table_fingerprints.sql"
     "$PODMAN" run --rm --network none --image-volume=ignore -v fraygrance_image_assets:/a:ro --entrypoint sh "$PG_IMAGE" \
       -c 'cd /a && find . -type f -exec sha256sum {} + | sort'
-    ls -l "${FRAY_BACKUP_DIR:-$HOME/F-Ray-grance-backups}" | sort; } | shasum -a 256 | cut -d' ' -f1
+    ls -l "${FRAY_BACKUP_DIR:-$HOME/F-Ray-grance-backups}" | sort
+  } | shasum -a 256 | cut -d' ' -f1
 }
 live_before="$(live_fp)"
 
@@ -61,7 +69,10 @@ fixture() {
   "$PODMAN" run -d --image-volume=ignore --name "$FX" --network none --label io.fraygrance.project=fraygrance \
     --label io.fraygrance.tier=p15-fixture -e POSTGRES_HOST_AUTH_METHOD=trust "$PG_IMAGE" >/dev/null
   for _ in 1 2; do
-    for _ in $(seq 60); do "$PODMAN" exec "$FX" pg_isready -U postgres -q 2>/dev/null && break; sleep 1; done
+    for _ in $(seq 60); do
+      "$PODMAN" exec "$FX" pg_isready -U postgres -q 2>/dev/null && break
+      sleep 1
+    done
     sleep 2
   done
   "$PODMAN" exec -i "$FX" psql -X -q -v ON_ERROR_STOP=1 -U postgres -d postgres <"$repo/ansible/roles/postgres_base/files/cluster.sql"
@@ -84,8 +95,9 @@ SQL
 # owners; prints their references.
 add_images() {
   local json
-  json="$("$PODMAN" run --rm -i --network none --image-volume=ignore -v "$FV":/assets -w /app/apps/api -e N="$1" -e SEED="$RANDOM" \
-    --entrypoint node "$API_IMAGE" --input-type=module - <<'JS'
+  json="$(
+    "$PODMAN" run --rm -i --network none --image-volume=ignore -v "$FV":/assets -w /app/apps/api -e N="$1" -e SEED="$RANDOM" \
+      --entrypoint node "$API_IMAGE" --input-type=module - <<'JS'
 import { createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import sharp from 'sharp';
@@ -169,23 +181,31 @@ good="$(latest_dump)" # latest schema with two images (one per owner)
 echo "== R1/R3: refusals and failures never leave a PASS receipt"
 expect_fail() { # <label> <dump> <stage>
   local out
-  out="$(restore "$2")" && { bad "$1: restore exited 0"; return; }
+  out="$(restore "$2")" && {
+    bad "$1: restore exited 0"
+    return
+  }
   if receipt_is FAIL "$3"; then ok "$1: FAIL at $3 — $(grep -Eo 'RESTORE_TEST_FAIL: .*|REFUSED: .*' <<<"$out" | head -1 | cut -c1-110)"; else bad "$1: receipt is not FAIL at $3 ($(python3 -c 'import json,sys;r=json.load(open(sys.argv[1]));print(r["result"],r.get("failed_stage"))' "$(last_receipt)"))"; fi
 }
-d="$(copyset "$good" 20000101T000001Z)"; python3 - "${d%.dump}.manifest.json" <<'PY'
+d="$(copyset "$good" 20000101T000001Z)"
+python3 - "${d%.dump}.manifest.json" <<'PY'
 import json,sys; m=json.load(open(sys.argv[1])); m['schema_version']='99'; json.dump(m,open(sys.argv[1],'w'))
 PY
 expect_fail 'future schema 99' "$d" compatibility
-d="$(copyset "$good" 20000101T000002Z)"; printf 'X' | dd of="$d" bs=1 seek=200 conv=notrunc 2>/dev/null
+d="$(copyset "$good" 20000101T000002Z)"
+printf 'X' | dd of="$d" bs=1 seek=200 conv=notrunc 2>/dev/null
 expect_fail 'corrupted dump' "$d" checksums
-d="$(copyset "$good" 20000101T000003Z)"; printf 'X' | dd of="${d%.dump}.images.tar" bs=1 seek=700 conv=notrunc 2>/dev/null
+d="$(copyset "$good" 20000101T000003Z)"
+printf 'X' | dd of="${d%.dump}.images.tar" bs=1 seek=700 conv=notrunc 2>/dev/null
 expect_fail 'corrupted image tar' "$d" checksums
-d="$(copyset "$good" 20000101T000004Z)"; rm "${d%.dump}.images.json"
+d="$(copyset "$good" 20000101T000004Z)"
+rm "${d%.dump}.images.json"
 expect_fail 'missing image sidecar' "$d" checksums
 for what in original derivative; do
   d="$(copyset "$good" "20000101T0000${#what}0Z")"
   first="$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["image_refs"][0]["path"])' "${d%.dump}.manifest.json")"
-  member="$first"; [[ "$what" == derivative ]] && member="$first.display.webp"
+  member="$first"
+  [[ "$what" == derivative ]] && member="$first.display.webp"
   python3 - "${d%.dump}.images.tar" "$member" <<'PY'
 import io,sys,tarfile
 src,drop=sys.argv[1],sys.argv[2]
@@ -236,7 +256,7 @@ fi
 
 echo "== R2: the collector removes only unreferenced files past the grace period"
 files() { "$PODMAN" run --rm --network none -v "$FV":/a:ro --entrypoint sh "$PG_IMAGE" -c 'cd /a && find . -type f | wc -l' | tr -d ' '; }
-total="$(files)" # 3 referenced images (6 files) + the deleted one (2 files)
+total="$(files)"                                                                                                                         # 3 referenced images (6 files) + the deleted one (2 files)
 "$PODMAN" run --rm --network none -v "$FV":/a --entrypoint sh "$PG_IMAGE" -c "touch -d '3 hours ago' /a/$victim /a/$victim.display.webp" # aged out
 out="$(backup 2>&1)"
 gc="$(grep -Eo 'IMAGE_GC removed=[0-9]+' <<<"$out")"
@@ -255,7 +275,8 @@ if grep -q 'IMAGE_GC removed=0' <<<"$out" && [[ "$(files)" == "$left" ]]; then o
 echo "== Status: only complete v2 receipts count; failures are reported"
 st="$(FRAY_BACKUP_DIR="$B" bash "$repo/scripts/backup-status.sh" 2>&1 || true)"
 grep -q 'complete set (database + images)' <<<"$st" && grep -q 'INDEPENDENT RESTORE OF LAST BACKUP SET: NOT RECORDED' <<<"$st" && ok "backup-status: complete set, independent restore NOT RECORDED" || bad "backup-status output: $st"
-pass_on_fail="$(python3 - "$B/restore-tests" <<'PY'
+pass_on_fail="$(
+  python3 - "$B/restore-tests" <<'PY'
 import json,pathlib,sys
 print(sum(1 for p in pathlib.Path(sys.argv[1]).glob('*.json') if (r:=json.loads(p.read_text()))['result']=='PASS' and any(s['result']=='FAIL' for s in r['stages'])))
 PY

@@ -20,7 +20,9 @@ import re
 import sys
 import tarfile
 
-NAME = re.compile(r"^[0-9a-f]{2}/[0-9a-f]{64}(\.display\.webp)?(\.[0-9a-f-]{36}\.tmp)?$")
+NAME = re.compile(
+    r"^[0-9a-f]{2}/[0-9a-f]{64}(\.display\.webp)?(\.[0-9a-f-]{36}\.tmp)?$"
+)
 DIRNAME = re.compile(r"^(\.|[0-9a-f]{2})$")
 
 
@@ -35,13 +37,23 @@ def unsafe_members(t):
         name = m.name.removeprefix("./")
         if m.isdir() and DIRNAME.match(name or "."):
             continue
-        if not m.isfile() or not NAME.match(name) or name.startswith("/") or ".." in name.split("/"):
+        if (
+            not m.isfile()
+            or not NAME.match(name)
+            or name.startswith("/")
+            or ".." in name.split("/")
+        ):
             bad.append(m.name)
     return bad
 
 
 def webp_ok(b):
-    return len(b) > 12 and b[:4] == b"RIFF" and b[8:12] == b"WEBP" and int.from_bytes(b[4:8], "little") + 8 == len(b)
+    return (
+        len(b) > 12
+        and b[:4] == b"RIFF"
+        and b[8:12] == b"WEBP"
+        and int.from_bytes(b[4:8], "little") + 8 == len(b)
+    )
 
 
 def problems(tar_path, refs):
@@ -74,14 +86,23 @@ def problems(tar_path, refs):
 def seal(tar_path, manifest_path, sidecar_path, tar_name, ts):
     m = json.load(open(manifest_path))
     refs = m.get("image_refs", [])
-    set_ = {"dump": {"file": m["file"], "sha256": m["sha256"]}, "images_tar": None, "images_manifest": None}
+    set_ = {
+        "dump": {"file": m["file"], "sha256": m["sha256"]},
+        "images_tar": None,
+        "images_manifest": None,
+    }
     if tar_path == "-":
         if refs:
-            sys.exit(f"BACKUP_FAIL: the snapshot references {len(refs)} image file(s) but no image volume was archived")
+            sys.exit(
+                f"BACKUP_FAIL: the snapshot references {len(refs)} image file(s) but no image volume was archived"
+            )
     else:
         found = problems(tar_path, refs)
         if found:
-            sys.exit(f"BACKUP_FAIL: image archive incomplete for this snapshot ({len(found)}): " + "; ".join(found[:5]))
+            sys.exit(
+                f"BACKUP_FAIL: image archive incomplete for this snapshot ({len(found)}): "
+                + "; ".join(found[:5])
+            )
         with tarfile.open(tar_path) as t:
             nfiles = sum(1 for x in t.getmembers() if x.isfile())
         sidecar = {
@@ -97,11 +118,16 @@ def seal(tar_path, manifest_path, sidecar_path, tar_name, ts):
         with open(sidecar_path, "w") as f:
             json.dump(sidecar, f, indent=2)
         set_["images_tar"] = {"file": tar_name, "sha256": sidecar["sha256"]}
-        set_["images_manifest"] = {"file": tar_name.removesuffix(".tar") + ".json", "sha256": sha_file(sidecar_path)}
+        set_["images_manifest"] = {
+            "file": tar_name.removesuffix(".tar") + ".json",
+            "sha256": sha_file(sidecar_path),
+        }
     m["recovery_set"] = set_
     with open(manifest_path, "w") as f:
         json.dump(m, f, indent=2)
-    print(f"IMAGES_SEALED referenced={len(refs)} archive={'none' if tar_path == '-' else 'verified'}")
+    print(
+        f"IMAGES_SEALED referenced={len(refs)} archive={'none' if tar_path == '-' else 'verified'}"
+    )
 
 
 if __name__ == "__main__":
@@ -111,12 +137,17 @@ if __name__ == "__main__":
     elif cmd == "verify":
         found = problems(sys.argv[2], json.load(open(sys.argv[3])))
         if found:
-            sys.exit(f"RESTORE_TEST_FAIL: image archive incomplete ({len(found)}): " + "; ".join(found[:5]))
+            sys.exit(
+                f"RESTORE_TEST_FAIL: image archive incomplete ({len(found)}): "
+                + "; ".join(found[:5])
+            )
         print("IMAGES_ARCHIVE_PASS")
     elif cmd == "safe":
         with tarfile.open(sys.argv[2]) as t:
             bad = unsafe_members(t)
         if bad:
-            sys.exit(f"RESTORE_TEST_FAIL: unsafe archive member(s): {', '.join(bad[:5])}")
+            sys.exit(
+                f"RESTORE_TEST_FAIL: unsafe archive member(s): {', '.join(bad[:5])}"
+            )
     else:
         sys.exit(__doc__)

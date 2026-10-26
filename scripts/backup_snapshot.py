@@ -99,11 +99,13 @@ def capture(dump_path, manifest_path, filename, timestamp):
             # Image files this snapshot references, from the same snapshot (ADR-016): the image
             # archive taken afterwards must contain every one of them before the backup is published.
             # A CASE cannot guard a static reference to a missing table, so check first (schema < 5).
-            "IMAGE_REFS": "[]"
-            if query("SELECT to_regclass('app.image_assets') IS NULL;") == "t"
-            else query(
-                "SELECT coalesce(json_agg(json_build_object('path', storage_path, 'checksum', checksum) ORDER BY storage_path), '[]')::text "
-                "FROM (SELECT DISTINCT storage_path, checksum FROM app.image_assets WHERE storage_path IS NOT NULL) r;"
+            "IMAGE_REFS": (
+                "[]"
+                if query("SELECT to_regclass('app.image_assets') IS NULL;") == "t"
+                else query(
+                    "SELECT coalesce(json_agg(json_build_object('path', storage_path, 'checksum', checksum) ORDER BY storage_path), '[]')::text "
+                    "FROM (SELECT DISTINCT storage_path, checksum FROM app.image_assets WHERE storage_path IS NOT NULL) r;"
+                )
             ),
         }
         os.environ.update({f"FRAY_M_{k}": v for k, v in values.items()})

@@ -72,7 +72,12 @@ def receipt(manifest_path, stages_path, compare_path, out, ts, rc) -> None:
     """Written once per attempt, after every stage ran: PASS only for a complete, all-PASS run."""
     m = json.load(open(manifest_path))
     stages = [json.loads(line) for line in open(stages_path) if line.strip()]
-    ok = int(rc) == 0 and stages and all(s["result"] == "PASS" for s in stages) and stages[-1]["stage"] == "complete"
+    ok = (
+        int(rc) == 0
+        and stages
+        and all(s["result"] == "PASS" for s in stages)
+        and stages[-1]["stage"] == "complete"
+    )
     failed = next((s for s in stages if s["result"] == "FAIL"), None)
     cmp = json.load(open(compare_path)) if os.path.exists(compare_path) else {}
     rs = m.get("recovery_set")
@@ -86,11 +91,20 @@ def receipt(manifest_path, stages_path, compare_path, out, ts, rc) -> None:
         "recovery_set": rs,
         "complete_set": bool(rs),
         "result": "PASS" if ok else "FAIL",
-        "failed_stage": None if ok else (failed or {"stage": stages[-1]["stage"] if stages else "start"})["stage"],
+        "failed_stage": (
+            None
+            if ok
+            else (failed or {"stage": stages[-1]["stage"] if stages else "start"})[
+                "stage"
+            ]
+        ),
         "failure": None if ok else (failed or {}).get("detail"),
         "stages": stages,
-        "environment": os.environ.get("FRAY_RESTORE_ENV_LABEL", "local Podman connection"),
-        "independent_recovery_operator_attested": bool(ok) and os.environ.get("FRAY_RESTORE_INDEPENDENT") == "YES",
+        "environment": os.environ.get(
+            "FRAY_RESTORE_ENV_LABEL", "local Podman connection"
+        ),
+        "independent_recovery_operator_attested": bool(ok)
+        and os.environ.get("FRAY_RESTORE_INDEPENDENT") == "YES",
         "tables_compared": cmp.get("tables_compared"),
         "rows_total": cmp.get("rows_total"),
         "restore_seconds": cmp.get("restore_seconds"),
@@ -100,7 +114,10 @@ def receipt(manifest_path, stages_path, compare_path, out, ts, rc) -> None:
     }
     with open(out, "w") as f:
         json.dump(report, f, indent=2)
-    print(f"RECEIPT {report['result']} {os.path.basename(out)}" + ("" if ok else f" failed_stage={report['failed_stage']}"))
+    print(
+        f"RECEIPT {report['result']} {os.path.basename(out)}"
+        + ("" if ok else f" failed_stage={report['failed_stage']}")
+    )
 
 
 if __name__ == "__main__":
