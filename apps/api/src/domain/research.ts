@@ -23,8 +23,28 @@ export function namesExactly(text: string, name: string): boolean {
   return !!n && t.includes(` ${n} `);
 }
 
+const CONC_PHRASE = /\b(eau\s+de\s+parfum|eau\s+de\s+toilette|eau\s+de\s+cologne|extrait(?:\s+de\s+parfum)?|parfum|perfume|cologne|edp|edt|edc|elixir)\b/gi;
+
+/** The concentration a product title states: one value, null when none, 'conflict' when several. */
+export function statedConcentration(text: string): Concentration | null | 'conflict' {
+  const found = [...new Set((text.match(CONC_PHRASE) ?? []).map((w) => mapConcentration(w)).filter((c): c is Concentration => !!c))];
+  return found.length === 0 ? null : found.length === 1 ? found[0]! : 'conflict';
+}
+
+/**
+ * A page stating a different concentration from the known one is a different product. The
+ * fragrance's own name is removed first, because names can contain such words ("Boss Bottled Elixir").
+ */
+export function sameProduct(text: string, known: Concentration | null, name = ''): boolean {
+  if (!known) return true;
+  const n = normalizeIdentity(name);
+  const rest = n ? ` ${normalizeIdentity(text) ?? ''} `.split(` ${n} `).join(' ') : text;
+  const st = statedConcentration(rest);
+  return st === null || st === known;
+}
+
 /** Result pages about exactly this fragrance, brand's own site first, no video/social pages. */
-export function selectPages(results: SearchResult[], brand: string, name: string, max = 2): SearchResult[] {
+export function selectPages(results: SearchResult[], brand: string, name: string, max = 2, knownConcentration: Concentration | null = null): SearchResult[] {
   const bk = (brandKey(brand) || '').replace(/\s+/g, '');
   const host = (u: string) => {
     try {
@@ -34,7 +54,7 @@ export function selectPages(results: SearchResult[], brand: string, name: string
     }
   };
   return results
-    .filter((r) => host(r.url) && !SKIP_SITES.test(host(r.url)) && namesExactly(r.title, name))
+    .filter((r) => host(r.url) && !SKIP_SITES.test(host(r.url)) && namesExactly(r.title, name) && sameProduct(r.title, knownConcentration, name))
     .map((r) => ({ r, official: bk.length > 2 && host(r.url).replace(/[^a-z0-9]/g, '').includes(bk) }))
     .sort((a, b) => Number(b.official) - Number(a.official) || a.r.position - b.r.position)
     .slice(0, max)
@@ -92,11 +112,14 @@ const cleanList = (v: unknown): string[] =>
 const text = (v: unknown, max: number) => (typeof v === 'string' ? v.replace(/[\u0000-\u001f<>]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max) : '');
 
 /** Validate one agent result. Anything unverifiable is dropped, never repaired or guessed. */
-export function validateFinding(raw: Record<string, unknown>, page: { url: string; siteName: string }, name: string): Finding {
+export function validateFinding(raw: Record<string, unknown>, page: { url: string; siteName: string }, name: string, knownConcentration: Concentration | null = null): Finding {
   const productNameOnPage = text(raw.product_name_on_page, 200);
   const base = { pageUrl: page.url, siteName: page.siteName, productNameOnPage, evidence: text(raw.evidence, 400) || null };
   if (raw.exact_match !== true || !namesExactly(productNameOnPage, name)) {
     return { ...base, proposals: [], rejected: `The page is not about exactly "${name}" (it names "${productNameOnPage || 'something else'}").` };
+  }
+  if (!sameProduct(productNameOnPage, knownConcentration, name)) {
+    return { ...base, proposals: [], rejected: `The page is about "${productNameOnPage}", a different concentration from yours, so it is a different product.` };
   }
   const proposals: Proposal[] = [];
   const seen = cleanList(raw.concentrations_seen);

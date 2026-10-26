@@ -44,7 +44,7 @@ describe('ScentTraitBars', () => {
 describe('navigation is defined once', () => {
   it('has the four primary journeys in DESIGN order plus secondary items', () => {
     expect(PRIMARY_NAV.map((n) => n.label)).toEqual(['Collection', 'Discover', 'Compare', 'My DNA']);
-    expect(SECONDARY_NAV.map((n) => n.label)).toEqual(['Samples', 'Academy', 'Settings']);
+    expect(SECONDARY_NAV.map((n) => n.label)).toEqual(['Samples', 'My Spectrum', 'Academy', 'Settings']);
     expect(new Set(NAVIGATION.map((n) => n.to)).size).toBe(NAVIGATION.length);
   });
   it('marks Samples (not Collection) active for the sampled filter', () => {

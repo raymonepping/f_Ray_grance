@@ -16,6 +16,7 @@ const picked = reactive<Record<string, Field[]>>({});
 const running = ref(false);
 const message = ref('');
 const saving = ref<string | null>(null);
+const savedFields = reactive<Record<string, Field[]>>({});
 
 async function load() {
   try {
@@ -55,8 +56,12 @@ async function save(f: Finding) {
   saving.value = f.id;
   message.value = '';
   try {
-    const r = await apiFetch<{ saved: number }>(`/api/v1/fragrances/${props.fragranceId}/research/${f.id}/accept`, { method: 'POST', body: { fields: picked[f.id] } });
-    message.value = `Saved ${r.saved} detail${r.saved === 1 ? '' : 's'} as web research from ${f.siteName}.`;
+    const r = await apiFetch<{ saved: number; fields: Field[] }>(`/api/v1/fragrances/${props.fragranceId}/research/${f.id}/accept`, { method: 'POST', body: { fields: picked[f.id] } });
+    savedFields[f.id] = [...(savedFields[f.id] ?? []), ...r.fields];
+    picked[f.id] = (picked[f.id] ?? []).filter((x) => !r.fields.includes(x));
+    // Once saved, a gap is no longer a gap anywhere in this run.
+    for (const other of findings.value ?? []) for (const p of other.proposals) if (r.fields.includes(p.field)) p.acceptable = false;
+    message.value = `Saved as web research from ${f.siteName}: ${r.fields.map((x) => LABEL[x]).join(', ')}. It now shows on this page, labelled “Web research”.`;
     await load();
     emit('saved');
   } catch (e) {
@@ -104,7 +109,8 @@ async function save(f: Finding) {
           <input v-model="picked[f.id]" type="checkbox" :value="p.field" :disabled="!p.acceptable" class="mt-0.5 size-4 accent-[var(--action)]" />
           <span class="min-w-0">
             <span class="font-medium text-ink">{{ LABEL[p.field] }}</span>
-            <span v-if="p.fillsGap" class="ml-1.5 rounded-[4px] border border-line px-1 text-[11px] text-ink-3">fills a gap</span>
+            <span v-if="savedFields[f.id]?.includes(p.field)" class="ml-1.5 inline-flex items-center gap-1 rounded-[4px] border border-line-strong px-1 text-[11px] text-ink" data-testid="research-saved"><AppIcon name="check" :size="11" /> Saved</span>
+            <span v-else-if="p.fillsGap" class="ml-1.5 rounded-[4px] border border-line px-1 text-[11px] text-ink-3">fills a gap</span>
             <span class="block text-ink-2 [overflow-wrap:anywhere]">{{ p.display }}</span>
             <span v-if="p.note" class="block text-[12px] text-warn">{{ p.note }}</span>
           </span>

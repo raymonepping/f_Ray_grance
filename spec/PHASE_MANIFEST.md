@@ -36,3 +36,7 @@ Phase 11: Scent Academy and optional local tutor, defined in [SCENT_ACADEMY_SPEC
 ## Accepted Phase 12 addendum — ADR-011
 
 Phase 12: source-attributed perfume images, defined in [PERFUME_IMAGE_SPEC.md](PERFUME_IMAGE_SPEC.md), for Codex and Claude, after Phase 11 is completed and pushed. Accepted by explicit operator instruction under [ADR-011](../docs/adr/ADR-011-phase12-perfume-images.md) on the same local-development terms as ADR-010: Phase 10 remains blocked, import remains disabled, remote access remains deferred, and no release acceptance is implied.
+
+## Phase 13 addendum (ADR-014)
+
+**Phase 13: My Spectrum** (Claude). An owner-scoped, read-only view of where the owned collection sits on two scent spectrums (Fresh ↔ Warm, Dry ↔ Sweet), plus a trait readout and a family breakdown, as specified in [SPECTRUM_SPEC.md](SPECTRUM_SPEC.md). Prompt: `prompts/Claude/13_add_spectrum.md`. It requires Phase 12. No schema change.

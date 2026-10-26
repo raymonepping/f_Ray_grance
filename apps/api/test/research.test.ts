@@ -13,7 +13,7 @@ import { createFragrance, upsertBrand } from '../src/repo/catalog.js';
 import { effectiveProfile, enrichExact } from '../src/repo/enrichment.js';
 import { ScentoClient, type Fetcher } from '../src/providers/scento.js';
 import { TinyFishClient, type HttpFetch } from '../src/providers/tinyfish.js';
-import { namesExactly, selectPages, validateFinding, researchQuery } from '../src/domain/research.js';
+import { namesExactly, selectPages, validateFinding, researchQuery, sameProduct, statedConcentration } from '../src/domain/research.js';
 import { lookupBarcode, pageImage } from '../src/images/lookup.js';
 import { buildSources } from '../src/images/sources.js';
 import { AssetStore } from '../src/images/store.js';
@@ -79,6 +79,28 @@ describe('research rules', () => {
     expect(conflict.proposals[0]!.note).toMatch(/conflicting/);
     expect(validateFinding({ exact_match: true, product_name_on_page: 'Boss Bottled Triumph Elixir', launch_year: 2020 }, page, 'Boss Bottled Elixir').rejected).toMatch(/not about exactly/);
     expect(validateFinding({ exact_match: false, product_name_on_page: 'Boss Bottled Elixir', launch_year: 2020 }, page, 'Boss Bottled Elixir').proposals).toEqual([]);
+  });
+});
+
+describe('concentration-aware research (regression: Sauvage EDT fed by the Sauvage Eau de Parfum page)', () => {
+  it('treats a page stating a different concentration as a different product', () => {
+    expect(statedConcentration('Sauvage Eau de Parfum')).toBe('eau_de_parfum');
+    expect(statedConcentration('Sauvage')).toBeNull();
+    expect(sameProduct('Sauvage Eau de Parfum', 'eau_de_toilette')).toBe(false);
+    expect(sameProduct('Sauvage Eau de Toilette', 'eau_de_toilette')).toBe(true);
+    expect(sameProduct('Sauvage', 'eau_de_toilette')).toBe(true);
+    expect(sameProduct('Sauvage Eau de Parfum', null)).toBe(true);
+    // A concentration word inside the name itself is not a stated concentration.
+    expect(sameProduct('Boss Bottled Elixir Hugo Boss for men', 'parfum', 'Boss Bottled Elixir')).toBe(true);
+    expect(sameProduct('BOSS Bottled Elixir eau de toilette 100ml', 'parfum', 'Boss Bottled Elixir')).toBe(false);
+    const pages = selectPages(
+      [sr(1, 'https://www.dior.com/en_int/sauvage-edp.html', 'Sauvage Eau de Parfum'), sr(2, 'https://www.dior.com/en_int/sauvage-edt.html', 'Sauvage Eau de Toilette')],
+      'Dior', 'Sauvage', 2, 'eau_de_toilette',
+    );
+    expect(pages.map((p) => p.title)).toEqual(['Sauvage Eau de Toilette']);
+    const f = validateFinding({ exact_match: true, product_name_on_page: 'Sauvage Eau de Parfum', concentrations_seen: ['Eau de Parfum'] }, { url: 'https://www.dior.com/x', siteName: 'dior.com' }, 'Sauvage', 'eau_de_toilette');
+    expect(f.proposals).toEqual([]);
+    expect(f.rejected).toMatch(/different concentration/);
   });
 });
 

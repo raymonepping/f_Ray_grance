@@ -19,6 +19,7 @@ import { portabilityRoutes } from './portability.js';
 import { imageRoutes } from './images.js';
 import { researchRoutes } from './research.js';
 import { lookupRoutes } from './lookup.js';
+import { spectrumRoutes } from './spectrum.js';
 import type { TinyFishClient } from '../../providers/tinyfish.js';
 import type { ImageSources } from '../../images/sources.js';
 import type { AssetStore } from '../../images/store.js';
@@ -40,6 +41,7 @@ export async function v1Routes(base: FastifyInstance, deps: { pool: RotatingPool
   await app.register(portabilityRoutes, { pool: deps.pool, importEnabled: deps.importEnabled });
   await app.register(imageRoutes, { pool: deps.pool, sources: deps.imageSources, store: deps.assetStore, tinyfish: deps.tinyfish, ...deps.imageLookup });
   await app.register(researchRoutes, { pool: deps.pool, tinyfish: deps.tinyfish });
+  await app.register(spectrumRoutes, { pool: deps.pool });
   await app.register(lookupRoutes, { pool: deps.pool, scento: deps.scento, tinyfish: deps.tinyfish, ...(deps.imageLookup?.http ? { http: deps.imageLookup.http } : {}) });
   const db = () => deps.pool.get();
 

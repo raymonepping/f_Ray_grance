@@ -553,6 +553,36 @@
         "Phase 10 remains blocked; import disabled; Tailscale deferred"
       ],
       "next_phase": null
+    },
+    "13": {
+      "status": "completed",
+      "agent": "claude-opus-5-5",
+      "prompt_id": "FRAY-CLAUDE-13",
+      "started_at_utc": "2026-10-26T14:14:12Z",
+      "baseline_head": "cf87674010ff1d0612e3333c741785ce6f65bb6a",
+      "report_path": "reports/13_spectrum.md",
+      "authorization": "ADR-014: operator asked for My Spectrum and prompt 13_add_spectrum.md to be added and executed (2026-10-26).",
+      "planned_scope": [
+        "Pure spectrum computation over owned (optionally sampled) fragrances using the existing trait method",
+        "GET /api/v1/profile/spectrum (owner-scoped, read-only)",
+        "My Spectrum page + secondary nav + link from My DNA",
+        "Unit, integration and e2e tests; report and state"
+      ],
+      "completed_at_utc": "2026-10-26T14:44:46Z",
+      "evidence": {
+        "make_test": "PASS",
+        "make_test_e2e": "45/45 PASS",
+        "validate_docs": "PASS (75 frozen docs)",
+        "health": "PASS",
+        "drift": "NO_DRIFT",
+        "live_security_probe": "39/39",
+        "impeccable_detect": "[]"
+      },
+      "residual": [
+        "Ticks can overlap with few fragrances; values listed below each track",
+        "Phase 10 remains blocked"
+      ],
+      "next_phase": null
     }
   },
   "accepted_adrs": [
@@ -568,7 +598,8 @@
     "ADR-010",
     "ADR-011",
     "ADR-012",
-    "ADR-013"
+    "ADR-013",
+    "ADR-014"
   ],
   "unresolved_blockers": [
     {
@@ -593,5 +624,5 @@
       "detail": "No approved separate environment supplied for a full recovery drill outside the original Podman VM."
     }
   ],
-  "updated_at_utc": "2026-10-26T10:53:10Z"
+  "updated_at_utc": "2026-10-26T14:44:46Z"
 }

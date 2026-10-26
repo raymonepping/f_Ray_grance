@@ -10,6 +10,7 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Added
 
+- **Phase 13: My Spectrum** ([ADR-014](docs/adr/ADR-014-my-spectrum.md)). Shows where the fragrances you own sit on Fresh ↔ Warm and Dry ↔ Sweet, with a trait readout and a family breakdown, computed from the existing indicative traits. Coverage is stated, unknown stays unknown, and it describes the collection rather than what you like.
 - **Quick find in Discover:** one box for a name, part of a name, a brand, or a barcode (EAN/UPC), like ISBN for books. A barcode is checked against your verified barcodes first, then Open Beauty Facts (or a web search) for the product title; that title is cleaned into a Scento search. Similar names are never substituted. The barcode is saved to the fragrance you add, so scanning it again finds it straight away.
 - **Web research and image lookups** ([ADR-013](docs/adr/ADR-013-web-research-and-image-lookup.md)):
   - fills Scento's gaps (concentration, launch year, note pyramid, listed notes) from pages that name exactly the fragrance, through TinyFish;
@@ -61,6 +62,7 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ### Fixed
 
+- Web research no longer takes facts from a different product that shares the name (e.g. "Sauvage Eau de Parfum" for Sauvage EDT). It only proposes and saves gaps, and saved values are shown as saved.
 - Collection returned a 500 (`cannot get array length of a scalar`) when it held a fragrance whose source pyramid has empty tiers (e.g. Boss Bottled Elixir). PostgreSQL may evaluate `AND` operands in any order; the check now uses `CASE`. A regression test covers it.
 
 - After the Mac wakes from sleep, the database login can be renewed late (the Podman VM clock lags). The app now says so plainly ("Reconnecting to the database") instead of "Session store unavailable". The banner re-checks every 15 seconds, clears itself on recovery, and points to `make heal`.

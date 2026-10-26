@@ -19,7 +19,8 @@ async function associate(){if(!selected.value)return;saving.value=true;try{await
 <template>
   <div class="flex min-w-0 max-w-4xl flex-col gap-6">
     <div><h1>My DNA</h1>
-    <p class="m-0 mt-2 text-[15px] text-ink-2">Your own spring, summer, autumn and winter choices. No daily wear log, and no assumed likes from ownership.</p></div>
+    <p class="m-0 mt-2 text-[15px] text-ink-2">Your own spring, summer, autumn and winter choices. No daily wear log, and no assumed likes from ownership.</p>
+    <NuxtLink to="/spectrum" class="btn btn-ghost mt-2 h-9 min-h-0 px-2.5"><AppIcon name="spectrum" :size="16" /> See where your collection sits: My Spectrum</NuxtLink></div>
     <div class="flex w-fit max-w-full flex-wrap gap-1 rounded-control border border-line bg-sunken p-1" role="group" aria-label="Season">
       <button v-for="s in seasons" :key="s" type="button" :disabled="saving" :aria-pressed="active===s" class="motion flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-[6px] px-3 text-[14px] pointer-coarse:h-11 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-[var(--focus)] capitalize" :class="active===s?'bg-raised font-medium text-ink shadow-[inset_0_0_0_1px_var(--line-strong)]':'text-ink-2 hover:text-ink'" @click="active=s">{{ s }}</button>
     </div>

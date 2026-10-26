@@ -7,8 +7,12 @@ PHASES = {f"{i:02d}" for i in range(11)}
 
 
 def expected_phases(agent):
-    # Phases 11 (ADR-010) and 12 (ADR-011) are accepted add-ons for Claude and Codex only.
-    return PHASES | ({"11", "12"} if agent in {"Claude", "Codex"} else set())
+    # Phases 11 (ADR-010) and 12 (ADR-011) are accepted add-ons for Claude and Codex only;
+    # Phase 13 (ADR-014, My Spectrum) for Claude only.
+    extra = {"11", "12"} if agent in {"Claude", "Codex"} else set()
+    if agent == "Claude":
+        extra |= {"13"}
+    return PHASES | extra
 
 
 def accepted_prompts(agent):

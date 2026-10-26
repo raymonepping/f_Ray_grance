@@ -1,6 +1,6 @@
 // Single navigation source (spec/DESIGN.md §5, §13): sidebar, rail, bottom nav and drawer
 // all render from this list. Primary = the four main journeys.
-export type IconName = 'library' | 'compass' | 'columns' | 'dna' | 'settings' | 'flask' | 'academy';
+export type IconName = 'library' | 'compass' | 'columns' | 'dna' | 'settings' | 'flask' | 'academy' | 'spectrum';
 
 export interface NavItem {
   to: string;
@@ -16,6 +16,7 @@ export const NAVIGATION: readonly NavItem[] = [
   { to: '/compare', label: 'Compare', icon: 'columns', primary: true, description: 'Two fragrances side by side' },
   { to: '/dna', label: 'My DNA', icon: 'dna', primary: true, description: 'Seasonal preferences' },
   { to: '/collection?state=sampled', label: 'Samples', icon: 'flask', primary: false, description: 'Testers and decants you have tried' },
+  { to: '/spectrum', label: 'My Spectrum', icon: 'spectrum', primary: false, description: 'Where the fragrances you own sit' },
   { to: '/academy', label: 'Academy', icon: 'academy', primary: false, description: 'Lessons, glossary and Train My Nose' },
   { to: '/settings', label: 'Settings', icon: 'settings', primary: false, description: 'Appearance, session, data and status' },
 ] as const;

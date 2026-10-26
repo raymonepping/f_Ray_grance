@@ -48,7 +48,7 @@ test('quick find: an EAN shows what the barcode is, and a brand-page listing (CK
   await page.getByRole('button', { name: 'Find', exact: true }).click();
   const hint = page.getByTestId('barcode-hint');
   await expect(hint).toContainText('Ck One Essence', { timeout: 20_000 });
-  await expect(hint).toContainText('Open Beauty Facts');
+  await expect(hint).toContainText(/Open Beauty Facts|Web search/); // live source; web search is the honest fallback
   await expect(page.getByText('matches the barcode')).toHaveCount(0); // "CK One" is not "CK One Essence"
   await page.getByLabel(/Name, part of a name, brand, or barcode/).fill('ck one');
   await page.getByRole('button', { name: 'Find', exact: true }).click();
@@ -71,5 +71,5 @@ test('detail offers web research and image lookups without running them automati
   await expect(images.getByRole('heading', { name: 'Find an image' })).toBeVisible();
   await images.getByLabel('Barcode from your bottle or box').fill('4006381333931');
   await images.getByRole('button', { name: 'Look up', exact: true }).click();
-  await expect(images.getByText(/Not in Open Beauty Facts|could not be reached/)).toBeVisible({ timeout: 20_000 });
+  await expect(images.getByText(/Not in Open Beauty Facts|Open Beauty Facts (could not be reached|answered HTTP)/)).toBeVisible({ timeout: 20_000 });
 });

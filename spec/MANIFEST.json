@@ -72,6 +72,11 @@
       "sha256": "a5c11335a4229ff21aa7a874b47c83db2229dc125742c1de071370eaf977c5ab"
     },
     {
+      "path": "docs/adr/ADR-014-my-spectrum.md",
+      "bytes": 1158,
+      "sha256": "fb679d98e0ec32c8c6a4192055b7ed2cd16185dfc8fb24bbe93bfda433a2f9e3"
+    },
+    {
       "path": "prompts/Claude/00_preflight_and_state.md",
       "bytes": 9960,
       "sha256": "531818921778e52bfaa9da6d4a4bedd922539c79488744f8b12449337ad947f8"
@@ -135,6 +140,11 @@
       "path": "prompts/Claude/12_perfume_images.md",
       "bytes": 9091,
       "sha256": "625fc1545638e9be00dbee093f4899e39ad0e03ec7dc66aba77e8602f00a167b"
+    },
+    {
+      "path": "prompts/Claude/13_add_spectrum.md",
+      "bytes": 6821,
+      "sha256": "07eb4e3256fb0c3724bed11bde5c37e74f5d33dee09bfaa85a4b786ddff3108a"
     },
     {
       "path": "prompts/Codex/00_preflight_and_state.md",
@@ -263,8 +273,8 @@
     },
     {
       "path": "prompts/STATE_CONTRACT.md",
-      "bytes": 4195,
-      "sha256": "866fc4d4722d856d34629ee3d2d737c3d4637a70dc5d04309106dacc27c41307"
+      "bytes": 4471,
+      "sha256": "967140f8777b5648797da6cc98064be182186e548063ce8a41d38198d2ca3388"
     },
     {
       "path": "prompts/launchers/Claude_START_HERE.md",
@@ -333,8 +343,8 @@
     },
     {
       "path": "spec/PHASE_MANIFEST.md",
-      "bytes": 4463,
-      "sha256": "1ecf9f0a90e9c250e4929661f5704ee82fc8312e3aa7e191bc93f1db157de89f"
+      "bytes": 4839,
+      "sha256": "6d373ef4a86f282d62eb0245979aebffea5e732b07e95e99e7ea60bbd864345b"
     },
     {
       "path": "spec/PRODUCT_SPEC.md",
@@ -365,6 +375,11 @@
       "path": "spec/SECURITY.md",
       "bytes": 6818,
       "sha256": "5df339116ae3a0e80290cc783ebc57e9cb08a02581765daa0ad08c20608b51d1"
+    },
+    {
+      "path": "spec/SPECTRUM_SPEC.md",
+      "bytes": 3034,
+      "sha256": "11db460c7ddcd7165b2373ccf3f93c7654e4fba46d90128616c986f18f171bd5"
     }
   ],
   "layout": {

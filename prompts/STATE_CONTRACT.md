@@ -46,3 +46,7 @@ ADR-010 accepts Phase 11 and explicit operator-authorized local development whil
 ## Phase 12 local-development exception
 
 ADR-011 accepts Phase 12 (perfume images) on the same terms as Phase 11: it requires Phase 11 completed and pushed, records its own local results under phase 12, and leaves Phase 10, its blockers and `last_successful_phase` unchanged. Codex/Claude Phase 12 prompts are accepted; IBM Bob's suite remains 00–10.
+
+## Phase 13 local-development exception
+
+ADR-014 accepts Phase 13 (My Spectrum) for Claude on the same terms. It requires Phase 12 completed and pushed, and records its own local results under phase 13. It leaves Phase 10, its blockers and `last_successful_phase` unchanged.

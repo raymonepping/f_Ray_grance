@@ -8,6 +8,7 @@ import type { FastifyInstance } from 'fastify';
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { ApiError } from '../../errors.js';
 import type { RotatingPool } from '../../db/pool.js';
+import { mapConcentration } from '../../domain/concentration.js';
 import { AGENT_SCHEMA, RESEARCH_FIELDS, agentGoal, researchQuery, selectPages, validateFinding, type Finding } from '../../domain/research.js';
 import { addResearchClaims, effectiveProfile } from '../../repo/enrichment.js';
 import { TinyFishError, type TinyFishClient } from '../../providers/tinyfish.js';
@@ -66,7 +67,13 @@ export async function researchRoutes(base: FastifyInstance, deps: { pool: Rotati
     const before = await missing(fragranceId, f);
     try {
       const results = await deps.tinyfish.search(researchQuery(f.brand, f.name, f.concentration));
-      const pages = selectPages(results, f.brand, f.name, 2);
+      // The known concentration (verified identity, else the effective claim) separates products
+      // that share a name, e.g. "Sauvage" Eau de Toilette vs "Sauvage Eau de Parfum".
+      // Only trusted sources set it: an earlier web-research value never decides what a product is.
+      const effConc = (await effectiveProfile(db(), fragranceId)).concentration;
+      const trusted = effConc && effConc.origin !== 'research' ? (effConc.value as { normalized?: string }).normalized : null;
+      const knownConc = mapConcentration(f.concentration?.replace(/_/g, ' ') ?? null) ?? mapConcentration(trusted?.replace(/_/g, ' ') ?? null);
+      const pages = selectPages(results, f.brand, f.name, 2, knownConc);
       if (!pages.length) return { available: true, missing: before, findings: [], message: `No result page names exactly "${f.name}".` };
       const settled = await Promise.allSettled(pages.map((p) => deps.tinyfish.agentRun(p.url, agentGoal(f.brand, f.name), AGENT_SCHEMA)));
       const now = Date.now();
@@ -75,7 +82,7 @@ export async function researchRoutes(base: FastifyInstance, deps: { pool: Rotati
         const page = { url: pages[i]!.url, siteName: pages[i]!.siteName || new URL(pages[i]!.url).hostname };
         const finding: Finding =
           s.status === 'fulfilled'
-            ? validateFinding(s.value, page, f.name)
+            ? validateFinding(s.value, page, f.name, knownConc)
             : { pageUrl: page.url, siteName: page.siteName, productNameOnPage: '', evidence: null, proposals: [], rejected: s.reason instanceof TinyFishError ? s.reason.message : 'The research run failed' };
         const stored: Stored = { ...finding, id: randomUUID(), ownerId: owner, fragranceId, checkedAt: new Date(), expiresAt: now + TTL_MS };
         findings.set(stored.id, stored);
@@ -86,7 +93,11 @@ export async function researchRoutes(base: FastifyInstance, deps: { pool: Rotati
           productNameOnPage: finding.productNameOnPage,
           evidence: finding.evidence,
           rejected: finding.rejected,
-          proposals: finding.proposals.map((p) => ({ field: p.field, display: p.display, note: p.note, acceptable: p.value !== null, fillsGap: before.includes(p.field) })),
+          // Only gaps can be saved: research never adds a lower-trust value for something already known.
+          proposals: finding.proposals.map((p) => {
+            const fillsGap = before.includes(p.field);
+            return { field: p.field, display: p.display, note: p.note ?? (fillsGap ? null : 'Already known from Scento or your own data, so not proposed.'), acceptable: p.value !== null && fillsGap, fillsGap };
+          }),
         };
       });
       return { available: true, missing: before, findings: out };
@@ -128,8 +139,10 @@ export async function researchRoutes(base: FastifyInstance, deps: { pool: Rotati
       const s = findings.get(req.params.fid);
       if (!s || s.ownerId !== owner || s.fragranceId !== req.params.id || s.expiresAt < Date.now()) throw new ApiError('NOT_FOUND', 'Research result expired; run the research again');
       const wanted = new Set<string>(req.body.fields as string[]);
-      const chosen = s.proposals.filter((p) => p.value !== null && wanted.has(p.field));
-      if (!chosen.length) throw new ApiError('VALIDATION_FAILED', 'None of the selected details can be saved');
+      const f = await fragrance(req.params.id);
+      const gaps = new Set<string>(await missing(req.params.id, f));
+      const chosen = s.proposals.filter((p) => p.value !== null && wanted.has(p.field) && gaps.has(p.field));
+      if (!chosen.length) throw new ApiError('VALIDATION_FAILED', 'None of the selected details fills a gap; nothing was saved');
       const n = await addResearchClaims(
         db(),
         req.params.id,
