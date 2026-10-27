@@ -8,6 +8,10 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ## [Unreleased]
 
+### Fixed (barcode hints)
+
+- **"Search for …" under a barcode hint did nothing** when the hint came from a web search, because those titles carry no separate brand. Hints now recognise the app's own house aliases at the start of a title, longest first: "Paco Rabanne …" and "Rabanne …" give the house Rabanne. Line names that double as aliases stay in the fragrance name ("BOSS Bottled", "CK One"). When a hint still has no brand, the button searches by the hint's text instead and keeps the barcode for saving. Covered by parser tests for the reported titles and a browser test.
+
 ### Added (Phase 16, clean slate, [ADR-017](docs/adr/ADR-017-clean-slate.md))
 
 - `make clean-slate` empties everything recorded: every owner's personal data and the shared fragrance catalogue (fragrances, brands, variants, observations, claims, notes, note dictionary, trait scores, embeddings). It keeps owner accounts and passwords, the migration ledger and the seeded lessons. Every table must be classified or it refuses. It also requires the typed phrase `CLEAN SLATE`, takes a fresh backup first, runs in one transaction and verifies the result. See [the Phase 16 report](reports/16_clean_slate.md).

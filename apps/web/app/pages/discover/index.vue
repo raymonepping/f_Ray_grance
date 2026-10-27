@@ -34,7 +34,7 @@ interface Lookup {
   message?: string;
   sourceDown: boolean;
   local?: { fragranceId: string; name: string; brand: string };
-  hint?: { source: 'Open Beauty Facts' | 'Web search'; title: string; url: string | null; brand: string | null; name: string; sizeMl: number | null } | null;
+  hint?: { source: 'Open Beauty Facts' | 'Web search'; title: string; url: string | null; brand: string | null; name: string; query: string; sizeMl: number | null } | null;
   suggestions: Suggestion[];
 }
 const quick = ref('');
@@ -43,7 +43,7 @@ const lookup = ref<Lookup | null>(null);
 const quickError = ref('');
 const pendingBarcode = ref<{ gtin14: string; sizeMl: number | null } | null>(null);
 const barcodeNote = ref('');
-async function quickFind() {
+async function quickFind(keepBarcode = false) {
   const q = quick.value.trim();
   if (q.length < 2) return;
   finding.value = true;
@@ -53,7 +53,8 @@ async function quickFind() {
   try {
     const r = await apiFetch<Lookup>('/api/v1/fragrances/lookup', { method: 'POST', body: { query: q } });
     lookup.value = r;
-    pendingBarcode.value = r.kind === 'barcode' && r.gtin14 && !r.local ? { gtin14: r.gtin14, sizeMl: r.hint?.sizeMl ?? null } : null;
+    // A follow-up text search started from a barcode hint keeps that barcode for saving.
+    if (!(keepBarcode && r.kind === 'text')) pendingBarcode.value = r.kind === 'barcode' && r.gtin14 && !r.local ? { gtin14: r.gtin14, sizeMl: r.hint?.sizeMl ?? null } : null;
     const exact = r.suggestions.filter((x) => x.exactToHint);
     if (exact.length === 1) pick(exact[0]!);
   } catch (e) {
@@ -70,9 +71,16 @@ function pick(sug: Suggestion) {
 function useHint() {
   const h = lookup.value?.hint;
   if (!h) return;
-  brand.value = h.brand ?? '';
-  name.value = h.name;
-  if (brand.value && name.value) submit();
+  if (h.brand && h.name) {
+    // Brand and name known: the exact search below runs straight away.
+    brand.value = h.brand;
+    name.value = h.name;
+    submit();
+    return;
+  }
+  // No brand in the hint: search Scento by the hint's text instead, keeping the barcode for saving.
+  quick.value = (h.query || h.name).trim();
+  void quickFind(true);
 }
 /** After a save (or an existing match), remember the barcode on that fragrance. */
 async function attachBarcode(fragranceId: string) {
@@ -148,7 +156,7 @@ const localId = computed(() => result.value?.local?.fragranceId ?? result.value?
     </div>
     <section class="bay flex flex-col gap-4 p-4 md:p-5" aria-labelledby="quick-h">
       <h2 id="quick-h" class="text-[19px]">Quick find</h2>
-      <form class="flex flex-col gap-1.5" @submit.prevent="quickFind">
+      <form class="flex flex-col gap-1.5" @submit.prevent="quickFind()">
         <label for="quick" class="text-[13px] font-medium text-ink-2">Name, part of a name, brand, or barcode (EAN)</label>
         <div class="flex gap-2">
           <input id="quick" v-model="quick" type="search" autocomplete="off" enterkeyhint="search" maxlength="120" placeholder="e.g. CK One, Rabanne, or 3616303473396" class="field" />

@@ -39,3 +39,6 @@ export function brandAliases(name: string): string[] {
   for (const [alias, canonical] of INDEX) if (normalizeIdentity(canonical) === key) out.add(alias);
   return [...out].filter(Boolean).sort((a, b) => b.length - a.length);
 }
+
+/** Every known way of writing a focus house (normalised), longest first, for spotting a house at the start of a title. */
+export const KNOWN_HOUSE_ALIASES: string[] = [...INDEX.keys()].sort((a, b) => b.length - a.length);

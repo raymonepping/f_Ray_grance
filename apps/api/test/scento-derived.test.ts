@@ -53,5 +53,12 @@ describe('barcode title hints', () => {
     // Seen live (web-search fallback for EAN 3348901486385): shop clutter goes, the identity stays.
     expect(hintFromProductTitle("Dior Men's Sauvage Parfum 3.4 oz Fragrances ...", '', ['Dior'])).toMatchObject({ brand: 'Dior', name: 'Sauvage Parfum', core: 'Sauvage', query: 'Dior Sauvage Parfum' });
     expect(hintFromProductTitle('Jean Paul Gaultier Le Male Pour Homme Eau de Toilette 125 ml', '', ['Jean Paul Gaultier']).name).toBe('Le Male Pour Homme Eau de Toilette');
+    // Web-search titles with no brand field: the app's own house aliases are recognised (operator report, 2026-10-27).
+    expect(hintFromProductTitle('Rabanne 1 Million Elixir Parfum Intense', '')).toMatchObject({ brand: 'Rabanne', name: '1 Million Elixir Parfum Intense', core: '1 Million Elixir', query: 'Rabanne 1 Million Elixir Parfum Intense' });
+    expect(hintFromProductTitle("Paco Rabanne Men's Phantom Parfum Spray 3.4 oz ...", '')).toMatchObject({ brand: 'Rabanne', name: 'Phantom Parfum', core: 'Phantom' });
+    expect(hintFromProductTitle('Unknown House Mystery 50ml', '').brand).toBeNull();
+    // Line names that are also house aliases stay in the name.
+    expect(hintFromProductTitle('BOSS Bottled Elixir 100ml', '')).toMatchObject({ brand: 'Hugo Boss', name: 'BOSS Bottled Elixir' });
+    expect(hintFromProductTitle('CK One Essence Parfum', '')).toMatchObject({ brand: 'Calvin Klein', name: 'CK One Essence Parfum' });
   });
 });

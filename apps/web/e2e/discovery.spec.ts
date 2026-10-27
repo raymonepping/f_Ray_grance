@@ -77,3 +77,44 @@ test('detail offers web research and image lookups without running them automati
   await images.getByRole('button', { name: 'Look up', exact: true }).click();
   await expect(images.getByText(/Not in Open Beauty Facts|Open Beauty Facts (could not be reached|answered HTTP)/)).toBeVisible({ timeout: 20_000 });
 });
+
+// Operator report 2026-10-27: "Search for …" under a barcode hint did nothing when the hint had no
+// separate brand (web-search titles). Responses are intercepted; no live lookup is made.
+test('the barcode hint button always searches: exact with a brand, by text without one', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  const lookups: unknown[] = [];
+  const resolves: unknown[] = [];
+  let withBrand = false;
+  await page.route('**/api/v1/fragrances/lookup', async (r) => {
+    const body = r.request().postDataJSON() as { query: string };
+    lookups.push(body);
+    const barcode = /^\d{8,14}$/.test(body.query);
+    await r.fulfill({
+      json: barcode
+        ? {
+            kind: 'barcode', query: body.query, gtin14: '03349668680757', sourceDown: false, suggestions: [],
+            hint: { source: 'Web search', title: 'Some shop title', url: null, brand: withBrand ? 'Rabanne' : null, name: withBrand ? '1 Million Elixir' : 'Rabanne 1 Million Elixir Parfum Intense', query: 'Rabanne 1 Million Elixir Parfum Intense', core: '', sizeMl: null, concentration: null },
+          }
+        : { kind: 'text', query: body.query, sourceDown: false, suggestions: [] },
+    });
+  });
+  await page.route('**/api/v1/fragrances/resolve', async (r) => {
+    resolves.push(r.request().postDataJSON());
+    await r.fulfill({ json: { state: 'not_found', reason: 'Synthetic', candidates: [] } });
+  });
+  await login(page, '/discover');
+  const box = page.getByLabel(/Name, part of a name, brand, or barcode/);
+  await box.fill('3349668680757');
+  await page.getByRole('button', { name: 'Find', exact: true }).click();
+  await page.getByRole('button', { name: /^Search for/ }).click();
+  await expect.poll(() => lookups.length).toBe(2);
+  expect(lookups[1]).toEqual({ query: 'Rabanne 1 Million Elixir Parfum Intense' }); // text search, not nothing
+  await expect(box).toHaveValue('Rabanne 1 Million Elixir Parfum Intense');
+
+  withBrand = true;
+  await box.fill('3349668680757');
+  await page.getByRole('button', { name: 'Find', exact: true }).click();
+  await page.getByRole('button', { name: /^Search for/ }).click();
+  await expect.poll(() => resolves.length).toBe(1);
+  expect(resolves[0]).toMatchObject({ brand: 'Rabanne', name: '1 Million Elixir' }); // the exact search ran
+});
