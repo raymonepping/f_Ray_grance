@@ -720,7 +720,7 @@
     "ADR-018"
   ],
   "unresolved_blockers": [],
-  "updated_at_utc": "2026-10-27T08:51:47Z",
+  "updated_at_utc": "2026-10-27T09:11:28Z",
   "reviews": {
     "2026-10-26_prompts_01_14": {
       "status": "completed_with_findings",
@@ -877,6 +877,71 @@
         }
       },
       "notes": "Article 01, STYLE and original screenshots left unchanged. No application source or phase acceptance changed; last successful phase remains 16. No live clean-slate, paid research, backup or recovery drill performed for this editorial work."
+    },
+    "03": {
+      "status": "completed",
+      "agent": "codex",
+      "finished_at_utc": "2026-10-27T09:11:28Z",
+      "baseline_head": "b022d1edec2de76d7c0425226296494e1ea9ac87",
+      "draft_path": "article/03.md",
+      "scope": "Operator-requested product-focused revision: why F-Ray-grance exists and its functionality; omit coding-agent usage and build-process narrative; retain approved title and add an SEO-friendly H2 subtitle.",
+      "instructions_applied": [
+        "article/STYLE.md",
+        ".agents/skills/no-ai-slop/SKILL.md",
+        ".agents/skills/no-ai-slop/eval.md"
+      ],
+      "artifacts": [
+        "article/03.md",
+        "article/STYLE.md"
+      ],
+      "changes": [
+        "Retained approved H1; added H2 subtitle covering fragrance collection, perfume comparison, scent notes and seasonal preferences.",
+        "Replaced phase chronology, agent usage, review/test counts and infrastructure incidents with collection workflows, exact identity, source-backed notes, research, Compare, My DNA, discovery, Spectrum, Academy, images, privacy, export and removal.",
+        "Preserved supplied Oasis excerpt, first-person voice, pull quote and eight existing screenshots; no new capture or application data changes.",
+        "Added reusable H1-title/H2-subtitle SEO and pull-quote structure to STYLE; generalized stale project-specific introductory wording."
+      ],
+      "validation": {
+        "make_validate_docs": "PASS: 84 frozen docs, 46 prompts, 301 local links",
+        "article_checks": "PASS: approved single H1, H2 subtitle, immediate pull quote, no tables or deeper headings, eight existing image links, supplied lyrics intact, no coding-agent/build-phase narrative, no authorial plural, banned-word and whitespace scans",
+        "git_diff_check": "PASS",
+        "facts": "Checked added collection/season/discovery/image functionality against PRODUCT_SPEC, README, phase reports 08/09/12 and current My DNA/Discover UI source; retained recovery/import/remote-access boundaries.",
+        "editorial_eval": {
+          "editing_principles_1_to_11": [
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass"
+          ],
+          "words_to_cut_1": "pass",
+          "patterns_to_cut_1_to_9": [
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass"
+          ],
+          "final_read_1_to_4": [
+            "pass",
+            "pass",
+            "pass",
+            "pass"
+          ],
+          "final_read_5": "not_applicable: edit, not detect"
+        },
+        "implementation_suites": "Not rerun for editorial-only changes."
+      },
+      "notes": "Article 02 and screenshot files unchanged. STYLE is included explicitly as requested for reuse. No phase status or gate evidence changed; contiguous successful phase remains 16."
     }
   }
 }
