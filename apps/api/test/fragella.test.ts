@@ -11,7 +11,7 @@ import { createFragrance, upsertBrand } from '../src/repo/catalog.js';
 import { claimRank, effectiveProfile } from '../src/repo/enrichment.js';
 import { FragellaClient, type HttpFetch } from '../src/providers/fragella.js';
 import { NoteboxdClient } from '../src/providers/noteboxd.js';
-import { mapGapProfile, pickExactHit } from '../src/domain/gap-sources.js';
+import { concentrationFromName, mapGapProfile, pickExactHit, type GapProfile } from '../src/domain/gap-sources.js';
 import { buildSources } from '../src/images/sources.js';
 import { AssetStore } from '../src/images/store.js';
 import type { RotatingPool } from '../src/db/pool.js';
@@ -76,6 +76,33 @@ describe('Fragella client (recorded live response)', () => {
     expect(full.proposals.map((p) => p.field)).toEqual(['launch_year', 'pyramid']); // empty OilType: no concentration
     const partial = mapGapProfile({ ...hit, notes: hit.notes.filter((n) => n.tier === 'top') }, PHANTOM, 'Fragella');
     expect(partial.proposals.find((p) => p.field === 'listed_notes')?.value).toEqual(hit.generalNotes);
+  });
+});
+
+describe('concentration conflicts that may come from the name (operator report: 1 Million Elixir)', () => {
+  // Observed: Scento knows "Million Elixir" with concentration "elixir"; Fragella has the full pyramid
+  // as "Paco Rabanne 1 Million Elixir", Eau de Parfum.
+  const fragella: GapProfile = {
+    id: 'Paco-Rabanne-1-Million-Elixir', name: 'Paco Rabanne 1 Million Elixir', brand: 'Paco Rabanne', pageUrl: 'https://api.fragella.com', concentration: 'Eau de Parfum', launchYear: null,
+    notes: [{ name: 'Apple', tier: 'top' }, { name: 'Davana', tier: 'top' }, { name: 'Damask Rose', tier: 'heart' }, { name: 'Cedar', tier: 'heart' }, { name: 'Osmanthus', tier: 'heart' }, { name: 'Vanilla Absolute', tier: 'base' }, { name: 'Tonka Bean', tier: 'base' }, { name: 'Patchouli', tier: 'base' }],
+    generalNotes: ['cedar', 'tonka bean'],
+  };
+  it('a known concentration that is a word in the name gives a warning, not a rejection', () => {
+    const id = { brand: 'Rabanne', name: 'Million Elixir', concentration: 'elixir' as const };
+    expect(concentrationFromName(id)).toBe(true);
+    const r = mapGapProfile(fragella, id, 'Fragella');
+    expect(r.rejected).toBeNull();
+    expect(r.warning).toMatch(/Eau de Parfum.*elixir.*Million Elixir/);
+    expect(r.proposals.find((p) => p.field === 'pyramid')?.value).toEqual({ top: ['Apple', 'Davana'], heart: ['Damask Rose', 'Cedar', 'Osmanthus'], base: ['Vanilla Absolute', 'Tonka Bean', 'Patchouli'] });
+    expect(r.proposals.find((p) => p.field === 'concentration')).toMatchObject({ value: null }); // the conflicting value is shown, never proposed
+  });
+  it('a real conflict still rejects: Sauvage Eau de Toilette against an Eau de Parfum profile', () => {
+    const id = { brand: 'Dior', name: 'Sauvage', concentration: 'eau_de_toilette' as const };
+    expect(concentrationFromName(id)).toBe(false);
+    const r = mapGapProfile({ ...fragella, name: 'Sauvage', brand: 'Dior' }, id, 'Fragella');
+    expect(r.proposals).toEqual([]);
+    expect(r.rejected).toMatch(/different concentration/);
+    expect(r.warning).toBeNull();
   });
 });
 

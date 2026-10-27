@@ -5,6 +5,7 @@
 import { brandKey } from './brands.js';
 import { mapConcentration, type Concentration } from './concentration.js';
 import { checkExactIdentity, type TrustedIdentity } from './exact-identity.js';
+import { normalizeIdentity } from './identity.js';
 import type { Proposal } from './research.js';
 
 export type GapTier = 'top' | 'heart' | 'base' | null;
@@ -39,14 +40,30 @@ export function pickExactHit<T extends GapHit>(hits: T[], id: TrustedIdentity, s
 }
 
 /** Proposals from a source profile, or the reason it is not about this fragrance. */
-export function mapGapProfile(p: GapProfile, id: TrustedIdentity, source: string, year = new Date().getUTCFullYear()): { proposals: Proposal[]; rejected: string | null } {
-  if (!isExact(p.brand, p.name, id)) return { proposals: [], rejected: `${source}'s profile is "${p.brand} ${p.name}", not exactly this fragrance.` };
+/**
+ * True when the known concentration is only a word from the fragrance's own name ("Million Elixir"
+ * known as "elixir", "Phantom Parfum" as "parfum"): such a value may come from the name rather than
+ * the bottle, so another source's different concentration is a warning, not proof of another product.
+ */
+export function concentrationFromName(id: TrustedIdentity): boolean {
+  if (!id.concentration) return false;
+  return (normalizeIdentity(id.name) ?? '').split(' ').some((w) => mapConcentration(w) === id.concentration);
+}
+
+export function mapGapProfile(p: GapProfile, id: TrustedIdentity, source: string, year = new Date().getUTCFullYear()): { proposals: Proposal[]; rejected: string | null; warning: string | null } {
+  if (!isExact(p.brand, p.name, id)) return { proposals: [], rejected: `${source}'s profile is "${p.brand} ${p.name}", not exactly this fragrance.`, warning: null };
   const conc: Concentration | null = p.concentration ? mapConcentration(p.concentration) : null;
+  let warning: string | null = null;
   if (conc && id.concentration && conc !== id.concentration) {
-    return { proposals: [], rejected: `${source}'s profile states ${p.concentration}, a different concentration, so it is a different product.` };
+    if (!concentrationFromName(id)) {
+      return { proposals: [], rejected: `${source}'s profile states ${p.concentration}, a different concentration, so it is a different product.`, warning: null };
+    }
+    warning = `${source} says ${p.concentration}, while the known concentration (${id.concentration.replace(/_/g, ' ')}) may only come from the word in the name "${id.name}". Check that this is your bottle before saving.`;
   }
   const proposals: Proposal[] = [];
-  if (p.concentration) {
+  if (p.concentration && warning) {
+    proposals.push({ field: 'concentration', value: null, display: p.concentration, note: 'Conflicts with the known concentration, so it is not proposed.' });
+  } else if (p.concentration) {
     proposals.push(conc ? { field: 'concentration', value: { raw: p.concentration, normalized: conc }, display: p.concentration, note: null } : { field: 'concentration', value: null, display: p.concentration, note: 'Unrecognised concentration wording, so none is proposed.' });
   }
   if (p.launchYear !== null && p.launchYear >= 1700 && p.launchYear <= year + 1) {
@@ -68,5 +85,5 @@ export function mapGapProfile(p: GapProfile, id: TrustedIdentity, source: string
       proposals.push({ field: 'listed_notes', value: names, display: names.join(', '), note: `${source} does not give every note a top, heart or base tier, so these are listed without tiers.` });
     }
   }
-  return { proposals, rejected: proposals.some((x) => x.value !== null) ? null : `${source} states none of the missing details.` };
+  return { proposals, rejected: proposals.some((x) => x.value !== null) ? null : `${source} states none of the missing details.`, warning };
 }

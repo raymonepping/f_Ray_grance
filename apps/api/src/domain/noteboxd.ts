@@ -16,4 +16,4 @@ export const toGapProfile = (p: NoteboxdProfile): GapProfile => ({ id: p.id, nam
 export const pickExact = (hits: NoteboxdHit[], id: TrustedIdentity): { hit: NoteboxdHit | null; reason: string | null; candidates: GapHit[] } => pickExactHit(hits, id, 'NoteboxD');
 
 /** Proposals from a NoteboxD profile, or the reason it is not about this fragrance. */
-export const mapProfile = (p: NoteboxdProfile, id: TrustedIdentity, year?: number): { proposals: Proposal[]; rejected: string | null } => mapGapProfile(toGapProfile(p), id, 'NoteboxD', year);
+export const mapProfile = (p: NoteboxdProfile, id: TrustedIdentity, year?: number): { proposals: Proposal[]; rejected: string | null; warning: string | null } => mapGapProfile(toGapProfile(p), id, 'NoteboxD', year);

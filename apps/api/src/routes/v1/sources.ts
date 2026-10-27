@@ -176,6 +176,7 @@ export async function sourceRoutes(base: FastifyInstance, deps: { pool: Rotating
           productNameOnPage: `${profile.brand} ${profile.name}`.trim(),
           evidence: null,
           rejected: mapped.rejected,
+          warning: mapped.warning,
           // Only gaps can be saved: a lower source never replaces a more trusted one.
           proposals: mapped.proposals.map((p) => {
             const fillsGap = missing.includes(p.field as GapField);

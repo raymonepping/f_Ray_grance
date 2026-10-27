@@ -9,7 +9,7 @@ const emit = defineEmits<{ saved: [] }>();
 type Field = 'concentration' | 'launch_year' | 'pyramid' | 'listed_notes';
 type Key = 'noteboxd' | 'fragella';
 interface Proposal { field: Field; display: string; note: string | null; acceptable: boolean; fillsGap: boolean }
-interface Finding { id: string; pageUrl: string; siteName: string; productNameOnPage: string; rejected: string | null; proposals: Proposal[] }
+interface Finding { id: string; pageUrl: string; siteName: string; productNameOnPage: string; rejected: string | null; warning?: string | null; proposals: Proposal[] }
 interface Source { key: string; label: string; role: string; enabled?: boolean; remainingToday?: number; remainingThisMonth?: number | null }
 interface Status {
   order: Source[];
@@ -128,6 +128,7 @@ async function save(k: Key) {
           <span class="text-[12px] text-ink-3">Entry: {{ result[k]!.finding!.productNameOnPage }}<template v-if="result[k]!.fromCache"> · checked earlier</template></span>
         </div>
         <p v-if="result[k]!.finding!.rejected" class="m-0 text-[13px] text-warn">{{ result[k]!.finding!.rejected }}</p>
+        <p v-if="result[k]!.finding!.warning" class="m-0 text-[13px] text-warn" data-testid="source-warning">{{ result[k]!.finding!.warning }}</p>
         <fieldset v-if="result[k]!.finding!.proposals.length" class="m-0 flex flex-col gap-2 border-0 p-0">
           <legend class="sr-only">Details proposed by {{ NAME[k] }}</legend>
           <label v-for="p in result[k]!.finding!.proposals" :key="p.field" class="flex items-start gap-2.5 text-[13px]" :class="p.acceptable ? '' : 'text-ink-3'">

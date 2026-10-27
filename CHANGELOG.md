@@ -8,6 +8,10 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ## [Unreleased]
 
+### Changed (source concentration conflicts)
+
+- When a fragrance's known concentration is only a word from its own name (Scento's "Million Elixir" known as "elixir"), a different concentration from NoteboxD or Fragella no longer rejects that source. Its details are shown with a warning, you decide, and the conflicting concentration itself is never proposed. Real conflicts (Sauvage Eau de Toilette against an Eau de Parfum profile) are still rejected. Reported for 1 Million Elixir, where Fragella's full pyramid was refused.
+
 ### Added (Phase 21, shop page evidence, [ADR-023](docs/adr/ADR-023-shop-page-evidence.md))
 
 - **Add from a shop page** on Discover: when Scento cannot verify a fragrance, paste its ICI PARIS XL product page. TinyFish reads it, you check the brand, name, concentration, notes per tier and EAN, and confirm. It is saved as "Confirmed by you" (never "Verified"), with the notes as your own entry citing the page, and your barcode is attached. Migration `0010` adds the `owner_confirmed` identity state.
