@@ -720,7 +720,7 @@
     "ADR-018"
   ],
   "unresolved_blockers": [],
-  "updated_at_utc": "2026-10-27T07:54:30Z",
+  "updated_at_utc": "2026-10-27T08:51:47Z",
   "reviews": {
     "2026-10-26_prompts_01_14": {
       "status": "completed_with_findings",
@@ -804,5 +804,79 @@
       "deferral": "Deferred by operator on 2026-10-27: an off-device copy and independent restore are not important enough for this personal project. Not a passed gate; Phase 10 stays blocked and import stays disabled. Revisit only on explicit operator request.",
       "scope": "outside_phase10_scope"
     }
-  ]
+  ],
+  "articles": {
+    "02": {
+      "status": "completed",
+      "agent": "codex",
+      "finished_at_utc": "2026-10-27T08:51:47Z",
+      "baseline_head": "59a5a3d",
+      "draft_path": "article/02.md",
+      "scope": "Revise article 01 in the operator first-person voice through phases 15 and 16; stronger title/subtitle/pull quote, H1/H2 structure, no tables; retain supplied Oasis excerpt.",
+      "instructions_applied": [
+        "article/STYLE.md",
+        ".agents/skills/no-ai-slop/SKILL.md",
+        ".agents/skills/no-ai-slop/eval.md",
+        "Operator update on ADR-018, phases 00-16, current counts and review findings; sole article writer confirmed."
+      ],
+      "artifacts": [
+        "article/02.md",
+        "article/screenshots/02/README.md",
+        "article/screenshots/02/reused-captures.json",
+        "article/screenshots/02/spectrum-capture.json",
+        "article/screenshots/02/capture-spectrum.mjs",
+        "Eight PNG screenshots in article/screenshots/02/"
+      ],
+      "changes": [
+        "Retained personal cabinet, barcode and Mac sleep stories while removing repetition and stale implementation/count claims.",
+        "Added seven-finding independent review and concrete recovery/identity revisions.",
+        "Replaced blocked-phase-10 narrative with local-scope completion and three explicitly untested operator deferrals; import stays off.",
+        "Reused seven original images unchanged; freshly captured Spectrum with one demo fragrance and verified its detail link."
+      ],
+      "validation": {
+        "make_validate_docs": "PASS: 84 frozen docs, 46 prompts, 301 links",
+        "article_structure": "PASS: one H1, H2 sections, subtitle then immediate pull quote, no tables, supplied Oasis lines retained",
+        "article_voice": "PASS: no authorial plural; the only two occurrences of we are in the supplied Oasis excerpt",
+        "asset_integrity": "PASS: all eight image links exist, hashes and sizes match metadata, seven copied originals byte-identical",
+        "spectrum_live_capture": "PASS: actual authenticated API; based-on-one-fragrance visible; tick opened Layton detail; temporary owner purged and catalogue undo completed",
+        "capture_script_syntax": "PASS: node --check",
+        "implementation_suites": "Not rerun for editorial-only changes; article attributes counts to recorded phase validation",
+        "editorial_eval": {
+          "editing_principles_1_to_11": [
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass"
+          ],
+          "words_to_cut_1": "pass",
+          "patterns_to_cut_1_to_9": [
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass",
+            "pass"
+          ],
+          "final_read_1_to_4": [
+            "pass",
+            "pass",
+            "pass",
+            "pass"
+          ],
+          "final_read_5": "not_applicable: edit, not detect"
+        }
+      },
+      "notes": "Article 01, STYLE and original screenshots left unchanged. No application source or phase acceptance changed; last successful phase remains 16. No live clean-slate, paid research, backup or recovery drill performed for this editorial work."
+    }
+  }
 }
