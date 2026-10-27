@@ -39,6 +39,16 @@ describe('ScentTraitBars', () => {
     expect(w.get('caption').text()).toContain('method normalized-v1');
     expect(w.findAll('th[scope="row"]').map((t) => t.text())).toEqual(['Sweet', 'Fresh']);
   });
+  it('colours the first series by My Spectrum pole (ADR-019); the comparison series stays neutral', () => {
+    const w = mount(ScentTraitBars, {
+      props: { series: ['A', 'B'], rows: [{ code: 'fresh', label: 'Fresh', values: [3, 2] }, { code: 'smoky', label: 'Smoky', values: [2, 1] }, { code: 'sweet', label: 'Sweet', values: [4, 4] }] },
+    });
+    const bars = (row: number) => w.findAll('tbody tr')[row]!.findAll('[data-bar]').map((b) => b.classes());
+    expect(bars(0)[0]).toContain('bg-spectrum-fresh');
+    expect(bars(1)[0]).toContain('bg-spectrum-warm');
+    expect(bars(2)[0]).toContain('bg-ink');
+    for (const r of [0, 1, 2]) expect(bars(r)[1]).toContain('bg-tier-base');
+  });
 });
 
 describe('navigation is defined once', () => {
@@ -79,6 +89,16 @@ describe('Chromatogram', () => {
     expect(w.find('figcaption').exists()).toBe(false);
     expect(w.findAll('path').length).toBeGreaterThan(0);
     expect(w.get('svg').attributes('aria-label')).toContain('Phantom:');
+  });
+  it('draws the trace on the spectral ramp, fresh top to warm base (ADR-019), in full and micro sizes', () => {
+    for (const micro of [false, true]) {
+      const w = mount(Chromatogram, { props: { pyramid, micro, label: 'Phantom' }, global: { stubs } });
+      const grad = w.get('[data-testid="chroma-spectrum"]');
+      const stops = grad.findAll('stop').map((x) => x.attributes('stop-color'));
+      expect(stops).toEqual(['var(--spectrum-fresh)', 'var(--spectrum-warm)']);
+      expect(grad.attributes('gradientUnits')).toBe('userSpaceOnUse');
+      expect(w.get('[data-testid="chroma-trace"]').attributes('stroke')).toBe(`url(#${grad.attributes('id')})`);
+    }
   });
   it('draws no trace when no pyramid is known (never a fabricated curve)', () => {
     const w = mount(Chromatogram, { props: { pyramid: null }, global: { stubs } });

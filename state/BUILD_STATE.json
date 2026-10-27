@@ -5,7 +5,7 @@
     "origin": "https://github.com/raymonepping/f_Ray_grance.git",
     "branch": "main"
   },
-  "last_successful_phase": "16",
+  "last_successful_phase": "17",
   "phases": {
     "00": {
       "status": "completed",
@@ -697,6 +697,33 @@
       "integration": "Concurrent Phase 10 local-scope decision renumbered ADR-017 -> ADR-018 and integrated at operator instruction",
       "not_run": "clean slate on the live database (operator runs make clean-slate)",
       "next_phase": null
+    },
+    "17": {
+      "status": "completed",
+      "agent": "claude-opus-5-5",
+      "prompt_id": "FRAY-CLAUDE-17",
+      "started_at_utc": "2026-10-27T10:11:58Z",
+      "baseline_head": "09839878ca64e69d44b4126a8ecc7d1b05e72ce4",
+      "report_path": "reports/17_spectral_colour.md",
+      "authorization": "ADR-019: operator asked for a touch of colour (warm orange, vibrant lime), classy, prompt 17 (2026-10-27).",
+      "planned_scope": [
+        "spectral tokens both themes + contrast tests",
+        "chromatogram gradient (full + micro)",
+        "Spectrum track/poles/ticks",
+        "trait bar pole colours",
+        "Spectral F + favicon, active nav marker, sign-in backdrop, warm readouts",
+        "DESIGN.md rule amendment, e2e + visual review"
+      ],
+      "completed_at_utc": "2026-10-27T10:24:25Z",
+      "evidence": {
+        "make_test": "PASS",
+        "make_test_e2e": "56/56 PASS (30/30 affected specs after readout change)",
+        "contrast": "PASS both themes",
+        "impeccable_detect": "[]",
+        "health": "PASS"
+      },
+      "deviation": "warm readouts removed after visual review (read as status)",
+      "next_phase": null
     }
   },
   "accepted_adrs": [
@@ -717,10 +744,11 @@
     "ADR-015",
     "ADR-016",
     "ADR-017",
-    "ADR-018"
+    "ADR-018",
+    "ADR-019"
   ],
   "unresolved_blockers": [],
-  "updated_at_utc": "2026-10-27T09:23:52Z",
+  "updated_at_utc": "2026-10-27T10:24:25Z",
   "reviews": {
     "2026-10-26_prompts_01_14": {
       "status": "completed_with_findings",

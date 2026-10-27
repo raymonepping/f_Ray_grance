@@ -52,6 +52,10 @@ describe.each(Object.entries(themes))('%s theme contrast', (_name, t) => {
   it.each(Object.entries(surfaces))('signal, status and focus colours used as text ≥ 4.5:1 on %s', (_s, bg) => {
     for (const tok of ['signal-text', 'warn', 'bad', 'focus']) expect(ratio(parse(t[tok]!), bg), tok).toBeGreaterThanOrEqual(4.5);
   });
+  it('spectral ramp (ADR-019): graphics ≥ 3:1 on panels and canvas, text ≥ 4.5:1 on every surface', () => {
+    for (const tok of ['spectrum-fresh', 'spectrum-warm']) for (const bg of [surfaces.panel, surfaces.canvas, surfaces.raised]) expect(ratio(parse(t[tok]!), bg), tok).toBeGreaterThanOrEqual(3);
+    for (const tok of ['spectrum-fresh-text', 'spectrum-warm-text']) for (const [s, bg] of Object.entries(surfaces)) expect(ratio(parse(t[tok]!), bg), `${tok} on ${s}`).toBeGreaterThanOrEqual(4.5);
+  });
   it('chromatogram tiers and strong hairlines are distinguishable (≥ 3:1 for peaks on panels)', () => {
     for (const tok of ['tier-top', 'tier-heart']) for (const bg of [surfaces.panel, surfaces.canvas]) expect(ratio(parse(t[tok]!), bg), tok).toBeGreaterThanOrEqual(3);
   });

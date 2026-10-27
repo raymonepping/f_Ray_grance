@@ -1,5 +1,7 @@
 /* F-Ray-grance "Scent Spectrometer" tokens. Anodised graphite bays, etched hairlines,
    ice-white ink and one phosphor-lime SIGNAL reserved for live, verified state only.
+   The SPECTRUM ramp (ADR-019) runs from vibrant lime (fresh) to warm orange (warm) and is used only
+   for scent data, the brand and the current place; never for status or actions.
    Components use these semantic tokens; no raw hex values in components.
    Contrast for every text pairing is verified in test/contrast.test.ts. */
 :root,
@@ -23,6 +25,10 @@
   --tier-top: #e8edf2; /* chromatogram peaks: luminance ramp, labelled, never colour-only */
   --tier-heart: #a9b2bd;
   --tier-base: #6f7b89;
+  --spectrum-fresh: #c6f24e; /* spectral ramp, graphics: fresh end (top notes, Fresh pole) */
+  --spectrum-warm: #ff8f3f; /* spectral ramp, graphics: warm end (base notes, Warm pole) */
+  --spectrum-fresh-text: #c6f24e;
+  --spectrum-warm-text: #ff9a52;
   --focus: #e8edf2;
   --chrome: rgba(11, 14, 18, 0.86); /* sticky header only */
   --glow: rgba(212, 255, 79, 0.14); /* scan line wash */
@@ -52,6 +58,10 @@
   --tier-top: #0c1016;
   --tier-heart: #56616e;
   --tier-base: #98a3af;
+  --spectrum-fresh: #4d7c0f;
+  --spectrum-warm: #c2410c;
+  --spectrum-fresh-text: #3f6212;
+  --spectrum-warm-text: #9a3412;
   --focus: #0c1016;
   --chrome: rgba(238, 241, 244, 0.88);
   --glow: rgba(62, 90, 0, 0.1);

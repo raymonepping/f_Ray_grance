@@ -61,7 +61,12 @@ const trace = computed(() => {
   return pts;
 });
 const line = computed(() => trace.value.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' '));
-const TIER_INK: Record<TierKey, string> = { top: 'var(--tier-top)', heart: 'var(--tier-heart)', base: 'var(--tier-base)' };
+// Tier rules under the chart follow the spectral ramp (ADR-019): fresh top, mixed heart, warm base.
+const TIER_RULE: Record<TierKey, string> = {
+  top: 'var(--spectrum-fresh)',
+  heart: 'color-mix(in oklab, var(--spectrum-fresh), var(--spectrum-warm))',
+  base: 'var(--spectrum-warm)',
+};
 // Apex of the trace near each peak, for the label overlay (percent of the drawing box).
 const labels = computed(() => {
   const amp = baseY.value - PAD_TOP.value;
@@ -107,13 +112,18 @@ onMounted(() => {
         <clipPath :id="`${uid}-reveal`">
           <rect x="0" y="0" :width="W" :height="H" class="chroma-reveal" :class="{ 'is-scanned': scanned }" />
         </clipPath>
-        <clipPath v-for="(t, z) in TIERS" :id="`${uid}-zone-${z}`" :key="t.key">
-          <rect :x="z * zoneW" y="0" :width="zoneW" :height="H" />
-        </clipPath>
-        <linearGradient :id="`${uid}-fill`" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="var(--ink)" stop-opacity="0.16" />
-          <stop offset="1" stop-color="var(--ink)" stop-opacity="0" />
+        <!-- the spectral ramp (ADR-019): the trace dries down from fresh (top) to warm (base) -->
+        <linearGradient :id="`${uid}-spectrum`" gradientUnits="userSpaceOnUse" x1="0" y1="0" :x2="W" y2="0" data-testid="chroma-spectrum">
+          <stop offset="0" stop-color="var(--spectrum-fresh)" />
+          <stop offset="1" stop-color="var(--spectrum-warm)" />
         </linearGradient>
+        <linearGradient :id="`${uid}-fade`" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="white" stop-opacity="1" />
+          <stop offset="1" stop-color="white" stop-opacity="0" />
+        </linearGradient>
+        <mask :id="`${uid}-wash`" maskContentUnits="userSpaceOnUse">
+          <rect x="0" :y="PAD_TOP" :width="W" :height="baseY - PAD_TOP" :fill="`url(#${uid}-fade)`" />
+        </mask>
       </defs>
 
       <!-- zone separators and baseline -->
@@ -128,21 +138,16 @@ onMounted(() => {
       </g>
 
       <g v-if="!empty" :clip-path="`url(#${uid}-reveal)`">
-        <path :d="area" :fill="`url(#${uid}-fill)`" />
-        <path v-if="micro" :d="line" fill="none" stroke="var(--ink)" stroke-width="1.25" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
-        <template v-else>
-          <path
-            v-for="(t, z) in TIERS"
-            :key="t.key"
-            :d="line"
-            fill="none"
-            :stroke="TIER_INK[t.key]"
-            stroke-width="1.6"
-            stroke-linejoin="round"
-            vector-effect="non-scaling-stroke"
-            :clip-path="`url(#${uid}-zone-${z})`"
-          />
-        </template>
+        <path :d="area" :fill="`url(#${uid}-spectrum)`" :fill-opacity="micro ? 0.22 : 0.2" :mask="`url(#${uid}-wash)`" />
+        <path
+          :d="line"
+          fill="none"
+          :stroke="`url(#${uid}-spectrum)`"
+          :stroke-width="micro ? 1.25 : 1.6"
+          stroke-linejoin="round"
+          vector-effect="non-scaling-stroke"
+          data-testid="chroma-trace"
+        />
         <template v-if="!micro">
           <line
             v-for="p in peaks"
@@ -173,7 +178,7 @@ onMounted(() => {
     </div>
 
     <figcaption v-if="!micro" class="grid grid-cols-3 gap-4">
-      <div v-for="c in counts" :key="c.key" class="min-w-0 border-t border-line pt-2.5">
+      <div v-for="c in counts" :key="c.key" class="min-w-0 border-t-2 pt-2.5" :style="{ borderTopColor: TIER_RULE[c.key] }">
         <p class="etch m-0 flex items-baseline justify-between">
           <span>{{ c.label }}</span>
           <span class="readout normal-case tracking-normal">{{ c.n ? String(c.n).padStart(2, '0') : '--' }}</span>

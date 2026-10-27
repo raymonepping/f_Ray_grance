@@ -9,6 +9,11 @@ export interface TraitRow {
 const props = defineProps<{ rows: TraitRow[]; series: string[]; method?: string }>();
 const pct = (v: number) => `${Math.max(0, Math.min(5, v)) * 20}%`;
 const fmt = (v: number | null) => (v === null ? '—' : v.toFixed(1));
+// Spectral colour (ADR-019): the first series takes its pole colour, with the same trait groups as
+// the My Spectrum Fresh ↔ Warm axis (spectrum-v1); other traits and the comparison series stay ink.
+const FRESH = new Set(['fresh', 'green', 'marine_mineral']);
+const WARM = new Set(['warm', 'spicy', 'smoky']);
+const barClass = (code: string, i: number) => (i > 0 ? 'bg-tier-base' : FRESH.has(code) ? 'bg-spectrum-fresh' : WARM.has(code) ? 'bg-spectrum-warm' : 'bg-ink');
 void props;
 </script>
 
@@ -31,7 +36,7 @@ void props;
             <div class="flex items-center gap-3">
               <div class="relative h-[6px] flex-1 overflow-hidden rounded-[2px] bg-sunken" aria-hidden="true">
                 <div class="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent_0,transparent_calc(20%-1px),var(--line)_calc(20%-1px),var(--line)_20%)]" />
-                <div v-if="v !== null" data-bar class="absolute inset-y-0 left-0 rounded-[2px]" :class="i === 0 ? 'bg-ink' : 'bg-tier-base'" :style="{ width: pct(v) }" />
+                <div v-if="v !== null" data-bar class="absolute inset-y-0 left-0 rounded-[2px]" :class="barClass(r.code, i)" :style="{ width: pct(v) }" />
               </div>
               <span class="readout w-8 text-right text-[13px]" :class="v === null ? 'text-ink-3' : 'text-ink'" :data-testid="`trait-${r.code}-${i}`">{{ fmt(v) }}</span>
             </div>

@@ -24,6 +24,10 @@
   --color-tier-top: var(--tier-top);
   --color-tier-heart: var(--tier-heart);
   --color-tier-base: var(--tier-base);
+  --color-spectrum-fresh: var(--spectrum-fresh);
+  --color-spectrum-warm: var(--spectrum-warm);
+  --color-spectrum-fresh-text: var(--spectrum-fresh-text);
+  --color-spectrum-warm-text: var(--spectrum-warm-text);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
   --radius-card: var(--radius);

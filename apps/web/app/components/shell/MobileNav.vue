@@ -14,7 +14,7 @@ const active = (item: (typeof PRIMARY_NAV)[number]) => isActive(item, route.path
           :class="active(item) ? 'font-medium text-ink' : 'text-ink-3'"
           :aria-current="active(item) ? 'page' : undefined"
         >
-          <span v-if="active(item)" class="absolute inset-x-6 top-0 h-[2px] rounded-full bg-ink" aria-hidden="true" />
+          <span v-if="active(item)" class="absolute inset-x-6 top-0 h-[2px] rounded-full bg-spectrum-warm" aria-hidden="true" />
           <AppIcon :name="item.icon" :size="20" />
           <span>{{ item.label }}</span>
         </NuxtLink>

@@ -21,6 +21,10 @@ colors:
   tier-top: "#e8edf2"
   tier-heart: "#a9b2bd"
   tier-base: "#6f7b89"
+  spectrum-fresh: "#c6f24e"
+  spectrum-warm: "#ff8f3f"
+  spectrum-fresh-text: "#c6f24e"
+  spectrum-warm-text: "#ff9a52"
   focus: "#e8edf2"
   chrome: "rgba(11, 14, 18, 0.86)"
   canvas-light: "#eef1f4"
@@ -42,6 +46,10 @@ colors:
   tier-top-light: "#0c1016"
   tier-heart-light: "#56616e"
   tier-base-light: "#98a3af"
+  spectrum-fresh-light: "#4d7c0f"
+  spectrum-warm-light: "#c2410c"
+  spectrum-fresh-text-light: "#3f6212"
+  spectrum-warm-text-light: "#9a3412"
   focus-light: "#0c1016"
   chrome-light: "rgba(238, 241, 244, 0.88)"
 typography:
@@ -223,13 +231,13 @@ Scope: the web console in this app (`apps/web`). The product specification in `.
 
 Every fragrance is read like a sample on an instrument. The collection is a sample table, a note pyramid is a chromatogram of labelled peaks, and provenance is the calibration line etched beside each reading. The interface is anodised graphite bays with etched hairlines and ice-white ink; in daylight it becomes calibrated lab paper with the same grammar. Nothing decorates: every mark either carries a value, labels a value, or frames a value.
 
-Density is that of a working console, not a showroom. Rows are fixed-column so only the values change between them; rank is carried by weight, case and reversal before size. Measurements, counts, identifiers and peak labels are set in Geist Mono with tabular figures; everything a person reads as language is set in Geist. One phosphor-lime signal exists in the whole system and it means one thing: this identity is verified, or this connection is live.
+Density is that of a working console, not a showroom. Rows are fixed-column so only the values change between them; rank is carried by weight, case and reversal before size. Measurements, counts, identifiers and peak labels are set in Geist Mono with tabular figures; everything a person reads as language is set in Geist. One phosphor-lime signal exists in the whole system and it means one thing: this identity is verified, or this connection is live. Beside it, one spectral ramp from lime to warm orange follows the scent itself, from fresh top notes to a warm base (ADR-019).
 
 The system rejects the fragrance category default of bottle-card grids, star ratings and marketing heroes, and the detector rejected decorative grid backgrounds outright. Motion is reserved for state and for one signature moment, The Scan, when a read head sweeps a chromatogram and its peaks appear once.
 
 **Key Characteristics:**
 - Graphite bays (dark, default) and lab paper (light) share one token set and one grammar.
-- One accent, phosphor lime, reserved for verified identity and live connection.
+- One state colour, phosphor lime, reserved for verified identity and live connection; one spectral ramp, lime to warm orange, for scent data, the brand and the current place.
 - Geist for language, Geist Mono for every measurement, count, identifier and peak label.
 - Flat, opaque, hairline-bordered panels; only the sticky header is translucent.
 - Fixed-column sample tables with etched mono-caps column labels.
@@ -238,7 +246,7 @@ The system rejects the fragrance category default of bottle-card grids, star rat
 
 ## Colors
 
-A near-monochrome graphite and ice-white instrument palette with a single phosphor-lime signal and two strong fault colours.
+A near-monochrome graphite and ice-white instrument palette with a single phosphor-lime signal, two strong fault colours, and one spectral ramp from vibrant lime to warm orange that follows the scent (ADR-019).
 
 The dark theme is the default (`:root` and `[data-theme='dark']`); the light theme (`[data-theme='light']`) is the same set of roles under daylight. Keys ending in `-light` in the frontmatter are the light-theme values of the same role. Components use the semantic tokens only, never raw hex, and every text pairing is verified for WCAG 2.2 AA in `test/contrast.test.ts`.
 
@@ -255,15 +263,19 @@ The dark theme is the default (`:root` and `[data-theme='dark']`); the light the
 - **Anodised Panel** (`panel`): the opaque reading surface for tables, pyramids, prose, the sidebar and the bottom nav.
 - **Raised Graphite** (`raised`): quiet buttons, the selected segment, the active nav row, row hover (at half strength).
 - **Well Black** (`sunken`): inputs, selects, tracks, segment tracks, table header strips and the lower half of the fragrance bay.
-- **Ice-White Ink** (`ink`): primary text, the active nav indicator bar, owned status glyph, the filled primary action (`action` with `action-ink` text) and the focus ring (`focus`).
+- **Ice-White Ink** (`ink`): primary text, owned status glyph, the filled primary action (`action` with `action-ink` text) and the focus ring (`focus`).
 - **Steel Ink** (`ink-2`): secondary text, inactive nav labels, peak labels.
 - **Etch Grey** (`ink-3`): column labels, captions, unknown values, placeholders, drawn chevrons.
 - **Etched Hairline** (`line`) and **Scale Hairline** (`line-strong`): every border, divider, baseline, zone separator and ruler tick. `line-strong` marks hover and the chromatogram baseline.
-- **Tier Ramp** (`tier-top`, `tier-heart`, `tier-base`): a luminance ramp, bright to dim, that inks the top, heart and base zones of a chromatogram. Always labelled, never colour alone. `tier-base` also draws the comparison series in trait bars.
+- **Tier Ramp** (`tier-top`, `tier-heart`, `tier-base`): a luminance ramp, bright to dim. Since ADR-019 the chromatogram uses the spectral ramp; `tier-base` still draws the comparison series in trait bars.
 - **Header Chrome** (`chrome`): the translucent fill of the sticky header only.
 
+### Spectral Accent (ADR-019)
+- **Spectral Ramp** (`spectrum-fresh` to `spectrum-warm`, vibrant lime to warm orange): a perfume dries down from fresh top notes to a warm base, so the colour follows the scent. It draws the chromatogram trace and its faint wash from top to base (full and micro), the coloured rules over the top, heart and base lists, the My Spectrum Fresh ↔ Warm track, its pole labels and its ticks (each tick takes the colour of its position; Dry ↔ Sweet stays neutral, warming toward Sweet), and the first-series trait bars of the fresh-pole traits (fresh, green, marine/mineral) in lime and the warm-pole traits (warm, spicy, smoky) in orange. It also colours the Spectral F's arms, the active navigation bar and icon, and the faint sign-in trace. Readouts and counters stay ink: next to the lime Verified count, a coloured number would read as a status.
+- **Spectral Text** (`spectrum-fresh-text`, `spectrum-warm-text`): the same hues set as text, at least 4.5:1 on every surface. On lab paper both ramp ends deepen to olive lime and burnt orange so graphics keep 3:1 and text keeps 4.5:1.
+
 ### Named Rules
-**The One Signal Rule.** Phosphor lime appears only for verified identity and live connection state. Status, selection of a nav row, primary actions and decoration never use it; if a screen has no verified or live thing on it, it has no lime.
+**The Signal and Spectrum Rule.** (Amended by ADR-019; it replaces The One Signal Rule.) Phosphor lime is the only colour that *states* something: verified identity or a live connection, always a dot plus a word. The spectral ramp may include lime, but it is used only for scent data, the brand and the current place listed above. It never marks a status, an action or decoration elsewhere, and it is never the only carrier of meaning. There are no gradients on surfaces or buttons, and no glows.
 
 **The Ink Action Rule.** The filled primary action is ink on graphite (or graphite ink on paper), never a hue. Colour is for state, not for calls to action.
 
@@ -325,7 +337,7 @@ Depth is tonal and drawn, not lifted. Surfaces are opaque and step from canvas t
 
 One corner language, scaled by size: panels at 10px, controls at 8px, segments and small inline buttons at 6px, source and origin chips at 4px, trait bars at 2px. Fully round shapes are kept for tiny status dots, step numbers and the 2px active indicator bars. Disclosures and selects use a drawn chevron (a rotated 7px corner of two 1.5px strokes, or a 2px-stroke SVG chevron in etch grey), never the browser's marker. Chromatogram zones are separated by dashed hairlines; the collection table's column-label strip carries a single ruler layer of 1px ticks every 8px along its bottom edge, 4px tall.
 
-The Spectral F mark is built on a 32-unit grid: a solid stem (the ray) and arms made of spectral lines that step down in length, weight and opacity. It is one colour (currentColor) so it holds in both themes, and it shares this geometry with the favicon.
+The Spectral F mark is built on a 32-unit grid: a solid stem (the ray) and arms made of spectral lines that step down in length, weight and opacity. The stem is ink (currentColor); the five spectral lines run along the spectral ramp from lime to orange, top to bottom, and fall back to currentColor under forced colours. It shares this geometry and colouring with the favicon.
 
 ## Components
 

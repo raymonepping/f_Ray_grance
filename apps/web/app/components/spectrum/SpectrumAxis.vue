@@ -45,6 +45,17 @@ const groups = computed(() => {
 const open = ref<string | null>(null);
 const tickLabel = (f: Tick) => `${f.name}, ${f.brand}: ${reading(f.position)}, ${fmt(f.position)}. Open details`;
 const groupLabel = (g: { items: Tick[] }) => `${g.items.length} fragrances close together near ${fmt(g.items[0]!.position)}: ${g.items.map((f) => f.name).join(', ')}`;
+// Spectral colour (ADR-019): Fresh ↔ Warm runs lime to orange; Dry ↔ Sweet stays neutral, warming
+// toward Sweet. Colour follows position only; every value is also written out below.
+const fresh = 'var(--spectrum-fresh)';
+const warm = 'var(--spectrum-warm)';
+const isFreshWarm = computed(() => props.axis.code === 'fresh_warm');
+const leftEnd = computed(() => (isFreshWarm.value ? fresh : 'var(--ink-3)'));
+const tickColour = (p: number) => `color-mix(in oklab, ${warm} ${Math.round(((p + 1) / 2) * 100)}%, ${leftEnd.value})`;
+const trackTint = computed(
+  () =>
+    `linear-gradient(90deg, color-mix(in srgb, ${isFreshWarm.value ? fresh : 'var(--ink-3)'} ${isFreshWarm.value ? 16 : 0}%, transparent), color-mix(in srgb, ${warm} ${isFreshWarm.value ? 18 : 12}%, transparent))`,
+);
 const align = (p: number) => (p < -0.33 ? 'left-0' : p > 0.33 ? 'right-0' : 'left-1/2 -translate-x-1/2');
 function closeGroup(e: KeyboardEvent, key: string) {
   if (e.key !== 'Escape' || open.value !== key) return;
@@ -72,11 +83,11 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick));
 
     <div class="flex flex-col gap-2">
       <div class="flex justify-between text-[13px]" aria-hidden="true">
-        <span class="font-medium">{{ axis.left.label }}</span>
+        <span class="font-medium" :class="isFreshWarm ? 'text-spectrum-fresh-text' : ''">{{ axis.left.label }}</span>
         <span class="text-ink-3">balanced</span>
-        <span class="font-medium">{{ axis.right.label }}</span>
+        <span class="font-medium text-spectrum-warm-text">{{ axis.right.label }}</span>
       </div>
-      <div ref="track" class="relative h-16 rounded-control border border-line bg-sunken">
+      <div ref="track" class="relative h-16 rounded-control border border-line bg-sunken" :style="{ backgroundImage: trackTint }" data-testid="axis-track">
         <div class="absolute inset-0" aria-hidden="true">
           <!-- graduations every 0.25 -->
           <span v-for="g in 9" :key="g" class="absolute bottom-0 w-px" :class="g === 5 ? 'top-0 bg-line-strong' : 'h-2 bg-line-strong'" :style="{ left: `${((g - 1) / 8) * 100}%` }" />
@@ -102,7 +113,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick));
               :aria-label="tickLabel(g.items[0]!)"
               :title="`${g.items[0]!.name} ${fmt(g.items[0]!.position)}`"
             >
-              <span class="my-4 w-[2px] rounded-full bg-ink-2 group-hover:w-[3px] group-hover:bg-ink" aria-hidden="true" />
+              <span class="my-4 w-[2px] rounded-full group-hover:w-[3px]" :style="{ backgroundColor: tickColour(g.items[0]!.position) }" aria-hidden="true" />
             </NuxtLink>
             <template v-else>
               <button
@@ -115,7 +126,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick));
                 @click.stop="open = open === g.key ? null : g.key"
                 @keydown="closeGroup($event, g.key)"
               >
-                <span class="w-[2px] flex-1 rounded-full bg-ink-2 group-hover:bg-ink" style="margin-block: 10px 2px" aria-hidden="true" />
+                <span class="w-[2px] flex-1 rounded-full group-hover:w-[3px]" :style="{ marginBlock: '10px 2px', backgroundColor: tickColour(g.position) }" aria-hidden="true" />
                 <span class="readout mb-1 text-[11px] leading-none text-ink-2" aria-hidden="true">{{ g.items.length }}</span>
               </button>
               <ul

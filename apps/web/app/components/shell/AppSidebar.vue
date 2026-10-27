@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Channel rail (desktop sidebar >=1200, icon rail 768-1199). The Spectral F leads the rail;
-// items are grouped by purpose with dividers (ADR-015); the active item carries an ink bar.
+// items are grouped by purpose with dividers (ADR-015); the active item carries a warm spectral bar
+// and icon (ADR-019).
 import { MAIN_GROUPS, UTILITY_NAV, isActive, type NavItem } from '~~/shared/navigation';
 
 const props = defineProps<{ collapsed: boolean; forceRail?: boolean }>();
@@ -38,8 +39,8 @@ const active = (item: NavItem) => isActive(item, route.path, route.query);
               :aria-current="active(item) ? 'page' : undefined"
               :title="rail ? item.label : undefined"
             >
-              <span v-if="active(item)" class="absolute inset-y-2.5 left-0 w-[2px] rounded-full bg-ink" aria-hidden="true" />
-              <AppIcon :name="item.icon" :size="18" />
+              <span v-if="active(item)" class="absolute inset-y-2.5 left-0 w-[2px] rounded-full bg-spectrum-warm" aria-hidden="true" />
+              <AppIcon :name="item.icon" :size="18" :class="active(item) ? 'text-spectrum-warm-text' : ''" />
               <span :class="rail ? 'sr-only' : 'flex-1'">{{ item.label }}</span>
             </NuxtLink>
           </li>
@@ -58,8 +59,8 @@ const active = (item: NavItem) => isActive(item, route.path, route.query);
             :aria-current="active(item) ? 'page' : undefined"
             :title="rail ? item.label : undefined"
           >
-            <span v-if="active(item)" class="absolute inset-y-2.5 left-0 w-[2px] rounded-full bg-ink" aria-hidden="true" />
-            <AppIcon :name="item.icon" :size="18" />
+            <span v-if="active(item)" class="absolute inset-y-2.5 left-0 w-[2px] rounded-full bg-spectrum-warm" aria-hidden="true" />
+            <AppIcon :name="item.icon" :size="18" :class="active(item) ? 'text-spectrum-warm-text' : ''" />
             <span :class="rail ? 'sr-only' : ''">{{ item.label }}</span>
           </NuxtLink>
         </li>

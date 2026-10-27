@@ -1,6 +1,6 @@
 // My Spectrum (Phase 13): empty state, populated spectrum on desktop and mobile in both themes,
 // coverage and readings stated, links to fragrance detail. Synthetic owner; real verified identities.
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Cookie, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { axe, noPageOverflow, trackConsole, uiLogin } from './helpers';
@@ -8,9 +8,19 @@ import { axe, noPageOverflow, trackConsole, uiLogin } from './helpers';
 const evidence = path.resolve(import.meta.dirname, '../../../reports/evidence/13');
 mkdirSync(evidence, { recursive: true });
 
-// Signs in itself: shell.spec ends by signing the shared session out.
+// shell.spec signs the shared session out, so this file signs in once and reuses that session:
+// the sign-in rate limit is a security control the suite must not exhaust.
+let cookies: Cookie[] = [];
+test.beforeAll(async ({ browser }) => {
+  const ctx = await browser.newContext({ storageState: { cookies: [], origins: [] } });
+  await uiLogin(await ctx.newPage());
+  cookies = (await ctx.storageState()).cookies;
+  await ctx.close();
+});
+test.beforeEach(async ({ page }) => page.context().addCookies(cookies));
+
 async function own(page: Page, names: string[]) {
-  await uiLogin(page);
+  await page.goto('/collection');
   const csrf = (await page.context().cookies()).find((c) => c.name === '__Host-fray_csrf')!.value;
   const headers = { origin: 'http://localhost:8470', 'x-csrf-token': csrf };
   const catalog = await (await page.request.get('/api/v1/fragrances?limit=100')).json();
@@ -24,7 +34,6 @@ async function own(page: Page, names: string[]) {
 }
 
 test('empty collection shows an honest empty state', async ({ page }) => {
-  await uiLogin(page);
   await page.route('**/api/v1/profile/spectrum**', (r) =>
     r.fulfill({ json: { scope: 'owned', method: 'spectrum-v1', traitMethod: 'sourced-notes-v1', total: 0, axes: [], traits: [], families: [], unknownFamily: 0, limitation: '' } }),
   );

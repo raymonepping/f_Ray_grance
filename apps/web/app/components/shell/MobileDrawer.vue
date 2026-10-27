@@ -80,7 +80,7 @@ onBeforeUnmount(() => {
                   :class="isActive(item, route.path, route.query) ? 'bg-raised font-medium text-ink' : 'text-ink-2'"
                   :aria-current="isActive(item, route.path, route.query) ? 'page' : undefined"
                 >
-                  <AppIcon :name="item.icon" />
+                  <AppIcon :name="item.icon" :class="isActive(item, route.path, route.query) ? 'text-spectrum-warm-text' : ''" />
                   <span class="flex flex-col"><span>{{ item.label }}</span><span class="text-[12px] text-ink-3">{{ item.description }}</span></span>
                 </NuxtLink>
               </li>
