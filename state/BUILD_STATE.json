@@ -720,7 +720,7 @@
     "ADR-018"
   ],
   "unresolved_blockers": [],
-  "updated_at_utc": "2026-10-27T09:11:28Z",
+  "updated_at_utc": "2026-10-27T09:19:06Z",
   "reviews": {
     "2026-10-26_prompts_01_14": {
       "status": "completed_with_findings",
@@ -941,7 +941,64 @@
         },
         "implementation_suites": "Not rerun for editorial-only changes."
       },
-      "notes": "Article 02 and screenshot files unchanged. STYLE is included explicitly as requested for reuse. No phase status or gate evidence changed; contiguous successful phase remains 16."
+      "notes": "Article 02 and screenshot files unchanged. STYLE is included explicitly as requested for reuse. No phase status or gate evidence changed; contiguous successful phase remains 16.",
+      "followups": [
+        {
+          "status": "completed",
+          "agent": "codex",
+          "finished_at_utc": "2026-10-27T09:19:06Z",
+          "baseline_head": "00d184ee1ee931a45d840440f5d5f6def5af04b4",
+          "scope": "Add HashiCorp Vault role and usage plus a give-it-a-try invitation linking to the operator-specified GitHub repository.",
+          "artifacts": [
+            "article/03.md"
+          ],
+          "changes": [
+            "Added H2 section describing dedicated Vault, five-minute PostgreSQL leases, AppRole/Vault Agent rendering, pool rotation, scoped runtime/migration access, session and TinyFish keys, root-token retirement and unsealing.",
+            "Added closing GitHub invitation, local setup context and practical first steps."
+          ],
+          "validation": {
+            "vault_claims": "Checked against ADR-008, Vault Agent templates, configuration and operating runbook.",
+            "article_checks": "PASS: H1/H2/subtitle/pull quote retained; first person, supplied lyrics and images preserved; no tables or coding-agent narrative; GitHub invitation present; banned-word and whitespace scans clear.",
+            "make_validate_docs": "PASS: 84 frozen docs, 46 prompts, 301 local Markdown links.",
+            "git_diff_check": "PASS",
+            "editorial_eval": {
+              "editing_principles_1_to_11": [
+                "pass",
+                "pass",
+                "pass",
+                "pass",
+                "pass",
+                "pass",
+                "pass",
+                "pass",
+                "pass",
+                "pass",
+                "pass"
+              ],
+              "words_to_cut_1": "pass",
+              "patterns_to_cut_1_to_9": [
+                "pass",
+                "pass",
+                "pass",
+                "pass",
+                "pass",
+                "pass",
+                "pass",
+                "pass",
+                "pass"
+              ],
+              "final_read_1_to_4": [
+                "pass",
+                "pass",
+                "pass",
+                "pass"
+              ],
+              "final_read_5": "not_applicable: edit, not detect"
+            }
+          },
+          "notes": "Editorial changes only; application, screenshots and phase status unchanged."
+        }
+      ]
     }
   }
 }
