@@ -13,7 +13,7 @@ Prompt FRAY-CLAUDE-15 ([prompt](../prompts/Claude/15_revisions.md), [ADR-016](..
 ## Conclusions
 
 - **Local implementation: completed.** R1–R7 are fixed and verified (table below).
-- **Release: still blocked.** B1, independent off-device recovery, needs the operator. Import stays disabled and Tailscale stays deferred (ADR-009).
+- **Release: still blocked.** B1, independent off-device recovery, is deferred by the operator (2026-10-27). Import stays disabled and Tailscale stays deferred (ADR-009).
 
 | Finding | Disposition | Verification |
 |---|---|---|
@@ -24,7 +24,7 @@ Prompt FRAY-CLAUDE-15 ([prompt](../prompts/Claude/15_revisions.md), [ADR-016](..
 | R5 docs/prompts/state | **Fixed, verified** | Codex 13/14 registered; Claude 15 registered; validators derive counts (42 stage prompts + 3 launchers); README, phase manifest, state contract, prompts README and Claude launcher updated. An unregistered prompt still fails both validators. |
 | R6 Spectrum stale scope | **Fixed, verified** | Request generation plus abort; data and errors apply only to the current scope; loading never shows the previous scope's counts. 3 browser regressions. |
 | R7 Spectrum presentation | **Fixed, verified** | Ticks are links outside the `aria-hidden` decoration. Fragrances within one 24 px target are grouped in a disclosure list (pointer, touch, keyboard, Escape returns focus). "· based on one fragrance" appears when one is placed. 4 browser regressions at 1440 and 320 px, both themes, axe and no overflow. |
-| B1 independent recovery | **Pending operator** | No protected off-device destination or separate Mac/VM has been provided. Nothing was attested. |
+| B1 independent recovery | **Deferred by operator (2026-10-27)** | The operator decided an off-device copy is not important enough for this personal project. Nothing was attested; Phase 10 stays blocked. |
 
 ## What changed
 
@@ -105,7 +105,7 @@ The 18 recovery-matrix cases:
 
 ## Remaining operator item
 
-**B1.** Provide a protected off-device destination and a separate Mac or VM. Then:
+**B1, deferred by the operator on 2026-10-27.** If it is ever picked up again: provide a protected off-device destination and a separate Mac or VM, then:
 
 1. `make backup`;
 2. copy the four files of the set;

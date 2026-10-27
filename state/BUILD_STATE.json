@@ -646,10 +646,10 @@
         "R5": "fixed_verified",
         "R6": "fixed_verified",
         "R7": "fixed_verified",
-        "B1": "pending_operator"
+        "B1": "deferred_by_operator (2026-10-27)"
       },
       "residual": [
-        "Phase 10 remains blocked: DR-OFFDEVICE, DR-INDEPENDENT (B1)",
+        "Phase 10 remains blocked: DR-OFFDEVICE, DR-INDEPENDENT deferred by operator (B1)",
         "Existing real backups are legacy sets; next manual make backup produces a complete set"
       ],
       "next_phase": null
@@ -685,18 +685,20 @@
       "id": "DR-OFFDEVICE",
       "phase_needed": "10",
       "owner": "operator",
-      "status": "blocked",
-      "detail": "No protected off-device destination/access supplied; latest host archive has no verified independent copy."
+      "status": "deferred_by_operator",
+      "detail": "No protected off-device destination/access supplied; latest host archive has no verified independent copy.",
+      "deferral": "Deferred by operator on 2026-10-27: an off-device copy and independent restore are not important enough for this personal project. Not a passed gate; Phase 10 stays blocked and import stays disabled. Revisit only on explicit operator request."
     },
     {
       "id": "DR-INDEPENDENT",
       "phase_needed": "10",
       "owner": "operator",
-      "status": "blocked",
-      "detail": "No approved separate environment supplied for a full recovery drill outside the original Podman VM."
+      "status": "deferred_by_operator",
+      "detail": "No approved separate environment supplied for a full recovery drill outside the original Podman VM.",
+      "deferral": "Deferred by operator on 2026-10-27: an off-device copy and independent restore are not important enough for this personal project. Not a passed gate; Phase 10 stays blocked and import stays disabled. Revisit only on explicit operator request."
     }
   ],
-  "updated_at_utc": "2026-10-26T20:38:18Z",
+  "updated_at_utc": "2026-10-27T07:27:51Z",
   "reviews": {
     "2026-10-26_prompts_01_14": {
       "status": "completed_with_findings",
