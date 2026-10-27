@@ -1,1 +1,0 @@
-**Build prompts:** see [`prompts/README.md`](../prompts/README.md) for the three agent-specific 00–10 build paths, shared state contract and portable `scripts/commit_gh` tool. This supplement preserves the authoritative v0.1.6 product baseline.
