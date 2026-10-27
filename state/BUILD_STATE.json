@@ -724,6 +724,25 @@
       },
       "deviation": "warm readouts removed after visual review (read as status)",
       "next_phase": null
+    },
+    "18": {
+      "status": "blocked",
+      "agent": "claude-opus-5-5",
+      "prompt_id": "FRAY-CLAUDE-18",
+      "started_at_utc": "2026-10-27T10:31:05Z",
+      "baseline_head": "d265ec234fc74a9c5eeec00ac11c7cfa5cf876f5",
+      "report_path": "reports/18_scentrev_source.md",
+      "blocked_reason": "ScentRev API down: its own /api/health reported MCP & REST API down (10:29 and 10:33 UTC 2026-10-27); MCP endpoint 404 to initialize and tools/list. Adapter must be built from observed responses only.",
+      "completed_parts": [
+        "key moved into Vault kv/fray/scentrev (make scentrev-key), policy, Ansible placeholder, Vault Agent template, config.ts; .env cleared; verified by prefix/length only",
+        "Terms reviewed (ADR-020)"
+      ],
+      "evidence": {
+        "make_test": "PASS",
+        "validate_docs": "PASS",
+        "health": "PASS"
+      },
+      "resume": "record tools/list schemas + fixtures, then adapter/mapping/UI/tests"
     }
   },
   "accepted_adrs": [
@@ -745,10 +764,11 @@
     "ADR-016",
     "ADR-017",
     "ADR-018",
-    "ADR-019"
+    "ADR-019",
+    "ADR-020"
   ],
   "unresolved_blockers": [],
-  "updated_at_utc": "2026-10-27T10:24:25Z",
+  "updated_at_utc": "2026-10-27T10:34:08Z",
   "reviews": {
     "2026-10-26_prompts_01_14": {
       "status": "completed_with_findings",

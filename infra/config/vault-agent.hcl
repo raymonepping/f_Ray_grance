@@ -59,3 +59,12 @@ template {
   {{- end -}}
   EOT
 }
+template {
+  destination = "/vault/rendered/scentrev.json"
+  perms       = "0640"
+  contents    = <<-EOT
+  {{- with secret "kv/data/fray/scentrev" -}}
+  {"api_key":{{ .Data.data.api_key | toJSON }},"version":{{ .Data.metadata.version }}}
+  {{- end -}}
+  EOT
+}

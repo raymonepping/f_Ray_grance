@@ -37,7 +37,7 @@ APPROVE := $(if $(filter YES,$(AUTO_APPROVE)),-auto-approve,)
 
 .PHONY: help toolchain deps validate-docs doctor check-socket smoke-init smoke-plan smoke-up smoke-down images build bootstrap \
  init plan drift recreate provision configure up start stop down restart status logs clock-sync heal health test test-e2e \
- owner-create owner-reset-password owner-revoke-sessions vault-init vault-unseal vault-bootstrap vault-status tinyfish-key vault-snapshot \
+ owner-create owner-reset-password owner-revoke-sessions vault-init vault-unseal vault-bootstrap vault-status tinyfish-key scentrev-key vault-snapshot \
  backup backup-status backup-record-copy purge clean-slate restore-test restore upgrade destroy danger-destroy-data check-app check-ansible
 
 help: ## Show command catalog
@@ -199,6 +199,9 @@ vault-bootstrap: ## ONE-TIME: create scoped fray-operator token, then revoke the
 
 tinyfish-key: ## Store the TinyFish API key in fray-vault (hidden prompt or stdin; empty clears; never echoed)
 	@bash scripts/vault.sh tinyfish-key
+
+scentrev-key: ## Store the ScentRev API key in fray-vault (hidden prompt or stdin; empty clears; never echoed)
+	@bash scripts/vault.sh scentrev-key
 
 vault-status: ## Show fray-vault initialised/sealed status
 	@bash scripts/vault.sh status

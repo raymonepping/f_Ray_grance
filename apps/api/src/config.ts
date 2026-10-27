@@ -15,6 +15,8 @@ export interface Config {
   images: { dir: string; providerHosts: string[]; externalHosts: string[] };
   /** File Vault Agent renders with the TinyFish key ({"api_key": ...}); empty or missing = off. */
   tinyfishKeyFile: string | null;
+  /** ScentRev API key rendered by Vault Agent (ADR-020); null or an empty key = off. */
+  scentrevKeyFile: string | null;
 }
 
 export class ConfigError extends Error {}
@@ -90,5 +92,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
       externalHosts: hosts(env, 'FRAY_IMAGE_EXTERNAL_HOSTS'),
     },
     tinyfishKeyFile: env.FRAY_TINYFISH_KEY_FILE === '' ? null : (env.FRAY_TINYFISH_KEY_FILE ?? '/vault/rendered/tinyfish.json'),
+    scentrevKeyFile: env.FRAY_SCENTREV_KEY_FILE === '' ? null : (env.FRAY_SCENTREV_KEY_FILE ?? '/vault/rendered/scentrev.json'),
   };
 }

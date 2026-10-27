@@ -41,6 +41,7 @@ The app is then served on `http://localhost:8470` (loopback only). Use `localhos
 | Forgot password | `make owner-reset-password USERNAME=<you>` (also signs out all sessions) |
 | Sign out everywhere | `make owner-revoke-sessions USERNAME=<you>` |
 | Store or rotate the TinyFish key (web research, web image search) | `make tinyfish-key` (hidden prompt; empty clears), then `make recreate SERVICE=vault-agent` to apply at once |
+| Store or rotate the ScentRev key (second fragrance source, ADR-020) | `make scentrev-key` (hidden prompt; empty clears), then `make recreate SERVICE=vault-agent` to apply at once. Generating a new key at ScentRev revokes the old one, so store the new key right away. |
 | Start from scratch (empty personal data, keep the account) | `make purge USERNAME=<you>` or `make purge ALL=YES` |
 | Clean slate (empty everything recorded, including the fragrance catalogue; keep the account) | `make clean-slate` |
 | Manual backup + rehearsal | `make backup`, copy off-device, `make backup-record-copy BACKUP=… LOCATION="…"`, `make restore-test`, `make backup-status` |
