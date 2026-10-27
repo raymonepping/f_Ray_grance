@@ -96,14 +96,14 @@ json.dump(d, open(p, "w"), indent=2)
 PY
   echo "BOOTSTRAP_OK: fray-operator token at $OP (0600, periodic 768h); initial root token revoked."
   ;;
-tinyfish-key | scentrev-key | noteboxd-key)
+tinyfish-key | scentrev-key | noteboxd-key | fragella-key)
   # Store (or clear with an empty line) a third-party API key in fray-vault KV:
   #   tinyfish-key -> kv/fray/tinyfish (ADR-013)   scentrev-key -> kv/fray/scentrev (ADR-020)
-  #   noteboxd-key -> kv/fray/noteboxd (ADR-021)
+  #   noteboxd-key -> kv/fray/noteboxd (ADR-021)   fragella-key -> kv/fray/fragella (ADR-022)
   # The key is read from stdin or a hidden prompt and travels only in the request body; the
   # operator token only in a header from a pipe. Vault Agent re-renders it within 5 minutes.
   name="${1%-key}"
-  case "$name" in tinyfish) label=TinyFish ;; scentrev) label=ScentRev ;; *) label=NoteboxD ;; esac
+  case "$name" in tinyfish) label=TinyFish ;; scentrev) label=ScentRev ;; noteboxd) label=NoteboxD ;; *) label=Fragella ;; esac
   wait_up
   OP="${FRAY_CONFIG_DIR:?}/operator-token"
   [[ -s "$OP" ]] || {

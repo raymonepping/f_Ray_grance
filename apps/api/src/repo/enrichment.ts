@@ -290,11 +290,11 @@ export async function effectiveProfile(db: Db, fragranceId: string): Promise<Rec
 
 export type GapField = 'concentration' | 'launch_year' | 'pyramid' | 'listed_notes';
 
-/** Mirrors app.claim_rank (migration 0008, ADR-021): the lower, the more trusted. */
+/** Mirrors app.claim_rank (migrations 0008/0009, ADR-021/022): the lower, the more trusted. */
 export function claimRank(origin: string, provider: string | null): number {
   if (origin === 'user') return 10;
   if (origin === 'official') return 20;
-  if (origin === 'provider') return provider === 'scento' ? 30 : provider === 'noteboxd' ? 31 : provider === 'scentrev' ? 32 : 33;
+  if (origin === 'provider') return ({ scento: 30, noteboxd: 31, scentrev: 32, fragella: 33 } as Record<string, number>)[provider ?? ''] ?? 34;
   return origin === 'derived' ? 40 : 50;
 }
 
@@ -325,7 +325,7 @@ export async function gapFields(
 
 /** Where owner-accepted gap-filling values come from (ADR-013 web research, ADR-021 NoteboxD). */
 export interface GapSource {
-  provider: 'tinyfish' | 'noteboxd';
+  provider: 'tinyfish' | 'noteboxd' | 'fragella';
   origin: 'research' | 'provider';
   attribution: string;
   /** Stable id at the source; defaults to a hash of the page URL. */

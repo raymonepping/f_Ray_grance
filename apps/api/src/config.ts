@@ -21,6 +21,10 @@ export interface Config {
   noteboxdKeyFile: string | null;
   /** Local daily NoteboxD call budget (the free tier allows 50 per day). */
   noteboxdDailyCalls: number;
+  /** Fragella API key rendered by Vault Agent (ADR-022); null or an empty key = off. */
+  fragellaKeyFile: string | null;
+  /** Stop calling Fragella when this many monthly calls remain (free plan: 20 per month). */
+  fragellaReserve: number;
 }
 
 export class ConfigError extends Error {}
@@ -99,5 +103,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     scentrevKeyFile: env.FRAY_SCENTREV_KEY_FILE === '' ? null : (env.FRAY_SCENTREV_KEY_FILE ?? '/vault/rendered/scentrev.json'),
     noteboxdKeyFile: env.FRAY_NOTEBOXD_KEY_FILE === '' ? null : (env.FRAY_NOTEBOXD_KEY_FILE ?? '/vault/rendered/noteboxd.json'),
     noteboxdDailyCalls: Math.max(0, Math.min(50, Number(env.FRAY_NOTEBOXD_DAILY_CALLS ?? 40) || 0)),
+    fragellaKeyFile: env.FRAY_FRAGELLA_KEY_FILE === '' ? null : (env.FRAY_FRAGELLA_KEY_FILE ?? '/vault/rendered/fragella.json'),
+    fragellaReserve: Math.max(0, Number(env.FRAY_FRAGELLA_RESERVE ?? 2) || 0),
   };
 }

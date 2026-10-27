@@ -263,6 +263,27 @@
   changed_when: true
   no_log: true
 
+# ------------------------------------------------------------- KV: Fragella key placeholder (ADR-022)
+- name: Read Fragella key presence
+  ansible.builtin.uri:
+    url: "{{ fray_vault_addr }}/v1/kv/metadata/fray/fragella"
+    headers: "{{ fray_vault_headers }}"
+    status_code: [200, 404]
+  register: fray_fragella_meta
+  no_log: true
+
+- name: Create an empty Fragella key placeholder (real key via make fragella-key; empty = off)
+  ansible.builtin.uri:
+    url: "{{ fray_vault_addr }}/v1/kv/data/fray/fragella"
+    method: POST
+    headers: "{{ fray_vault_headers }}"
+    body_format: json
+    body: { data: { api_key: "" } }
+    status_code: [200, 204]
+  when: fray_fragella_meta.status == 404
+  changed_when: true
+  no_log: true
+
 # ------------------------------------------------------------- AppRole for Vault Agent
 - name: Discover the private project network subnet
   ansible.builtin.command:

@@ -762,6 +762,26 @@
         "health": "PASS"
       },
       "next_phase": null
+    },
+    "20": {
+      "status": "completed",
+      "agent": "claude-opus-5-5",
+      "prompt_id": "FRAY-CLAUDE-20",
+      "started_at_utc": "2026-10-27T11:04:12Z",
+      "baseline_head": "cc7469080b1377c66cc06d2f6c77fbdc4da94567",
+      "report_path": "reports/20_fragella_source.md",
+      "completed_at_utc": "2026-10-27T11:14:34Z",
+      "evidence": {
+        "make_test": "PASS",
+        "make_test_e2e": "56/56 PASS",
+        "migration": "0009 applied, schema 9",
+        "live_check": "usage via Vault key: 17 usable; 409 gate before NoteboxD; no paid call",
+        "fragella_quota": "1 paid call spent (fixture); 19/20 left",
+        "backup": "fray-20261027T110954Z complete set",
+        "impeccable_detect": "[]",
+        "health": "PASS"
+      },
+      "next_phase": null
     }
   },
   "accepted_adrs": [
@@ -785,10 +805,11 @@
     "ADR-018",
     "ADR-019",
     "ADR-020",
-    "ADR-021"
+    "ADR-021",
+    "ADR-022"
   ],
   "unresolved_blockers": [],
-  "updated_at_utc": "2026-10-27T11:01:25Z",
+  "updated_at_utc": "2026-10-27T11:14:34Z",
   "reviews": {
     "2026-10-26_prompts_01_14": {
       "status": "completed_with_findings",

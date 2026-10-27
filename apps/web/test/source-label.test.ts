@@ -7,6 +7,7 @@ describe('sourceLabel', () => {
     expect(sourceLabel({ origin: 'provider', source: { provider: 'scento' } })).toBe('Scento');
     expect(sourceLabel({ origin: 'provider', source: { provider: 'noteboxd' } })).toBe('NoteboxD');
     expect(sourceLabel({ origin: 'provider', source: { provider: 'scentrev' } })).toBe('ScentRev');
+    expect(sourceLabel({ origin: 'provider', source: { provider: 'fragella' } })).toBe('Fragella');
     expect(sourceLabel({ origin: 'provider', source: null })).toBe('Scento');
     expect(sourceLabel({ origin: 'research', source: { provider: 'tinyfish' } })).toBe('Web research');
     expect(sourceLabel({ origin: 'user', source: null })).toBe('Personal');

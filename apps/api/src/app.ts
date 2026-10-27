@@ -4,6 +4,7 @@ import { buildSources, type ImageSources } from './images/sources.js';
 import { AssetStore } from './images/store.js';
 import { TinyFishClient } from './providers/tinyfish.js';
 import { NoteboxdClient } from './providers/noteboxd.js';
+import { FragellaClient } from './providers/fragella.js';
 import type { ImageLookupDeps } from './routes/v1/images.js';
 import Fastify, { type FastifyInstance, type FastifyServerOptions } from 'fastify';
 import cookie from '@fastify/cookie';
@@ -32,6 +33,7 @@ export interface AppDeps {
   assetStore?: AssetStore;
   tinyfish?: TinyFishClient;
   noteboxd?: NoteboxdClient;
+  fragella?: FragellaClient;
   imageLookup?: Partial<ImageLookupDeps>;
   logger?: boolean | object;
 }
@@ -116,6 +118,6 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     lockout: deps.config.lockout,
     loginRatePerMinute: deps.config.loginRatePerMinute,
   });
-  await app.register(v1Routes, { prefix: '/api/v1', pool: deps.pool, scento: deps.scento ?? new ScentoClient(), ollama: deps.ollama ?? new OllamaClient(fetch, 'http://fray-ollama:11434', deps.config.tutorModel), importEnabled: deps.config.importEnabled, imageSources: deps.imageSources ?? buildSources(deps.config.images), assetStore: deps.assetStore ?? new AssetStore(deps.config.images.dir), tinyfish: deps.tinyfish ?? new TinyFishClient(deps.config.tinyfishKeyFile), noteboxd: deps.noteboxd ?? new NoteboxdClient(deps.config.noteboxdKeyFile, deps.config.noteboxdDailyCalls), imageLookup: deps.imageLookup ?? {} });
+  await app.register(v1Routes, { prefix: '/api/v1', pool: deps.pool, scento: deps.scento ?? new ScentoClient(), ollama: deps.ollama ?? new OllamaClient(fetch, 'http://fray-ollama:11434', deps.config.tutorModel), importEnabled: deps.config.importEnabled, imageSources: deps.imageSources ?? buildSources(deps.config.images), assetStore: deps.assetStore ?? new AssetStore(deps.config.images.dir), tinyfish: deps.tinyfish ?? new TinyFishClient(deps.config.tinyfishKeyFile), noteboxd: deps.noteboxd ?? new NoteboxdClient(deps.config.noteboxdKeyFile, deps.config.noteboxdDailyCalls), fragella: deps.fragella ?? new FragellaClient(deps.config.fragellaKeyFile, deps.config.fragellaReserve), imageLookup: deps.imageLookup ?? {} });
   return app;
 }

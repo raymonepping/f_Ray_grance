@@ -196,7 +196,7 @@ describe('source order (app.claim_rank) and NoteboxD through the API', () => {
 
   it('checks NoteboxD, proposes only gaps, saves accepted values below Scento, and reuses the observation', async () => {
     const st = (await call(A, 'GET', `/api/v1/fragrances/${probe}/sources`)).json();
-    expect(st.order.map((o: { key: string }) => o.key)).toEqual(['scento', 'noteboxd', 'scentrev', 'research']);
+    expect(st.order.map((o: { key: string }) => o.key)).toEqual(['scento', 'noteboxd', 'scentrev', 'fragella', 'research']);
     expect(st.noteboxd.enabled).toBe(true);
     expect(st.noteboxd.missing).toEqual(expect.arrayContaining(['launch_year']));
     expect(st.noteboxd.missing).not.toContain('concentration'); // the verified identity states Parfum

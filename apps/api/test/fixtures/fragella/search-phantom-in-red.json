@@ -1,0 +1,723 @@
+[
+    {
+        "_id": "Phantom-in-Red",
+        "Name": "Phantom in Red",
+        "Brand": "Rabanne",
+        "founder": "Paco Rabanne (Francisco Rabaneda Cuervo)",
+        "perfumers": "Anne Flipo; Juliette Karagueuzoglou; Nicolas Beaulieu",
+        "Year": "2025",
+        "rating": "4.00",
+        "Country": "",
+        "Image URL": "https://cdn.fragella.com/images/phantom-in-red.jpg",
+        "Image URL Transparent": "https://cdn.fragella.com/images/phantom-in-red.webp",
+        "Gender": "men",
+        "Price": "",
+        "OilType": "",
+        "Longevity": "Long Lasting",
+        "Sillage": "Strong",
+        "Confidence": "high",
+        "Popularity": "High",
+        "Price Value": "okay",
+        "General Notes": [
+            "Plum Liquor",
+            "Saffron",
+            "Bergamot",
+            "Lavender",
+            "Sage",
+            "Orange Blossom",
+            "Amberwood",
+            "Benzoin",
+            "Oud",
+            "Tobacco"
+        ],
+        "Main Accords": [
+            "amber",
+            "warm spicy",
+            "aromatic",
+            "lavender",
+            "tobacco",
+            "woody",
+            "fruity",
+            "oud",
+            "fresh spicy",
+            "herbal"
+        ],
+        "Main Accords Percentage": {
+            "amber": "Dominant",
+            "warm spicy": "Dominant",
+            "aromatic": "Prominent",
+            "lavender": "Prominent",
+            "tobacco": "Moderate",
+            "woody": "Moderate",
+            "fruity": "Moderate",
+            "oud": "Moderate",
+            "fresh spicy": "Moderate",
+            "herbal": "Moderate"
+        },
+        "Season Ranking": [
+            {
+                "name": "fall",
+                "score": 2.241
+            },
+            {
+                "name": "winter",
+                "score": 2.083
+            },
+            {
+                "name": "spring",
+                "score": 0.546
+            },
+            {
+                "name": "summer",
+                "score": 0
+            }
+        ],
+        "Occasion Ranking": [
+            {
+                "name": "night out",
+                "score": 1.674
+            },
+            {
+                "name": "professional",
+                "score": 1.221
+            },
+            {
+                "name": "casual",
+                "score": 0
+            }
+        ],
+        "Notes": {
+            "Top": [
+                {
+                    "name": "Plum Liquor",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Plum%20Liquor.png"
+                },
+                {
+                    "name": "Saffron",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Saffron.png"
+                },
+                {
+                    "name": "Bergamot",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Bergamot.png"
+                }
+            ],
+            "Middle": [
+                {
+                    "name": "Lavender",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Lavender.png"
+                },
+                {
+                    "name": "Sage",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Sage.png"
+                },
+                {
+                    "name": "Orange Blossom",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Orange%20Blossom.png"
+                }
+            ],
+            "Base": [
+                {
+                    "name": "Amberwood",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Amberwood.png"
+                },
+                {
+                    "name": "Benzoin",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Benzoin.png"
+                },
+                {
+                    "name": "Oud",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Oud.png"
+                },
+                {
+                    "name": "Tobacco",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Tobacco.png"
+                }
+            ]
+        }
+    },
+    {
+        "_id": "red-sauce-in-the-box-for-men",
+        "Name": "Red Sauce for men",
+        "Brand": "In The Box",
+        "founder": "",
+        "perfumers": "",
+        "Year": "2020",
+        "rating": "3.94",
+        "Country": "",
+        "Image URL": "https://cdn.fragella.com/images/red-sauce-in-the-box-for-men.jpg",
+        "Image URL Transparent": "https://cdn.fragella.com/images/red-sauce-in-the-box-for-men.webp",
+        "Gender": "men",
+        "Price": "35",
+        "OilType": "",
+        "Longevity": "Long Lasting",
+        "Sillage": "Strong",
+        "Confidence": "low",
+        "Popularity": "Low",
+        "Price Value": "good_value",
+        "General Notes": [
+            "Cactus",
+            "Tarragon",
+            "Orange",
+            "Red Chilli Pepper",
+            "Cedar",
+            "Geranium",
+            "Cedar",
+            "Musk",
+            "Sandalwood"
+        ],
+        "Main Accords": [
+            "woody",
+            "warm spicy",
+            "powdery",
+            "aromatic",
+            "musky",
+            "green",
+            "fresh spicy",
+            "fresh",
+            "herbal"
+        ],
+        "Main Accords Percentage": {
+            "woody": "Dominant",
+            "warm spicy": "Dominant",
+            "powdery": "Prominent",
+            "aromatic": "Prominent",
+            "musky": "Prominent",
+            "green": "Moderate",
+            "fresh spicy": "Moderate",
+            "fresh": "Moderate",
+            "herbal": "Moderate"
+        },
+        "Season Ranking": [
+            {
+                "name": "fall",
+                "score": 2.183
+            },
+            {
+                "name": "winter",
+                "score": 1.55
+            },
+            {
+                "name": "spring",
+                "score": 1.391
+            },
+            {
+                "name": "summer",
+                "score": 0.796
+            }
+        ],
+        "Occasion Ranking": [
+            {
+                "name": "professional",
+                "score": 2.326
+            },
+            {
+                "name": "night out",
+                "score": 1.283
+            },
+            {
+                "name": "casual",
+                "score": 0.46
+            }
+        ],
+        "Notes": {
+            "Top": [
+                {
+                    "name": "Cactus",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Cactus.png"
+                },
+                {
+                    "name": "Tarragon",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Tarragon.png"
+                },
+                {
+                    "name": "Orange",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Orange.png"
+                }
+            ],
+            "Middle": [
+                {
+                    "name": "Red Chilli Pepper",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Red%20Chilli%20Pepper.png"
+                },
+                {
+                    "name": "Cedar",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Cedar.png"
+                },
+                {
+                    "name": "Geranium",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Geranium.png"
+                }
+            ],
+            "Base": [
+                {
+                    "name": "Cedar",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Cedar.png"
+                },
+                {
+                    "name": "Musk",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Musk.png"
+                },
+                {
+                    "name": "Sandalwood",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Sandalwood.png"
+                }
+            ]
+        },
+        "Image Fallbacks": [
+            "https://d2k6fvhyk5xgx.cloudfront.net/images/red-sauce-in-the-box-for-men.jpg"
+        ],
+        "Purchase URL": "https://www.target.com/s/red+sauce"
+    },
+    {
+        "_id": "Boston-Red-Sox",
+        "Name": "Boston Red Sox",
+        "Brand": "Boston Red Sox",
+        "founder": "",
+        "perfumers": "",
+        "Year": "1989",
+        "rating": "4.11",
+        "Country": "",
+        "Image URL": "https://cdn.fragella.com/images/boston-red-sox.jpg",
+        "Image URL Transparent": "https://cdn.fragella.com/images/boston-red-sox.webp",
+        "Gender": "men",
+        "Price": "7.99",
+        "OilType": "Eau de Toilette",
+        "Longevity": "Moderate",
+        "Sillage": "Moderate",
+        "Confidence": "low",
+        "Popularity": "Low",
+        "Price Value": "good_value",
+        "General Notes": [
+            "bergamot",
+            "grass",
+            "mandarin orange",
+            "strawberry leaf",
+            "watery notes",
+            "coriander",
+            "green notes",
+            "spruce",
+            "vetiver",
+            "water notes",
+            "canadian balsam",
+            "cedar",
+            "musk",
+            "sandalwood",
+            "woody notes"
+        ],
+        "Main Accords": [
+            "green",
+            "woody",
+            "aquatic",
+            "citrus",
+            "fresh"
+        ],
+        "Main Accords Percentage": {
+            "green": "Dominant",
+            "woody": "Prominent",
+            "aquatic": "Moderate",
+            "citrus": "Moderate",
+            "fresh": "Moderate"
+        },
+        "Season Ranking": [
+            {
+                "name": "summer",
+                "score": 2.137
+            },
+            {
+                "name": "spring",
+                "score": 1.807
+            },
+            {
+                "name": "fall",
+                "score": 0.657
+            },
+            {
+                "name": "winter",
+                "score": 0.511
+            }
+        ],
+        "Occasion Ranking": [
+            {
+                "name": "professional",
+                "score": 1.835
+            },
+            {
+                "name": "casual",
+                "score": 1.431
+            },
+            {
+                "name": "night out",
+                "score": 0
+            }
+        ],
+        "Notes": {
+            "Top": [
+                {
+                    "name": "bergamot",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Bergamot.png"
+                },
+                {
+                    "name": "grass",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Grass.png"
+                },
+                {
+                    "name": "mandarin orange",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Mandarin%20Orange.png"
+                },
+                {
+                    "name": "strawberry leaf",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Strawberry%20Leaf.png"
+                },
+                {
+                    "name": "watery notes",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Watery%20Notes.png"
+                }
+            ],
+            "Middle": [
+                {
+                    "name": "coriander",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Coriander.png"
+                },
+                {
+                    "name": "green notes",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Green%20Notes.png"
+                },
+                {
+                    "name": "spruce",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Spruce.png"
+                },
+                {
+                    "name": "vetiver",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Vetiver.png"
+                },
+                {
+                    "name": "water notes",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Water%20Notes.png"
+                }
+            ],
+            "Base": [
+                {
+                    "name": "canadian balsam",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Canadian%20Balsam.png"
+                },
+                {
+                    "name": "cedar",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Cedar.png"
+                },
+                {
+                    "name": "musk",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Musk.png"
+                },
+                {
+                    "name": "sandalwood",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Sandalwood.png"
+                },
+                {
+                    "name": "woody notes",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Woody%20Notes.png"
+                }
+            ]
+        },
+        "Image Fallbacks": [
+            "https://cdn.fragrancenet.com/images/photos/600x600/258054.jpg"
+        ],
+        "Purchase URL": "https://www.fragrancenet.com/cologne/boston-red-sox/boston-red-sox/edt?mv_pc=LS&utm_campaign=MmJMBbLy6ow&utm_medium=Affiliate&utm_source=LS#258054"
+    },
+    {
+        "_id": "Phantom",
+        "Name": "Phantom",
+        "Brand": "Empreinte d'Effluves",
+        "founder": "",
+        "perfumers": "Anne-Sophie Behaghel",
+        "Year": "2024",
+        "rating": "3.71",
+        "Country": "",
+        "Image URL": "https://cdn.fragella.com/images/phantom.jpg",
+        "Image URL Transparent": "https://cdn.fragella.com/images/phantom.webp",
+        "Gender": "unisex",
+        "Price": "",
+        "OilType": "",
+        "Longevity": "Long Lasting",
+        "Sillage": "Strong",
+        "Confidence": "low",
+        "Popularity": "Low",
+        "Price Value": "overpriced",
+        "General Notes": [
+            "Aldehydes",
+            "Almond Milk",
+            "elemi",
+            "Solar Notes",
+            "Violet",
+            "Ylang Ylang",
+            "Coconut",
+            "Powdery Notes",
+            "Toffee",
+            "White Musk",
+            "Amberwood",
+            "Vanille",
+            "Leather",
+            "Honey",
+            "Tonka Bean"
+        ],
+        "Main Accords": [
+            "sweet",
+            "powdery",
+            "aldehydic",
+            "yellow floral",
+            "violet",
+            "woody",
+            "vanilla",
+            "coconut",
+            "fresh",
+            "amber"
+        ],
+        "Main Accords Percentage": {
+            "sweet": "Dominant",
+            "powdery": "Dominant",
+            "aldehydic": "Prominent",
+            "yellow floral": "Prominent",
+            "violet": "Prominent",
+            "woody": "Moderate",
+            "vanilla": "Moderate",
+            "coconut": "Moderate",
+            "fresh": "Moderate",
+            "amber": "Moderate"
+        },
+        "Season Ranking": [
+            {
+                "name": "winter",
+                "score": 1.429
+            },
+            {
+                "name": "fall",
+                "score": 1.101
+            },
+            {
+                "name": "spring",
+                "score": 0.533
+            },
+            {
+                "name": "summer",
+                "score": 0.533
+            }
+        ],
+        "Occasion Ranking": [
+            {
+                "name": "casual",
+                "score": 1.133
+            },
+            {
+                "name": "professional",
+                "score": 1.03
+            },
+            {
+                "name": "night out",
+                "score": 0.96
+            }
+        ],
+        "Notes": {
+            "Top": [
+                {
+                    "name": "Aldehydes",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Aldehydes.png"
+                },
+                {
+                    "name": "Almond Milk",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Almond%20Milk.png"
+                },
+                {
+                    "name": "elemi",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Elemi.png"
+                }
+            ],
+            "Middle": [
+                {
+                    "name": "Solar Notes",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Solar%20Notes.png"
+                },
+                {
+                    "name": "Violet",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Violet.png"
+                },
+                {
+                    "name": "Ylang Ylang",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Ylang%20Ylang.png"
+                },
+                {
+                    "name": "Coconut",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Coconut.png"
+                },
+                {
+                    "name": "Powdery Notes",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Powdery%20Notes.png"
+                }
+            ],
+            "Base": [
+                {
+                    "name": "Toffee",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Toffee.png"
+                },
+                {
+                    "name": "White Musk",
+                    "imageUrl": "https://cdn.fragella.com/note_images/White%20Musk.png"
+                },
+                {
+                    "name": "Amberwood",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Amberwood.png"
+                },
+                {
+                    "name": "Vanille",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Vanille.png"
+                },
+                {
+                    "name": "Leather",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Leather.png"
+                },
+                {
+                    "name": "Honey",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Honey.png"
+                },
+                {
+                    "name": "Tonka Bean",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Tonka%20Bean.png"
+                }
+            ]
+        }
+    },
+    {
+        "_id": "Vanderbilt-In-Red",
+        "Name": "Vanderbilt In Red",
+        "Brand": "Gloria Vanderbilt",
+        "founder": "Gloria Vanderbilt (namesake fragrance line)",
+        "perfumers": "",
+        "Year": "2023",
+        "rating": "3.76",
+        "Country": "USA",
+        "Image URL": "https://cdn.fragella.com/images/vanderbilt-in-red.jpg",
+        "Image URL Transparent": "https://cdn.fragella.com/images/vanderbilt-in-red.webp",
+        "Gender": "women",
+        "Price": "15.99",
+        "OilType": "Eau de Parfum",
+        "Longevity": "Moderate",
+        "Sillage": "Moderate",
+        "Confidence": "medium",
+        "Popularity": "Medium",
+        "Price Value": "good_value",
+        "General Notes": [
+            "Pink Pepper",
+            "Bergamot Essence",
+            "Pear Accord",
+            "Rose Essence",
+            "Blackcurrant Bud Absolute",
+            "Rose Essence",
+            "Jasmine Absolute",
+            "Vanilla",
+            "Vetiver Essence",
+            "Cashmeran"
+        ],
+        "Main Accords": [
+            "rose",
+            "woody",
+            "soft spicy",
+            "fruity",
+            "sweet",
+            "vanilla",
+            "floral",
+            "musky",
+            "powdery",
+            "aromatic"
+        ],
+        "Main Accords Percentage": {
+            "rose": "Dominant",
+            "woody": "Dominant",
+            "soft spicy": "Dominant",
+            "fruity": "Prominent",
+            "vanilla": "Prominent",
+            "sweet": "Prominent",
+            "floral": "Prominent",
+            "musky": "Prominent",
+            "powdery": "Prominent",
+            "aromatic": "Moderate"
+        },
+        "Season Ranking": [
+            {
+                "name": "fall",
+                "score": 1.458
+            },
+            {
+                "name": "winter",
+                "score": 1.305
+            },
+            {
+                "name": "spring",
+                "score": 1.178
+            },
+            {
+                "name": "summer",
+                "score": 0
+            }
+        ],
+        "Occasion Ranking": [
+            {
+                "name": "professional",
+                "score": 1.684
+            },
+            {
+                "name": "night out",
+                "score": 1.173
+            },
+            {
+                "name": "casual",
+                "score": 0.955
+            }
+        ],
+        "Notes": {
+            "Top": [
+                {
+                    "name": "Pink Pepper",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Pink%20Pepper.png"
+                },
+                {
+                    "name": "Pear",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Pear.png"
+                },
+                {
+                    "name": "Bergamot",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Bergamot.png"
+                }
+            ],
+            "Middle": [
+                {
+                    "name": "Rose",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Rose.png"
+                },
+                {
+                    "name": "Black Currant Blossom",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Black%20Currant%20Blossom.png"
+                },
+                {
+                    "name": "Jasmine",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Jasmine.png"
+                }
+            ],
+            "Base": [
+                {
+                    "name": "Vanilla",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Vanilla.png"
+                },
+                {
+                    "name": "Cashmeran",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Cashmeran.png"
+                },
+                {
+                    "name": "Vetiver",
+                    "imageUrl": "https://cdn.fragella.com/note_images/Vetiver.png"
+                }
+            ]
+        },
+        "Image Fallbacks": [
+            "https://cdn.fragrancenet.com/images/photos/600x600/468908.jpg"
+        ],
+        "Purchase URL": "https://www.fragrancenet.com/perfume/gloria-vanderbilt/vanderbilt-in-red/eau-de-parfum?mv_pc=LS&utm_campaign=MmJMBbLy6ow&utm_medium=Affiliate&utm_source=LS#468908"
+    }
+]

@@ -25,7 +25,7 @@ All authoritative specification documents live in [`spec/`](spec); `spec/MANIFES
 | [`PHASE_00.md`](spec/PHASE_00.md) | Phase 00 environment validation |
 | [`PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md) | **Authoritative 00–10 sequence** for all agents and release stages |
 | [`RELEASE_NOTES.md`](RELEASE_NOTES.md) | v0.1.6 accepted changes, verification limits and start guide |
-| [`docs/adr/`](docs/adr) | Accepted ADR-001 through ADR-021, including project Vault, direct-main commits, manual backups, the operator’s Tailscale deferral and the accepted add-on phases 11–16 and Phase 10's local-scope completion |
+| [`docs/adr/`](docs/adr) | Accepted ADR-001 through ADR-022, including project Vault, direct-main commits, manual backups, the operator’s Tailscale deferral and the accepted add-on phases 11–16 and Phase 10's local-scope completion |
 
 ## Locked decisions
 

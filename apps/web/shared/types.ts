@@ -47,7 +47,7 @@ export const CONCENTRATION_LABEL: Record<string, string> = {
 
 export const ORIGIN_LABEL: Record<Origin, string> = { user: 'Personal', official: 'Official', provider: 'Scento', derived: 'Derived', research: 'Web research' };
 /** Provider claims are labelled by their actual source (ADR-021: Scento, NoteboxD, ScentRev). */
-export const PROVIDER_LABEL: Record<string, string> = { scento: 'Scento', noteboxd: 'NoteboxD', scentrev: 'ScentRev' };
+export const PROVIDER_LABEL: Record<string, string> = { scento: 'Scento', noteboxd: 'NoteboxD', scentrev: 'ScentRev', fragella: 'Fragella' };
 export const sourceLabel = (f: { origin: Origin; source?: { provider?: string | null } | null }): string =>
   f.origin === 'provider' ? (PROVIDER_LABEL[f.source?.provider ?? 'scento'] ?? 'Provider') : ORIGIN_LABEL[f.origin];
 
