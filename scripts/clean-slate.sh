@@ -141,9 +141,18 @@ bash "$repo/scripts/backup.sh" | grep -E 'BACKUP_OK|IMAGES_OK' || {
 } | psqlq >/dev/null
 
 bad=0
-for t in "${EMPTY[@]}"; do [[ "$(count "$t")" == 0 ]] || { echo "  still has rows: $t" >&2; bad=1; }; done
-for t in "${KEEP[@]}"; do [[ "$(count "$t")" == "${kept[$t]}" ]] || { echo "  kept table changed: $t" >&2; bad=1; }; done
-[[ "$(psqlq -c "SELECT tgenabled FROM pg_trigger WHERE tgname = 'collection_events_append_only'")" == O ]] || { echo '  history trigger not re-enabled' >&2; bad=1; }
+for t in "${EMPTY[@]}"; do [[ "$(count "$t")" == 0 ]] || {
+  echo "  still has rows: $t" >&2
+  bad=1
+}; done
+for t in "${KEEP[@]}"; do [[ "$(count "$t")" == "${kept[$t]}" ]] || {
+  echo "  kept table changed: $t" >&2
+  bad=1
+}; done
+[[ "$(psqlq -c "SELECT tgenabled FROM pg_trigger WHERE tgname = 'collection_events_append_only'")" == O ]] || {
+  echo '  history trigger not re-enabled' >&2
+  bad=1
+}
 ((bad == 0)) || {
   echo 'CLEAN_SLATE_INCOMPLETE (see above)' >&2
   exit 1
