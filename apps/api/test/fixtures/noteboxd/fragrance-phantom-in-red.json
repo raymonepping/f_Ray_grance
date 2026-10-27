@@ -1,0 +1,176 @@
+{
+    "id": "cmpbr4bu71awl2coocnbji4ta",
+    "name": "Phantom In Red",
+    "slug": "rabanne/phantom-in-red",
+    "brand": {
+        "name": "Rabanne",
+        "slug": "rabanne"
+    },
+    "description": "Phantom in Red by Rabanne is a Oriental Woody fragrance for men. This is a new fragrance. Phantom in Red was launched in 2025. Phantom in Red was created by Anne Flipo, Juliette Karagueuzoglou and Nicolas Beaulieu. Top notes are Saffron, Plum Liquor and Bergamot; middle notes are Lavender, Sage and Orange Blossom; base notes are Amberwood, Benzoin, Oud and Tobacco. Phantom in Red by Rabanne is a fragrance for men launched in 2025 and marketed by Puig. The composition is built around aromatic lavender, saffron and benzoin, combining herbal, spicy and resinous facets in a streamlined note structure. The advertising campaign features Spanish model Yeray Allgayer.Top notes: Bergamot - Plum liqueur - Saffron Heart notes: Lavender - Sage - Orange Floral Base notes: Amberwood - Tobacco - Benzoin - Oud",
+    "concentration": null,
+    "launchYear": 2025,
+    "genderLabel": "MASCULINE",
+    "familyPrimary": "AMBERY (ORIENTAL)",
+    "familySecondary": "CITRUS",
+    "priceRange": "MIDRANGE",
+    "originCountry": "Spain",
+    "communityScore": null,
+    "criticScore": null,
+    "ratingCount": 0,
+    "imageUrl": "https://img.noteboxd.com/f/rabanne/phantom-in-red.webp",
+    "perfumers": [
+        {
+            "name": "Juliette Karagueuzoglou",
+            "slug": "juliette-karagueuzoglou"
+        },
+        {
+            "name": "Anne Flipo",
+            "slug": "anne-flipo"
+        },
+        {
+            "name": "Nicolas Beaulieu",
+            "slug": "nicolas-beaulieu"
+        }
+    ],
+    "notes": [
+        {
+            "name": "Bergamot",
+            "slug": "bergamot",
+            "hexColor": "#E09A5F",
+            "family": "Citrus",
+            "pyramid": "UNSPECIFIED"
+        },
+        {
+            "name": "Orange Blossom",
+            "slug": "orange-blossom",
+            "hexColor": "#B8739B",
+            "family": "Floral",
+            "pyramid": "UNSPECIFIED"
+        },
+        {
+            "name": "Benzoin",
+            "slug": "benzoin",
+            "hexColor": "#D37A55",
+            "family": "Ambery (Oriental)",
+            "pyramid": "UNSPECIFIED"
+        },
+        {
+            "name": "Clary Sage",
+            "slug": "clary-sage",
+            "hexColor": "#4D6C51",
+            "family": "Aromatic Fougere",
+            "pyramid": "UNSPECIFIED"
+        },
+        {
+            "name": "Saffron",
+            "slug": "saffron",
+            "hexColor": "#684431",
+            "family": "Leather",
+            "pyramid": "UNSPECIFIED"
+        },
+        {
+            "name": "Tobacco Leaf",
+            "slug": "tobacco-leaf",
+            "hexColor": "#9C8B4A",
+            "family": "Tobacco",
+            "pyramid": "UNSPECIFIED"
+        },
+        {
+            "name": "Plum",
+            "slug": "plum",
+            "hexColor": "#D17097",
+            "family": "Fruity",
+            "pyramid": "UNSPECIFIED"
+        },
+        {
+            "name": "Oud / Agarwood",
+            "slug": "oud-agarwood",
+            "hexColor": "#63482C",
+            "family": "Woody",
+            "pyramid": "UNSPECIFIED"
+        },
+        {
+            "name": "Lavender",
+            "slug": "lavender",
+            "hexColor": "#77A492",
+            "family": "Aromatic Fougere",
+            "pyramid": "UNSPECIFIED"
+        },
+        {
+            "name": "Oud",
+            "slug": "oud",
+            "hexColor": "#B28A41",
+            "family": null,
+            "pyramid": "BASE"
+        },
+        {
+            "name": "Sage",
+            "slug": "sage",
+            "hexColor": "#56795A",
+            "family": null,
+            "pyramid": "HEART"
+        },
+        {
+            "name": "Tobacco",
+            "slug": "tobacco",
+            "hexColor": "#887742",
+            "family": null,
+            "pyramid": "BASE"
+        },
+        {
+            "name": "Amberwood",
+            "slug": "amberwood",
+            "hexColor": "#673729",
+            "family": "Woody",
+            "pyramid": "BASE"
+        },
+        {
+            "name": "Liquor",
+            "slug": "liquor",
+            "hexColor": "#CD6882",
+            "family": "Fruity",
+            "pyramid": "UNSPECIFIED"
+        },
+        {
+            "name": "Plum Liquor",
+            "slug": "plum-liquor",
+            "hexColor": "#D57585",
+            "family": "Fruity",
+            "pyramid": "TOP"
+        }
+    ],
+    "accords": [
+        {
+            "name": "Woody",
+            "slug": "woody"
+        },
+        {
+            "name": "Fruity",
+            "slug": "fruity"
+        },
+        {
+            "name": "Tobacco",
+            "slug": "tobacco"
+        },
+        {
+            "name": "amber",
+            "slug": "amber"
+        },
+        {
+            "name": "aromatic",
+            "slug": "aromatic"
+        },
+        {
+            "name": "lavender",
+            "slug": "lavender"
+        },
+        {
+            "name": "oud",
+            "slug": "oud"
+        },
+        {
+            "name": "warm spicy",
+            "slug": "warm-spicy"
+        }
+    ]
+}

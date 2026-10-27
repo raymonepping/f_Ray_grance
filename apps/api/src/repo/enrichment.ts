@@ -270,7 +270,7 @@ export async function effectiveProfile(db: Db, fragranceId: string): Promise<Rec
        FROM app.source_claims c LEFT JOIN app.source_records r ON r.id = c.source_record_id
       WHERE c.fragrance_id = $1 AND c.superseded_at IS NULL
       ORDER BY c.field_name,
-               CASE c.origin WHEN 'user' THEN 1 WHEN 'official' THEN 2 WHEN 'provider' THEN 3 WHEN 'derived' THEN 4 ELSE 5 END,
+               app.claim_rank(c.origin, r.provider), -- source order (ADR-021): Scento, NoteboxD, ScentRev, ...
                c.claimed_at DESC`,
     [fragranceId],
   );
@@ -288,33 +288,99 @@ export async function effectiveProfile(db: Db, fragranceId: string): Promise<Rec
   return out;
 }
 
+export type GapField = 'concentration' | 'launch_year' | 'pyramid' | 'listed_notes';
+
+/** Mirrors app.claim_rank (migration 0008, ADR-021): the lower, the more trusted. */
+export function claimRank(origin: string, provider: string | null): number {
+  if (origin === 'user') return 10;
+  if (origin === 'official') return 20;
+  if (origin === 'provider') return provider === 'scento' ? 30 : provider === 'noteboxd' ? 31 : provider === 'scentrev' ? 32 : 33;
+  return origin === 'derived' ? 40 : 50;
+}
+
+/**
+ * Gap fields a source of rank `rank` may fill: fields with no effective value, or whose effective
+ * value comes from a lower-ranked (less trusted) source. The verified identity's own concentration
+ * and launch year always count as known.
+ */
+export async function gapFields(
+  db: Db,
+  fragranceId: string,
+  f: { concentration: string | null; launch_year: number | null },
+  rank: number,
+): Promise<GapField[]> {
+  const eff = await effectiveProfile(db, fragranceId);
+  const known = (k: string) => {
+    const e = eff[k];
+    return !!e && claimRank(e.origin, e.source?.provider ?? null) <= rank;
+  };
+  const fields: GapField[] = ['concentration', 'launch_year', 'pyramid', 'listed_notes'];
+  return fields.filter((k) => {
+    if (k === 'concentration') return !f.concentration && !known('concentration');
+    if (k === 'launch_year') return !f.launch_year && !known('launch_year');
+    if (k === 'listed_notes') return !known('pyramid') && !known('listed_notes');
+    return !known(k);
+  });
+}
+
+/** Where owner-accepted gap-filling values come from (ADR-013 web research, ADR-021 NoteboxD). */
+export interface GapSource {
+  provider: 'tinyfish' | 'noteboxd';
+  origin: 'research' | 'provider';
+  attribution: string;
+  /** Stable id at the source; defaults to a hash of the page URL. */
+  externalId?: string;
+}
+
+const WEB_RESEARCH = (siteName: string): GapSource => ({ provider: 'tinyfish', origin: 'research', attribution: `Web research via TinyFish: ${siteName}`.slice(0, 200) });
+
 /** Store owner-accepted web-research proposals as origin "research", citing the page they came from. */
 export async function addResearchClaims(
   db: Db,
   fragranceId: string,
   page: { url: string; siteName: string; checkedAt: Date; evidence: string | null; productNameOnPage: string },
-  claims: { field: 'concentration' | 'launch_year' | 'pyramid' | 'listed_notes'; value: unknown }[],
+  claims: { field: GapField; value: unknown }[],
+): Promise<number> {
+  return addGapClaims(db, fragranceId, page, claims, WEB_RESEARCH(page.siteName));
+}
+
+/**
+ * Store owner-accepted gap-filling values with their source record. A newer value from the same
+ * source supersedes its own earlier value for that field; other sources' claims are untouched, and
+ * app.claim_rank decides which one is effective.
+ */
+export async function addGapClaims(
+  db: Db,
+  fragranceId: string,
+  page: { url: string; siteName: string; checkedAt: Date; evidence: string | null; productNameOnPage: string },
+  claims: { field: GapField; value: unknown }[],
+  source: GapSource,
 ): Promise<number> {
   return tx(db, async (c) => {
     const mappedObs = { page: page.url, site: page.siteName, productNameOnPage: page.productNameOnPage, evidence: page.evidence, claims };
     const hash = createHash('sha256').update(JSON.stringify(mappedObs)).digest('hex');
-    // external_id: a stable hash of the page URL (the URL itself is kept in source_url).
-    const pageId = createHash('sha256').update(page.url).digest('hex');
-    const existing = await c.query<{ id: string }>(`SELECT id FROM app.source_records WHERE provider = 'tinyfish' AND external_id = $1 AND response_hash = $2`, [pageId, hash]);
+    // external_id: the source's own id, or a stable hash of the page URL (the URL is kept in source_url).
+    const externalId = source.externalId ?? createHash('sha256').update(page.url).digest('hex');
+    const existing = await c.query<{ id: string }>(`SELECT id FROM app.source_records WHERE provider = $1 AND external_id = $2 AND response_hash = $3`, [source.provider, externalId, hash]);
     const sr =
       existing.rows[0]?.id ??
       (
         await c.query<{ id: string }>(
           `INSERT INTO app.source_records (provider, external_id, source_url, attribution, checked_at, response_hash, permitted_cache_class, mapped)
-           VALUES ('tinyfish', $1, $6, $2, $3, $4, 'user_lookup', $5) RETURNING id`,
-          [pageId, `Web research via TinyFish: ${page.siteName}`.slice(0, 200), page.checkedAt, hash, JSON.stringify(mappedObs), page.url.slice(0, 2000)],
+           VALUES ($7, $1, $6, $2, $3, $4, 'user_lookup', $5) RETURNING id`,
+          [externalId, source.attribution.slice(0, 200), page.checkedAt, hash, JSON.stringify(mappedObs), page.url.slice(0, 2000), source.provider],
         )
       ).rows[0]!.id;
     for (const claim of claims) {
-      await c.query(`UPDATE app.source_claims SET superseded_at = now() WHERE fragrance_id = $1 AND origin = 'research' AND field_name = $2 AND superseded_at IS NULL`, [fragranceId, claim.field]);
+      await c.query(
+        `UPDATE app.source_claims SET superseded_at = now()
+          WHERE fragrance_id = $1 AND origin = $3 AND field_name = $2 AND superseded_at IS NULL
+            AND source_record_id IN (SELECT id FROM app.source_records WHERE provider = $4)`,
+        [fragranceId, claim.field, source.origin, source.provider],
+      );
       const { rows } = await c.query<{ id: string }>(
-        `INSERT INTO app.source_claims (fragrance_id, source_record_id, origin, field_name, value) VALUES ($1, $2, 'research', $3, $4) RETURNING id`,
-        [fragranceId, sr, claim.field, JSON.stringify(claim.value)],
+        `INSERT INTO app.source_claims (fragrance_id, source_record_id, origin, field_name, value) VALUES ($1, $2, $5, $3, $4) RETURNING id`,
+        [fragranceId, sr, claim.field, JSON.stringify(claim.value), source.origin],
       );
       if (claim.field === 'pyramid') await writePyramid(c, fragranceId, rows[0]!.id, claim.value as SourceProfile['pyramid']);
     }

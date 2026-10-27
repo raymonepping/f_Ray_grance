@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Fragrance detail (DESIGN §6.2): identity, note profile, character, provenance.
 // Trait DNA, seasons and compare arrive in later phases and are not faked here.
-import { CONCENTRATION_LABEL, ORIGIN_LABEL, type CollectionEntry, type EffectiveField, type Fragrance, type Pyramid, type Variant } from '~~/shared/types';
+import { CONCENTRATION_LABEL, sourceLabel, type CollectionEntry, type EffectiveField, type Fragrance, type Pyramid, type Variant } from '~~/shared/types';
 import type { DnaProfile } from '~~/shared/dna';
 
 const route = useRoute();
@@ -60,14 +60,14 @@ const conc = computed(() => {
   if (f?.concentration) return { label: CONCENTRATION_LABEL[f.concentration] ?? f.concentration, origin: null as string | null };
   const c = data.value?.fields.concentration;
   const v = c?.value as { raw?: string | null; normalized?: string | null } | undefined;
-  if (c && (v?.normalized || v?.raw)) return { label: v.normalized ? (CONCENTRATION_LABEL[v.normalized] ?? v.normalized) : v.raw!, origin: ORIGIN_LABEL[c.origin] };
+  if (c && (v?.normalized || v?.raw)) return { label: v.normalized ? (CONCENTRATION_LABEL[v.normalized] ?? v.normalized) : v.raw!, origin: sourceLabel(c) };
   return null;
 });
 const year = computed(() => {
   const f = data.value?.fragrance;
   if (f?.launch_year) return { label: String(f.launch_year), origin: null as string | null };
   const y = data.value?.fields.launch_year;
-  return y && typeof y.value === 'number' ? { label: String(y.value), origin: ORIGIN_LABEL[y.origin] } : null;
+  return y && typeof y.value === 'number' ? { label: String(y.value), origin: sourceLabel(y) } : null;
 });
 const tierCount = computed(() => (['top', 'heart', 'base'] as const).reduce((n, k) => n + (pyramid.value?.[k]?.length ?? 0), 0));
 const subfamily = computed(() => data.value?.fields.subfamily?.value as string | undefined);
@@ -113,11 +113,11 @@ const subfamily = computed(() => data.value?.fields.subfamily?.value as string |
             <AcademyExplainLink concept="pyramid" />
           </div>
           <FragranceChromatogram :pyramid="pyramid" label="Scent pyramid" />
-          <FragranceListedNotes v-if="listedNotes.length && !tierCount" class="mt-5" :notes="listedNotes" :materials="materials" :source="data.fields.listed_notes ? ORIGIN_LABEL[data.fields.listed_notes.origin] : 'The source'" />
+          <FragranceListedNotes v-if="listedNotes.length && !tierCount" class="mt-5" :notes="listedNotes" :materials="materials" :source="data.fields.listed_notes ? sourceLabel(data.fields.listed_notes) : 'The source'" />
           <p class="m-0 mt-4 text-[12px] text-ink-3">
             <template v-if="!tierCount && listedNotes.length">No tiered pyramid is sourced, so the chromatogram stays flat.</template>
             <template v-else-if="!pyramid">No pyramid has been sourced or entered for this fragrance.</template>
-            <template v-else>One peak per listed note. Height follows listed order, not concentration.<template v-if="data.fields.pyramid"> Source: {{ ORIGIN_LABEL[data.fields.pyramid.origin] }}.</template></template>
+            <template v-else>One peak per listed note. Height follows listed order, not concentration.<template v-if="data.fields.pyramid"> Source: {{ sourceLabel(data.fields.pyramid) }}.</template></template>
           </p>
         </div>
       </section>
@@ -142,6 +142,7 @@ const subfamily = computed(() => data.value?.fields.subfamily?.value as string |
             </div>
             <FragranceScentTraitBars :rows="dna.traits.map(t => ({ code: t.code, label: t.label, values: [t.score] }))" :series="[data.fragrance.canonical_name]" :method="dna.method" />
           </div>
+          <FragranceSourcesPanel :fragrance-id="data.fragrance.id" @saved="load" />
           <FragranceResearchPanel :fragrance-id="data.fragrance.id" @saved="load" />
           <CollectionVariantList :fragrance-id="data.fragrance.id" :variants="variants" @changed="loadRelationship" />
         </div>

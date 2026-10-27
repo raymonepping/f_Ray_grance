@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CONCENTRATION_LABEL, ORIGIN_LABEL, type Fragrance } from '~~/shared/types';
+import { CONCENTRATION_LABEL, sourceLabel, type Fragrance } from '~~/shared/types';
 import type { Comparison } from '~~/shared/dna';
 usePageHeader({ title: 'Compare' });
 const route = useRoute(); const router = useRouter(); const selection = useCompare();
@@ -124,7 +124,7 @@ const rows = computed(() => data.value?.fragrances[0].traits.filter((t, i) => i 
           </div>
           <div class="flex flex-col gap-3 p-5 text-[14px]">
             <dl class="m-0 grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2">
-              <dt class="etch pt-0.5">Family</dt><dd class="m-0">{{ f.fields.family?.value ?? 'Family not listed' }} <span v-if="f.fields.family" class="readout text-[11px] text-ink-3">{{ ORIGIN_LABEL[f.fields.family.origin] }}</span></dd>
+              <dt class="etch pt-0.5">Family</dt><dd class="m-0">{{ f.fields.family?.value ?? 'Family not listed' }} <span v-if="f.fields.family" class="readout text-[11px] text-ink-3">{{ sourceLabel(f.fields.family) }}</span></dd>
               <dt class="etch pt-0.5">Seasons</dt>
               <dd class="m-0">
                 <span v-if="f.personalSeasons.length">Your choices: {{ f.personalSeasons.map(s => `${s.season}: ${s.affinity}`).join(', ') }}</span>

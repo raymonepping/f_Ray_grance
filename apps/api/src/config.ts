@@ -17,6 +17,10 @@ export interface Config {
   tinyfishKeyFile: string | null;
   /** ScentRev API key rendered by Vault Agent (ADR-020); null or an empty key = off. */
   scentrevKeyFile: string | null;
+  /** NoteboxD API key rendered by Vault Agent (ADR-021); null or an empty key = off. */
+  noteboxdKeyFile: string | null;
+  /** Local daily NoteboxD call budget (the free tier allows 50 per day). */
+  noteboxdDailyCalls: number;
 }
 
 export class ConfigError extends Error {}
@@ -93,5 +97,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     },
     tinyfishKeyFile: env.FRAY_TINYFISH_KEY_FILE === '' ? null : (env.FRAY_TINYFISH_KEY_FILE ?? '/vault/rendered/tinyfish.json'),
     scentrevKeyFile: env.FRAY_SCENTREV_KEY_FILE === '' ? null : (env.FRAY_SCENTREV_KEY_FILE ?? '/vault/rendered/scentrev.json'),
+    noteboxdKeyFile: env.FRAY_NOTEBOXD_KEY_FILE === '' ? null : (env.FRAY_NOTEBOXD_KEY_FILE ?? '/vault/rendered/noteboxd.json'),
+    noteboxdDailyCalls: Math.max(0, Math.min(50, Number(env.FRAY_NOTEBOXD_DAILY_CALLS ?? 40) || 0)),
   };
 }

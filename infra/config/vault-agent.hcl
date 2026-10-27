@@ -68,3 +68,12 @@ template {
   {{- end -}}
   EOT
 }
+template {
+  destination = "/vault/rendered/noteboxd.json"
+  perms       = "0640"
+  contents    = <<-EOT
+  {{- with secret "kv/data/fray/noteboxd" -}}
+  {"api_key":{{ .Data.data.api_key | toJSON }},"version":{{ .Data.metadata.version }}}
+  {{- end -}}
+  EOT
+}

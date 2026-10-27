@@ -1,0 +1,21 @@
+{
+    "query": "phantom in red",
+    "results": [
+        {
+            "type": "fragrance",
+            "id": "cmpbr4bu71awl2coocnbji4ta",
+            "name": "Phantom In Red",
+            "subtitle": "Rabanne",
+            "imageUrl": "https://img.noteboxd.com/f/rabanne/phantom-in-red.webp",
+            "score": null
+        },
+        {
+            "type": "fragrance",
+            "id": "cmuspgc0d34m0l7sb6qkzvkmw",
+            "name": "Phantom My Hero In Miami",
+            "subtitle": "Emper",
+            "imageUrl": "https://img.noteboxd.com/f/emper/phantom-my-hero-in-miami.webp",
+            "score": null
+        }
+    ]
+}

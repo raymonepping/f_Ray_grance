@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Field provenance (DESIGN §9.3): Scento / Official / Derived / Personal, with checked time.
-import { ORIGIN_LABEL, type EffectiveField } from '~~/shared/types';
+import { sourceLabel, type EffectiveField } from '~~/shared/types';
 defineProps<{ fields: Record<string, EffectiveField> }>();
 const when = (iso: string) => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
 </script>
@@ -12,7 +12,7 @@ const when = (iso: string) => new Date(iso).toLocaleString(undefined, { dateStyl
       <template v-for="(f, name) in fields" :key="name">
         <dt class="etch self-center">{{ String(name).replace('_', ' ') }}</dt>
         <dd class="m-0 min-w-0">
-          <span class="readout rounded-[4px] border border-line px-1.5 py-0.5 text-[11px] text-ink">{{ ORIGIN_LABEL[f.origin] }}</span>
+          <span class="readout rounded-[4px] border border-line px-1.5 py-0.5 text-[11px] text-ink">{{ sourceLabel(f) }}</span>
           <template v-if="f.source">
             · <a v-if="f.source.url" :href="f.source.url" rel="noopener noreferrer" target="_blank" class="[overflow-wrap:anywhere]">{{ f.source.attribution ?? f.source.provider }}<span class="sr-only"> (opens in a new tab)</span></a>
             · checked {{ when(f.source.checkedAt) }}
