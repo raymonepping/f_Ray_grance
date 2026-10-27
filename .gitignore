@@ -22,6 +22,23 @@ FOLDER_TREE.md
 .ropeproject
 
 ########################################
+# Local tooling, drafts and project records
+########################################
+# Operator-requested root directories: ignore new, untracked files.
+# Existing tracked files remain versioned, including GitHub automation,
+# validation inputs and the canonical build-state record.
+/.agents/
+/.claude/
+/.codex/
+/.github/
+/.impeccable/
+/article/
+/prompts/
+/reports/
+/spec/
+/state/*
+
+########################################
 # 🐍 Python
 ########################################
 __pycache__/
@@ -253,11 +270,11 @@ output/*
 ########################################
 # 🌸 F-Ray-grance
 ########################################
-# Agent orchestration: track state/BUILD_STATE.json, never locks or temp writes
+# Keep the canonical state record addable; ignore other new state files.
+!/state/BUILD_STATE.json
 state/.run.lock/
 state/*.tmp
 state/.*.tmp
-!state/BUILD_STATE.json
 # Manual PostgreSQL backups live OUTSIDE the repo and the Podman VM; guard anyway
 backups/
 *.dump

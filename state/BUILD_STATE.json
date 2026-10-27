@@ -720,7 +720,7 @@
     "ADR-018"
   ],
   "unresolved_blockers": [],
-  "updated_at_utc": "2026-10-27T09:19:06Z",
+  "updated_at_utc": "2026-10-27T09:23:52Z",
   "reviews": {
     "2026-10-26_prompts_01_14": {
       "status": "completed_with_findings",
@@ -1000,5 +1000,38 @@
         }
       ]
     }
-  }
+  },
+  "maintenance": [
+    {
+      "status": "completed",
+      "agent": "codex",
+      "finished_at_utc": "2026-10-27T09:23:20Z",
+      "baseline_head": "56a47986c003b53e6ef89f4d4112141b34afb48e",
+      "scope": "Operator-requested gitignore rules for root tooling, article and project-record directories.",
+      "artifacts": [
+        ".gitignore"
+      ],
+      "ignored_directories": [
+        "/.agents/",
+        "/.claude/",
+        "/.codex/",
+        "/.github/",
+        "/.impeccable/",
+        "/article/",
+        "/prompts/",
+        "/reports/",
+        "/spec/",
+        "/state/* (except /state/BUILD_STATE.json)"
+      ],
+      "validation": {
+        "ignore_rules": "PASS: git check-ignore --no-index on a new placeholder path inside each of all ten directories.",
+        "tracked_files": "PASS: existing tracked files preserved, canonical build state remains tracked, no tracked deletions.",
+        "untracked_files": "PASS: requested local-only material no longer appears as untracked.",
+        "make_validate_docs": "PASS: 84 frozen docs, 46 prompts, 301 links.",
+        "git_diff_check": "PASS",
+        "canonical_state": "PASS: canonical state remains tracked and explicitly unignored for commit_gh; other new state files ignored."
+      },
+      "notes": "Added ignore rules only; no cached removals or history rewrite. Previously tracked GitHub automation, validation inputs, articles and reports remain on GitHub. Retained the canonical build-state exception so state recording and commit_gh continue to work. A first commit attempt staged only these same two files but stopped on the ignored state parent; the rule was narrowed and the staged files were explicitly reset before retrying. Phase statuses unchanged."
+    }
+  ]
 }
