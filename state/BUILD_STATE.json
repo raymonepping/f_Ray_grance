@@ -653,6 +653,22 @@
         "Existing real backups are legacy sets; next manual make backup produces a complete set"
       ],
       "next_phase": null
+    },
+    "16": {
+      "status": "in_progress",
+      "agent": "claude-opus-5-5",
+      "prompt_id": "FRAY-CLAUDE-16",
+      "started_at_utc": "2026-10-27T07:34:57Z",
+      "baseline_head": "04607a92b7f83ba7c5fdee498f357c52ca7f6c63",
+      "report_path": "reports/16_clean_slate.md",
+      "authorization": "ADR-017: operator asked for prompt 16_clean_slate.md to remove all recorded info and start from scratch (2026-10-27).",
+      "planned_scope": [
+        "scripts/clean-slate.sh with explicit table classification, typed confirmation, backup first, one transaction",
+        "make clean-slate",
+        "E2E catalogue mark/undo so the suite leaves no catalogue rows",
+        "probe on isolated restore copy",
+        "docs, report, state"
+      ]
     }
   },
   "accepted_adrs": [
@@ -671,7 +687,8 @@
     "ADR-013",
     "ADR-014",
     "ADR-015",
-    "ADR-016"
+    "ADR-016",
+    "ADR-017"
   ],
   "unresolved_blockers": [
     {
@@ -698,7 +715,7 @@
       "deferral": "Deferred by operator on 2026-10-27: an off-device copy and independent restore are not important enough for this personal project. Not a passed gate; Phase 10 stays blocked and import stays disabled. Revisit only on explicit operator request."
     }
   ],
-  "updated_at_utc": "2026-10-27T07:27:51Z",
+  "updated_at_utc": "2026-10-27T07:34:57Z",
   "reviews": {
     "2026-10-26_prompts_01_14": {
       "status": "completed_with_findings",

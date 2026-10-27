@@ -58,3 +58,7 @@ ADR-015 accepts Phase 14 (sidebar order and dividers) for Claude on the same ter
 ## Phase 15 local-development exception
 
 ADR-016 accepts Phase 15 (evidence-backed revisions from `reports/review_01_14.md`) for Claude on the same terms. It requires Phase 14 completed and pushed, and records its own local results under phase 15. It leaves Phase 10, its blockers and `last_successful_phase` unchanged. Codex prompts 13 and 14 are accepted alternatives to the Claude prompts.
+
+## Phase 16 local-development exception
+
+ADR-017 accepts Phase 16 (clean slate) for Claude on the same terms. It requires Phase 15 completed and pushed, and records its own local results under phase 16. It leaves Phase 10, its blockers and `last_successful_phase` unchanged. The agent never runs the clean slate against the live database; the operator does.

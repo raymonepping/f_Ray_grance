@@ -25,7 +25,7 @@ All authoritative specification documents live in [`spec/`](spec); `spec/MANIFES
 | [`PHASE_00.md`](spec/PHASE_00.md) | Phase 00 environment validation |
 | [`PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md) | **Authoritative 00–10 sequence** for all agents and release stages |
 | [`RELEASE_NOTES.md`](RELEASE_NOTES.md) | v0.1.6 accepted changes, verification limits and start guide |
-| [`docs/adr/`](docs/adr) | Accepted ADR-001 through ADR-016, including project Vault, direct-main commits, manual backups, the operator’s Tailscale deferral and the accepted add-on phases 11–15 |
+| [`docs/adr/`](docs/adr) | Accepted ADR-001 through ADR-017, including project Vault, direct-main commits, manual backups, the operator’s Tailscale deferral and the accepted add-on phases 11–16 |
 
 ## Locked decisions
 
@@ -44,7 +44,7 @@ Phases 00–09 are implemented and pushed to the verified GitHub `main`. The app
 
 Local Phase 10 security, lifecycle and recovery checks pass, including 39 security checks and the final 28 browser tests. Host backups and restores into disposable containers work. The release remains blocked on independent recovery evidence. Independent off-device protection, a restore outside the original Podman VM, and production recovery promotion still require operator verification. Real-data import stays disabled. iPhone/tailnet access is deferred by operator instruction because of enterprise network policy; it has not been verified. No production-ready release is claimed.
 
-The v0.1.6 specification remains the accepted documentation baseline. Phases 11–14 were accepted as local-development add-ons (ADR-010, ADR-011, ADR-014, ADR-015), built and pushed: the Scent Academy and Spectrometer redesign, perfume images, My Spectrum and the grouped sidebar. Phase 15 (ADR-016) resolves the findings of the [independent review of prompts 01–14](reports/review_01_14.md). None of these advances the contiguous successful-phase marker past 09 while Phase 10 is blocked.
+The v0.1.6 specification remains the accepted documentation baseline. Phases 11–14 were accepted as local-development add-ons (ADR-010, ADR-011, ADR-014, ADR-015), built and pushed: the Scent Academy and Spectrometer redesign, perfume images, My Spectrum and the grouped sidebar. Phase 15 (ADR-016) resolves the findings of the [independent review of prompts 01–14](reports/review_01_14.md), and Phase 16 (ADR-017) adds `make clean-slate`. None of these advances the contiguous successful-phase marker past 09 while Phase 10 is blocked.
 
 ## Operating the stack
 

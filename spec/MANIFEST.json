@@ -87,6 +87,11 @@
       "sha256": "48d9595ca6e7917423b3da315b8998e7f0f8fe69332bdd522b0d625b7dd43247"
     },
     {
+      "path": "docs/adr/ADR-017-clean-slate.md",
+      "bytes": 1765,
+      "sha256": "54fecfbbd99b54851907e97c72ed7cf0dec392c91debaca48d1c5e8b90f42c60"
+    },
+    {
       "path": "prompts/Claude/00_preflight_and_state.md",
       "bytes": 9960,
       "sha256": "531818921778e52bfaa9da6d4a4bedd922539c79488744f8b12449337ad947f8"
@@ -165,6 +170,11 @@
       "path": "prompts/Claude/15_revisions.md",
       "bytes": 15885,
       "sha256": "dd1914232cb4814cebebc5ce8aed1d0807a1f0ac79db2bbe1713003f60dc7145"
+    },
+    {
+      "path": "prompts/Claude/16_clean_slate.md",
+      "bytes": 7267,
+      "sha256": "f86cfe3bc4d629be955a337da243d99221f74b80bffce3ada6b2180fbe957c38"
     },
     {
       "path": "prompts/Codex/00_preflight_and_state.md",
@@ -298,18 +308,18 @@
     },
     {
       "path": "prompts/README.md",
-      "bytes": 7185,
-      "sha256": "27a3456a86bb2a06e861eabfc5b1dbb385d702b8ebdb68b7ad38f2e964e56ed8"
+      "bytes": 7222,
+      "sha256": "954b10847db407f35e3bfa75765e4b37f11675991b7349d9987cee2bd30c4216"
     },
     {
       "path": "prompts/STATE_CONTRACT.md",
-      "bytes": 5093,
-      "sha256": "a635cb6c46dc195d983f61f7310597b61153909819851c7ae913741ea8fc2a7b"
+      "bytes": 5452,
+      "sha256": "d7a0332db19997dab16e5bab6a779eb0a084c297b4c83011141d2d107c71a01d"
     },
     {
       "path": "prompts/launchers/Claude_START_HERE.md",
-      "bytes": 9319,
-      "sha256": "b88b9520a3a7cfcba323843a9e530ca1cd31d492aef6d7c4d248f30dc07df5f0"
+      "bytes": 9391,
+      "sha256": "4260b1c2ad397e1e1eeb5ec8e1a715c1d427c125bdeadccd711429b3ae36b98f"
     },
     {
       "path": "prompts/launchers/Codex_START_HERE.md",
@@ -373,8 +383,8 @@
     },
     {
       "path": "spec/PHASE_MANIFEST.md",
-      "bytes": 5908,
-      "sha256": "92f7aa7752435b17422a75b644e4301f05902049245a2168cd3a124aaa196b53"
+      "bytes": 6358,
+      "sha256": "b0c9ff4f60e2a62a464442a4f8d2f1eb31f3d750b7984a1c44192e8a771e8fa7"
     },
     {
       "path": "spec/PRODUCT_SPEC.md",

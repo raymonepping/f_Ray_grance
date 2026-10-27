@@ -48,3 +48,7 @@ Phase 12: source-attributed perfume images, defined in [PERFUME_IMAGE_SPEC.md](P
 ## Phase 15 addendum (ADR-016)
 
 **Phase 15: Evidence-backed revisions** (Claude). Resolves findings R1–R7 of the [independent review](../reports/review_01_14.md): one authoritative restore receipt for the complete database-plus-images set, a consistent database/image backup, restore of older-schema backups, exact identity in web research and image lookup, a coherent prompt registry, and the Spectrum race and presentation items. Prompt: `prompts/Claude/15_revisions.md`. It requires Phase 14. B1 (independent off-device recovery) remains an operator gate; Phase 10 stays blocked. The Codex copies of prompts 13 and 14 are accepted alternatives to the Claude prompts.
+
+## Phase 16 addendum (ADR-017)
+
+**Phase 16: Clean slate** (Claude). `make clean-slate` empties every application table except owner accounts, passwords, the migration ledger and the seeded lesson list, after a printed summary, the typed phrase `CLEAN SLATE` and a fresh backup. Every table must be classified as kept or emptied. The browser suite removes the catalogue rows it adds. Prompt: `prompts/Claude/16_clean_slate.md`. It requires Phase 15.
