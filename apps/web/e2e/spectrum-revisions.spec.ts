@@ -76,6 +76,7 @@ test.describe('R6: only the selected scope may update the page', () => {
     await page.waitForTimeout(1000); // past the slow response
     await expect(page.getByRole('button', { name: 'Owned', exact: true })).toHaveAttribute('aria-pressed', 'true');
     await expect(readout(page)).toHaveText('01');
+    await page.getByTestId('axis-fresh_warm').getByTestId('axis-details').locator('summary').click();
     await expect(page.getByRole('list', { name: 'Fresh ↔ Warm: your fragrances' }).getByRole('listitem')).toHaveCount(1);
     expect(errors).toEqual([]);
   });

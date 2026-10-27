@@ -8,6 +8,10 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ## [Unreleased]
 
+### Changed (My Spectrum)
+
+- Each axis's fragrance list and its explanation line are folded by default behind "N fragrances on this axis · N not placed", which makes the page cleaner. The plotted ticks stay the direct links, and the list stays one click away as their accessible alternative.
+
 ### Changed (source concentration conflicts)
 
 - When a fragrance's known concentration is only a word from its own name (Scento's "Million Elixir" known as "elixir"), a different concentration from NoteboxD or Fragella no longer rejects that source. Its details are shown with a warning, you decide, and the conflicting concentration itself is never proposed. Real conflicts (Sauvage Eau de Toilette against an Eau de Parfum profile) are still rejected. Reported for 1 Million Elixir, where Fragella's full pyramid was refused.

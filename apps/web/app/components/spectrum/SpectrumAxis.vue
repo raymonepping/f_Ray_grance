@@ -151,15 +151,24 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick));
       <div class="readout flex justify-between text-[11px] text-ink-3" aria-hidden="true"><span>−1</span><span>0</span><span>+1</span></div>
     </div>
 
-    <ul v-if="sorted.length" class="m-0 list-none overflow-hidden rounded-control border border-line p-0" :aria-label="`${axis.label}: your fragrances`">
-      <li v-for="f in sorted" :key="f.id" class="flex items-center justify-between gap-3 border-b border-line px-3 py-2 last:border-b-0">
-        <NuxtLink :to="`/fragrances/${f.id}`" class="min-w-0 truncate text-[14px] no-underline hover:underline">{{ f.name }} <span class="text-ink-3">{{ f.brand }}</span></NuxtLink>
-        <span class="readout shrink-0 text-[13px]" :aria-label="`${reading(f.position)}, ${fmt(f.position)}`">{{ fmt(f.position) }}</span>
-      </li>
-    </ul>
-    <p class="m-0 text-[12px] text-ink-3">
-      {{ axis.left.label }}: {{ traitList(axis.left.traits) }}. {{ axis.right.label }}: {{ traitList(axis.right.traits) }}.
-      <template v-if="axis.notPlaced.length"> Not placed (no known traits on one side): {{ axis.notPlaced.map((f) => f.name).join(', ') }}.</template>
-    </p>
+    <!-- Folded by default (operator request): the values and the method stay one click away. The
+         plotted ticks above remain the direct links; this list is also their accessible alternative. -->
+    <details class="rounded-control border border-line" data-testid="axis-details">
+      <summary class="tap px-3 py-2 text-[13px] text-ink-2">
+        {{ sorted.length }} {{ sorted.length === 1 ? 'fragrance' : 'fragrances' }} on this axis<template v-if="axis.notPlaced.length"> · {{ axis.notPlaced.length }} not placed</template>
+      </summary>
+      <div class="flex flex-col gap-3 px-3 pb-3">
+        <ul v-if="sorted.length" class="m-0 list-none overflow-hidden rounded-control border border-line p-0" :aria-label="`${axis.label}: your fragrances`">
+          <li v-for="f in sorted" :key="f.id" class="flex items-center justify-between gap-3 border-b border-line px-3 py-2 last:border-b-0">
+            <NuxtLink :to="`/fragrances/${f.id}`" class="min-w-0 truncate text-[14px] no-underline hover:underline">{{ f.name }} <span class="text-ink-3">{{ f.brand }}</span></NuxtLink>
+            <span class="readout shrink-0 text-[13px]" :aria-label="`${reading(f.position)}, ${fmt(f.position)}`">{{ fmt(f.position) }}</span>
+          </li>
+        </ul>
+        <p class="m-0 text-[12px] text-ink-3">
+          {{ axis.left.label }}: {{ traitList(axis.left.traits) }}. {{ axis.right.label }}: {{ traitList(axis.right.traits) }}.
+          <template v-if="axis.notPlaced.length"> Not placed (no known traits on one side): {{ axis.notPlaced.map((f) => f.name).join(', ') }}.</template>
+        </p>
+      </div>
+    </details>
   </section>
 </template>

@@ -59,6 +59,9 @@ for (const vp of [{ tag: 'desktop', w: 1440, h: 900 }, { tag: 'mobile', w: 390, 
       await expect(axis.getByTestId('axis-reading')).toHaveText(/Balanced|Leans|Clearly|Not enough known traits/);
     }
     await expect(page.getByText(/not a statement of what you like/)).toBeVisible();
+    const fwDetails = page.getByTestId('axis-fresh_warm').getByTestId('axis-details');
+    await expect(fwDetails).toHaveJSProperty('open', false); // folded by default
+    await fwDetails.locator('summary').click();
     await expect(page.getByRole('list', { name: 'Fresh ↔ Warm: your fragrances' })).toContainText('Phantom in Red');
     for (const colorScheme of ['dark', 'light'] as const) {
       await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
@@ -70,6 +73,7 @@ for (const vp of [{ tag: 'desktop', w: 1440, h: 900 }, { tag: 'mobile', w: 390, 
     // Scope switch includes samples; ticks link to fragrance detail.
     await page.getByRole('button', { name: 'Owned and samples' }).click();
     await expect(page.getByRole('button', { name: 'Owned and samples' })).toHaveAttribute('aria-pressed', 'true');
+    await page.getByTestId('axis-fresh_warm').getByTestId('axis-details').locator('summary').click(); // the scope switch reloads the axes
     await page.getByRole('list', { name: 'Fresh ↔ Warm: your fragrances' }).getByRole('link', { name: /Phantom in Red/ }).click();
     await expect(page.getByRole('heading', { level: 1, name: 'Phantom in Red' })).toBeVisible();
     expect(errors).toEqual([]);
