@@ -42,6 +42,7 @@ The app is then served on `http://localhost:8470` (loopback only). Use `localhos
 | Sign out everywhere | `make owner-revoke-sessions USERNAME=<you>` |
 | Store or rotate the TinyFish key (web research, web image search) | `make tinyfish-key` (hidden prompt; empty clears), then `make recreate SERVICE=vault-agent` to apply at once |
 | Start from scratch (empty personal data, keep the account) | `make purge USERNAME=<you>` or `make purge ALL=YES` |
+| Clean slate (empty everything recorded, including the fragrance catalogue; keep the account) | `make clean-slate` |
 | Manual backup + rehearsal | `make backup`, copy off-device, `make backup-record-copy BACKUP=… LOCATION="…"`, `make restore-test`, `make backup-status` |
 
 ## Starting from scratch: `make purge`
@@ -49,6 +50,14 @@ The app is then served on `http://localhost:8470` (loopback only). Use `localhos
 `make purge USERNAME=<name>` empties one owner's personal data; `make purge ALL=YES` does it for every owner. It removes collection entries with their history, ratings, private notes, seasons, Academy progress, Train My Nose practice, perfume image records (the files themselves are collected by the next `make backup` once no record uses them, ADR-016), the owner's own catalogue corrections, sessions and login counters. It **keeps** the owner account and password, the schema, the shared catalogue (verified fragrances, Scento observations, embeddings) and Vault. Nothing is dropped or recreated.
 
 It prints what will be emptied, asks you to type `EMPTY <name>` (or `EMPTY ALL OWNERS`), then takes a fresh `make backup` and stops if that fails. Undo is a restore from that backup through the recovery procedure (`docs/recovery.md`). Sign in again afterwards.
+
+## A real clean slate: `make clean-slate`
+
+`make purge` keeps the shared catalogue. `make clean-slate` (ADR-017) empties **everything recorded**: the personal data of every owner (as `make purge ALL=YES`) and the whole catalogue, meaning fragrances, brands, barcodes and variants, Scento and web-research observations and claims, notes and the note dictionary, trait scores and embeddings. It keeps only the owner accounts and passwords, the migration ledger and the six Academy lessons that ship with the schema. The schema, Vault, the containers and the image volume are untouched. Image files are no longer referenced and are collected by a `make backup` taken an hour or more later (ADR-016).
+
+It refuses if any table in the database is not classified in `scripts/clean-slate.sh`. It prints every table's row count, asks you to type `CLEAN SLATE`, then takes a fresh `make backup` and stops if that fails. Everything is emptied in one transaction. Sign in again afterwards with the same password, and Discover adds fragrances back one exact identity at a time. Undo is a restore from that backup through the recovery procedure (`docs/recovery.md`).
+
+The browser suite (`make test-e2e`) works on an empty catalogue. It adds the two identities it needs (Phantom in Red, Layton) through the normal exact-identity path, and afterwards removes every catalogue row it added that nothing references. On an existing catalogue, it refreshes the Scento observations of those two identities.
 
 ## Why `make heal` exists
 

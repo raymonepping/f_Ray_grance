@@ -45,3 +45,13 @@ Production recovery promotion and iPhone Safari/remote device grants/denials are
 Recovery scripts (`backup.sh`, `backup_snapshot.py`, `backup_manifest.py`, `backup-status.sh`, `restore-test.sh`, `restore.sh`, `upgrade.sh`), disposable database setup, runtime restore smoke SQL, synthetic lifecycle/concurrency probes, inherited security probe, Make/test integration, current README/changelog/runbooks, browser evidence and atomic build state. Only these explicit phase-owned changes are committed through `commit_gh`; unrelated agent configuration stays untracked.
 
 Local recovery implementation was committed/pushed through `commit_gh` as `5d6bee138de9c0319f4c6d440f868cfb0f669782`. Its GitHub Detect secrets check was observed completed/success. The following checkpoint includes that observed CI result and shell formatting produced by the pre-commit hook; shell syntax and documentation validation pass. This does not change the blocked independent recovery decision.
+
+## Closeout 2026-10-27: completed for local scope (ADR-018)
+
+The operator deferred Tailscale/iPhone access (G00.10, ADR-009), an off-device protected copy (DR-OFFDEVICE) and a restore outside the original Podman VM (DR-INDEPENDENT). On 2026-10-27 the operator instructed that Phase 10 be marked completed for its gates. [ADR-018](../docs/adr/ADR-018-phase10-local-scope-completion.md) records that scope change.
+
+Phase 10 is now **completed** with `acceptance_scope: local_scope_with_operator_deferrals`. The in-scope local gates have passing recorded evidence:
+- this report's security probe (39/39), lifecycle, concurrency and guard probes;
+- Phase 15's complete-set recovery revisions R1–R3 ([report](15_revisions.md), recovery matrix 18/18).
+
+The three deferred checks remain **unverified**. They are recorded as `deferred_by_operator`, never PASS, and are not requested again unless the operator reopens them. Real-data import stays disabled, existing real backups remain legacy sets, and no remote access, device-loss survival or production promotion is claimed. The "Release BLOCKED" decision above is preserved as the historical result and is superseded, not rewritten.

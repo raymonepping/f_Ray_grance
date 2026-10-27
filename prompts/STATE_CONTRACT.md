@@ -61,4 +61,8 @@ ADR-016 accepts Phase 15 (evidence-backed revisions from `reports/review_01_14.m
 
 ## Phase 16 local-development exception
 
-ADR-017 accepts Phase 16 (clean slate) for Claude on the same terms. It requires Phase 15 completed and pushed, and records its own local results under phase 16. It leaves Phase 10, its blockers and `last_successful_phase` unchanged. The agent never runs the clean slate against the live database; the operator does.
+ADR-017 accepts Phase 16 (clean slate) for Claude on the same terms. It requires Phase 15 completed and pushed, and records its own local results under phase 16. Phase 10's status follows ADR-018 (completed for local scope, with operator deferrals). The agent never runs the clean slate against the live database; the operator does.
+
+## Superseding Phase 10 local completion — ADR-018
+
+The operator explicitly revised Phase 10 acceptance on 2026-10-27. ADR-018 overrides earlier “Phase 10 stays blocked / marker stays 09” clauses above: local security, lifecycle and isolated recovery are the required scope; remote access, off-device protection and a second-machine restore remain recorded operator deferrals, not passed checks or blockers to this scope. Mark Phase 10 completed once its local gates are evidenced and allow the highest contiguous completed/pushed phase to advance (15, then 16 once Phase 16 is pushed). Preserve historical results and deferral reasons. Do not re-request the deferred work or enable real-data import. See `docs/adr/ADR-018-phase10-local-scope-completion.md`.

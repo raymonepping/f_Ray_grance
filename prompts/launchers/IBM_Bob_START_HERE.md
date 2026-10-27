@@ -34,3 +34,7 @@
 
 
 **End of launcher.** Read and execute exactly one selected phase prompt. The phase-specific acceptance criteria override generic suggestions, but never weaken safety or durability invariants.
+
+## Current completion scope — ADR-018
+
+ADR-018 supersedes earlier instructions to resume Phase 10 solely for its external access/recovery checks. When local gates pass, Phase 10 is completed with explicit operator deferrals. Select the next genuinely incomplete accepted phase; do not reopen G00.10, DR-OFFDEVICE or DR-INDEPENDENT without an operator request. Import remains disabled and deferred checks remain unverified. If all accepted phases are completed and pushed, report that result without creating new work.

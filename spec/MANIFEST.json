@@ -92,6 +92,11 @@
       "sha256": "54fecfbbd99b54851907e97c72ed7cf0dec392c91debaca48d1c5e8b90f42c60"
     },
     {
+      "path": "docs/adr/ADR-018-phase10-local-scope-completion.md",
+      "bytes": 2675,
+      "sha256": "ad5aeac15eeeaf0028b465810263b661b475803ed245493f8f7e9cfdd659a808"
+    },
+    {
       "path": "prompts/Claude/00_preflight_and_state.md",
       "bytes": 9960,
       "sha256": "531818921778e52bfaa9da6d4a4bedd922539c79488744f8b12449337ad947f8"
@@ -143,8 +148,8 @@
     },
     {
       "path": "prompts/Claude/10_recovery_security_and_release_gate.md",
-      "bytes": 9971,
-      "sha256": "a84d4a4cf11e80856ed21b8c588908c87ba3dbc7f4ef81bf78fc536e2bbbf2b1"
+      "bytes": 11853,
+      "sha256": "923d399370e5bd7b09d6b2bbd5c205ae5268b3507579425f8c282f093a241f6d"
     },
     {
       "path": "prompts/Claude/11_scent_academy_and_tutor.md",
@@ -173,8 +178,8 @@
     },
     {
       "path": "prompts/Claude/16_clean_slate.md",
-      "bytes": 7267,
-      "sha256": "f86cfe3bc4d629be955a337da243d99221f74b80bffce3ada6b2180fbe957c38"
+      "bytes": 7320,
+      "sha256": "5e4e2502fb521b7b04c7aa3db8785465b24751ef458d40be118dc12daedce937"
     },
     {
       "path": "prompts/Codex/00_preflight_and_state.md",
@@ -228,8 +233,8 @@
     },
     {
       "path": "prompts/Codex/10_recovery_security_and_release_gate.md",
-      "bytes": 9900,
-      "sha256": "330cc35c7a09a726595c3381c56586c60735cd9b50b471d8f0a54a0c50bdd98e"
+      "bytes": 11782,
+      "sha256": "004f4e865e7f378576e46221fc855f7950aff3de128d925301de948d0f8e1ea9"
     },
     {
       "path": "prompts/Codex/11_scent_academy_and_tutor.md",
@@ -303,33 +308,33 @@
     },
     {
       "path": "prompts/IBM_Bob/10_recovery_security_and_release_gate.md",
-      "bytes": 9922,
-      "sha256": "21fd465ec8e1a2e495a39c50c1d63268b24823854f5fac92936a717e67e46c83"
+      "bytes": 11804,
+      "sha256": "b7e3667891e4f560c04acd0ee5b60934b42ed042953f366b91af0cd628adf695"
     },
     {
       "path": "prompts/README.md",
-      "bytes": 7222,
-      "sha256": "954b10847db407f35e3bfa75765e4b37f11675991b7349d9987cee2bd30c4216"
+      "bytes": 8027,
+      "sha256": "261b8984f28b9a94cb43e7659fa8766a8d2da024218300400dd1c01a57a10a6b"
     },
     {
       "path": "prompts/STATE_CONTRACT.md",
-      "bytes": 5452,
-      "sha256": "d7a0332db19997dab16e5bab6a779eb0a084c297b4c83011141d2d107c71a01d"
+      "bytes": 6234,
+      "sha256": "a097513e5580d76059b5386d46e2c7fe0880c6d3dbec401b7e5d623f823f3fdf"
     },
     {
       "path": "prompts/launchers/Claude_START_HERE.md",
-      "bytes": 9391,
-      "sha256": "4260b1c2ad397e1e1eeb5ec8e1a715c1d427c125bdeadccd711429b3ae36b98f"
+      "bytes": 9880,
+      "sha256": "587f82a7b544fc4f2bbb4d7ff83237a8ff525dedb94768a5edb5f4669f9dccba"
     },
     {
       "path": "prompts/launchers/Codex_START_HERE.md",
-      "bytes": 8999,
-      "sha256": "5664469d1e2009cd58c766e90734845272dc997d8a7951cd93d31c6b42fb0fe0"
+      "bytes": 9520,
+      "sha256": "39f058bc55c35b38e3f7c63ea10064af5e60d027d80e73f8a85282083271f689"
     },
     {
       "path": "prompts/launchers/IBM_Bob_START_HERE.md",
-      "bytes": 8588,
-      "sha256": "579883aa2768db1cadce8d9c3a5d007549c77b8cb8ef17f9cb1602bab954ca3e"
+      "bytes": 9109,
+      "sha256": "e1126c827bc368c59901c1d3706661c2607f9c27f46ae7f5270dc451bcecd476"
     },
     {
       "path": "spec/AGENT_PROMPT_SUITE.md",
@@ -383,8 +388,8 @@
     },
     {
       "path": "spec/PHASE_MANIFEST.md",
-      "bytes": 6358,
-      "sha256": "b0c9ff4f60e2a62a464442a4f8d2f1eb31f3d750b7984a1c44192e8a771e8fa7"
+      "bytes": 7079,
+      "sha256": "301c4064076b8f66cfd980673bb44c743f1f4f8c822577a7da5ede7c50330551"
     },
     {
       "path": "spec/PRODUCT_SPEC.md",

@@ -16,7 +16,7 @@ This manifest is authoritative for phase IDs, dependencies and required delivery
 | 07 | Structured Fragrance DNA and two-way Compare | Sourced pyramids, normalized traits, responsive aligned comparison, deterministic tests |
 | 08 | Ollama embeddings and pgvector discovery | Versioned vectors, meaningful comparison metrics, explainable fallback |
 | 09 | Seasonal DNA and portability | Four seasons, owned/previously owned differentiation, manual export/import validation |
-| 10 | Security, Tailscale HTTPS, disaster-recovery and release gates | iPhone/Mac tailnet access, blocked unauthorized requests, manual off-VM backup & isolated restore, regression evidence |
+| 10 | Local security, persistence and isolated recovery (ADR-018) | Passing local gates and recorded operator deferrals; remote access, off-device copy and second-machine recovery are outside scope |
 
 ## Rules
 
@@ -52,3 +52,7 @@ Phase 12: source-attributed perfume images, defined in [PERFUME_IMAGE_SPEC.md](P
 ## Phase 16 addendum (ADR-017)
 
 **Phase 16: Clean slate** (Claude). `make clean-slate` empties every application table except owner accounts, passwords, the migration ledger and the seeded lesson list, after a printed summary, the typed phrase `CLEAN SLATE` and a fresh backup. Every table must be classified as kept or emptied. The browser suite removes the catalogue rows it adds. Prompt: `prompts/Claude/16_clean_slate.md`. It requires Phase 15.
+
+## Current Phase 10 completion policy — ADR-018 (2026-10-27)
+
+[ADR-018](../docs/adr/ADR-018-phase10-local-scope-completion.md) supersedes earlier instructions in this document and addenda to keep Phase 10 blocked solely for external recovery/access. The operator accepts local-scope completion: verify the local gates, keep G00.10/DR-OFFDEVICE/DR-INDEPENDENT `deferred_by_operator`, and mark Phase 10 completed with `local_scope_with_operator_deferrals`. Deferred checks are not PASS and must not be requested again unless reopened. Real-data import remains disabled. The contiguous successful-phase marker may advance through completed and pushed successors; prior historical blocked evidence remains intact.

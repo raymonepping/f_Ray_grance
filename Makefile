@@ -38,7 +38,7 @@ APPROVE := $(if $(filter YES,$(AUTO_APPROVE)),-auto-approve,)
 .PHONY: help toolchain deps validate-docs doctor check-socket smoke-init smoke-plan smoke-up smoke-down images build bootstrap \
  init plan drift recreate provision configure up start stop down restart status logs clock-sync heal health test test-e2e \
  owner-create owner-reset-password owner-revoke-sessions vault-init vault-unseal vault-bootstrap vault-status tinyfish-key vault-snapshot \
- backup backup-status backup-record-copy purge restore-test restore upgrade destroy danger-destroy-data check-app check-ansible
+ backup backup-status backup-record-copy purge clean-slate restore-test restore upgrade destroy danger-destroy-data check-app check-ansible
 
 help: ## Show command catalog
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z0-9_-]+:.*## / { printf "  %-19s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
@@ -214,6 +214,9 @@ purge: ## EMPTY (not delete) personal data, keep accounts: USERNAME=<name> | ALL
 	@if [[ "$(ALL)" == YES ]]; then bash scripts/purge-owner-data.sh --all; \
 	 elif [[ -n "$(USERNAME)" ]]; then bash scripts/purge-owner-data.sh "$(USERNAME)"; \
 	 else echo 'Use make purge USERNAME=<name> or make purge ALL=YES' >&2; exit 2; fi
+
+clean-slate: ## EMPTY everything recorded (all owners' data AND the fragrance catalogue); keeps accounts (backs up first, typed confirmation)
+	@bash scripts/clean-slate.sh
 
 backup-status: ## Report last verified manual backup and recorded off-device copy
 	@bash scripts/backup-status.sh

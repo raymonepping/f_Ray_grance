@@ -8,6 +8,11 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ## [Unreleased]
 
+### Added (Phase 16, clean slate, [ADR-017](docs/adr/ADR-017-clean-slate.md))
+
+- `make clean-slate` empties everything recorded: every owner's personal data and the shared fragrance catalogue (fragrances, brands, variants, observations, claims, notes, note dictionary, trait scores, embeddings). It keeps owner accounts and passwords, the migration ledger and the seeded lessons. Every table must be classified or it refuses. It also requires the typed phrase `CLEAN SLATE`, takes a fresh backup first, runs in one transaction and verifies the result. See [the Phase 16 report](reports/16_clean_slate.md).
+- The browser suite enriches the identities it needs and removes the catalogue rows it added, so it runs on an empty catalogue and leaves a clean slate clean.
+
 ### Fixed (Phase 15, evidence-backed revisions, [ADR-016](docs/adr/ADR-016-phase15-revisions.md))
 
 Resolves the findings of the [independent review of prompts 01–14](reports/review_01_14.md); see [the Phase 15 report](reports/15_revisions.md).

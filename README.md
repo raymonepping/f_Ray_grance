@@ -25,7 +25,7 @@ All authoritative specification documents live in [`spec/`](spec); `spec/MANIFES
 | [`PHASE_00.md`](spec/PHASE_00.md) | Phase 00 environment validation |
 | [`PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md) | **Authoritative 00–10 sequence** for all agents and release stages |
 | [`RELEASE_NOTES.md`](RELEASE_NOTES.md) | v0.1.6 accepted changes, verification limits and start guide |
-| [`docs/adr/`](docs/adr) | Accepted ADR-001 through ADR-017, including project Vault, direct-main commits, manual backups, the operator’s Tailscale deferral and the accepted add-on phases 11–16 |
+| [`docs/adr/`](docs/adr) | Accepted ADR-001 through ADR-018, including project Vault, direct-main commits, manual backups, the operator’s Tailscale deferral and the accepted add-on phases 11–16 and Phase 10's local-scope completion |
 
 ## Locked decisions
 
@@ -42,9 +42,9 @@ All authoritative specification documents live in [`spec/`](spec); `spec/MANIFES
 
 Phases 00–09 are implemented and pushed to the verified GitHub `main`. The app runs locally at `http://localhost:8470` with owner authentication, exact-identity enrichment, collection/history, two-fragrance Compare, local discovery, four-season preferences and private JSON export/import preview. Phase 09 passed the complete quality gate and 28 browser tests. Evidence and revision-specific results are in [build state](state/BUILD_STATE.json) and [phase reports](reports).
 
-Local Phase 10 security, lifecycle and recovery checks pass, including 39 security checks and the final 28 browser tests. Host backups and restores into disposable containers work. The release remains blocked on independent recovery evidence. Independent off-device protection, a restore outside the original Podman VM, and production recovery promotion still require operator verification. Real-data import stays disabled. iPhone/tailnet access is deferred by operator instruction because of enterprise network policy; it has not been verified. No production-ready release is claimed.
+Phase 10 is completed for the accepted **local scope with operator deferrals** under [ADR-018](docs/adr/ADR-018-phase10-local-scope-completion.md). Local security, persistence and recovery have recorded passing evidence, including Phase 15's complete-set recovery revisions. Tailscale/iPhone access, a protected off-device copy and recovery on a second machine remain deferred and unverified; they no longer block phase completion. Real-data import remains disabled. Existing real backups remain legacy sets until the next manually requested complete-set backup. No independent disaster-recovery or remote-access success is claimed.
 
-The v0.1.6 specification remains the accepted documentation baseline. Phases 11–14 were accepted as local-development add-ons (ADR-010, ADR-011, ADR-014, ADR-015), built and pushed: the Scent Academy and Spectrometer redesign, perfume images, My Spectrum and the grouped sidebar. Phase 15 (ADR-016) resolves the findings of the [independent review of prompts 01–14](reports/review_01_14.md), and Phase 16 (ADR-017) adds `make clean-slate`. None of these advances the contiguous successful-phase marker past 09 while Phase 10 is blocked.
+The v0.1.6 specification plus accepted addenda remains the baseline. Phases 11–16 are completed: Academy/Spectrometer, images, Spectrum, grouped navigation, the evidence-backed revisions (ADR-016) and `make clean-slate` (ADR-017). The contiguous successful-phase marker advances through the highest completed and pushed phase; the historical blocked Phase 10 decision is superseded, not relabelled as an external test success.
 
 ## Operating the stack
 

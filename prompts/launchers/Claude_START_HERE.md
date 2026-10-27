@@ -41,4 +41,8 @@ ADR-010 records explicit operator authorization to develop Phase 11 while Phase 
 
 ## Accepted local Phases 12–16
 
-ADR-011, ADR-014, ADR-015, ADR-016 and ADR-017 extend the same operator authorization to Phases 12–16. Phase 15 (`prompts/Claude/15_revisions.md`) is the revision pass; Phase 16 (`prompts/Claude/16_clean_slate.md`) adds `make clean-slate`. Preserve Phase 10 blockers, keep import disabled, and keep the contiguous successful-phase marker at 09.
+ADR-011, ADR-014, ADR-015, ADR-016 and ADR-017 extend the same operator authorization to Phases 12–16. Phase 15 (`prompts/Claude/15_revisions.md`) is the revision pass; Phase 16 (`prompts/Claude/16_clean_slate.md`) adds `make clean-slate`. Keep import disabled; Phase 10's local-scope completion follows ADR-018.
+
+## Current completion scope — ADR-018
+
+ADR-018 supersedes earlier instructions to resume Phase 10 solely for its external access/recovery checks. When local gates pass, Phase 10 is completed with explicit operator deferrals. Select the next genuinely incomplete accepted phase; do not reopen G00.10, DR-OFFDEVICE or DR-INDEPENDENT without an operator request. Import remains disabled and deferred checks remain unverified. If all accepted phases are completed and pushed, report that result without creating new work.
