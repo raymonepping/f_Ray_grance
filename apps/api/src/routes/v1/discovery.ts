@@ -9,13 +9,14 @@ import { OllamaClient, MODEL, MODEL_REVISION, DIMENSION } from '../../providers/
 import type { RotatingPool } from '../../db/pool.js';
 import { emptyChoices, type Choices } from '../../domain/seasons.js';
 import { deriveDna, noteKey } from '../../domain/dna.js';
+import { isConfirmedIdentity } from '../../domain/identity.js';
 
 export async function discoveryRoutes(base: FastifyInstance, deps: { pool: RotatingPool; ollama: OllamaClient }) {
   const app = base.withTypeProvider<TypeBoxTypeProvider>(); const db = () => deps.pool.get();
   app.post('/fragrances/:id/embedding', { config: { rateLimit: { max: 12, timeWindow: '1 minute' } }, schema: { params: Type.Object({ id: Type.String({ format: 'uuid' }) }, { additionalProperties: false }) } }, async (req) => {
     const f = await getFragrance(db(), req.params.id);
     if (!f) throw new ApiError('NOT_FOUND', 'Fragrance not found');
-    if (f.identity_status !== 'verified') throw new ApiError('CONFLICT', 'Verify this fragrance before indexing');
+    if (!isConfirmedIdentity(f.identity_status)) throw new ApiError('CONFLICT', 'Verify this fragrance before indexing');
     const source = embeddingInput(f, await effectiveProfile(db(), f.id));
     let vector: number[];
     try { vector = await deps.ollama.embed(source.text); } catch { throw new ApiError('DEPENDENCY_UNAVAILABLE', 'Local embedding service unavailable or model changed; stored DNA remains usable'); }
@@ -43,8 +44,8 @@ export async function discoveryRoutes(base: FastifyInstance, deps: { pool: Rotat
     const anchors = await Promise.all(likedRows.rows.slice(0, 100).map(async r => {
       const f = await getFragrance(db(), r.fragrance_id); return f ? { f, fields: await effectiveProfile(db(), f.id) } : null;
     }));
-    const usable = anchors.filter((a): a is NonNullable<typeof a> => a !== null && a.f.identity_status === 'verified');
-    const candidates = (await searchFragrances(db(), '', 100, 0)).filter(f => f.identity_status === 'verified');
+    const usable = anchors.filter((a): a is NonNullable<typeof a> => a !== null && isConfirmedIdentity(a.f.identity_status));
+    const candidates = (await searchFragrances(db(), '', 100, 0)).filter(f => isConfirmedIdentity(f.identity_status));
     const excluded = new Set((await db().query<{ fragrance_id: string }>("SELECT fragrance_id FROM app.collection_entries WHERE owner_id=$1 AND (state IN ('owned','rejected') OR rating<=2) UNION SELECT fragrance_id FROM app.season_fragrances WHERE owner_id=$1 AND affinity_origin='user' AND affinity='avoid' AND ($2::text IS NULL OR season=$2)", [owner, req.query.season ?? null])).rows.map(r => r.fragrance_id));
     let online = true; try { await deps.ollama.verify(); } catch { online = false; }
     const items = [];

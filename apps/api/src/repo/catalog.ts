@@ -10,7 +10,7 @@ export interface FragranceRow {
   concentration: string | null;
   formulation_revision: string | null;
   launch_year: number | null;
-  identity_status: 'verified' | 'draft' | 'needs_review';
+  identity_status: 'verified' | 'draft' | 'needs_review' | 'owner_confirmed';
 }
 
 const SELECT_FRAGRANCE = `

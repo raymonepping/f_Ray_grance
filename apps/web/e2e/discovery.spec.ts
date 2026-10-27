@@ -118,3 +118,40 @@ test('the barcode hint button always searches: exact with a brand, by text witho
   await expect.poll(() => resolves.length).toBe(1);
   expect(resolves[0]).toMatchObject({ brand: 'Rabanne', name: '1 Million Elixir' }); // the exact search ran
 });
+
+// ADR-023: add a fragrance from a shop page when Scento cannot verify it. Responses are intercepted;
+// no shop page is read and no TinyFish credit is used.
+test('add from a shop page: preview, correct, confirm as "Confirmed by you"', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  let confirmBody: unknown = null;
+  await page.route('**/api/v1/fragrances/from-shop/preview', (r) =>
+    r.fulfill({
+      json: {
+        available: true,
+        preview: {
+          id: '00000000-0000-4000-8000-0000000000aa', shop: 'ICI PARIS XL', url: 'https://www.iciparisxl.nl/rabanne/phantom-parfum/parfum/p/BP_1257290',
+          brand: 'Rabanne', name: 'Phantom Parfum', concentration: 'parfum', concentrationRaw: 'Parfum',
+          notes: { top: ['Bergamote', 'Citron'], heart: ['Trio De Lavande'], base: ['Gousse De Vanille', 'Vetiver'] }, pageEan: '3349668614585',
+        },
+      },
+    }),
+  );
+  await page.route('**/api/v1/fragrances/from-shop/*/confirm', async (r) => {
+    confirmBody = r.request().postDataJSON();
+    await r.fulfill({ status: 201, json: { fragranceId: '00000000-0000-4000-8000-0000000000bb', created: true, identityStatus: 'owner_confirmed', notesSaved: true } });
+  });
+  await login(page, '/discover');
+  const panel = page.getByTestId('shop-evidence');
+  await panel.getByLabel('Product page URL').fill('https://www.iciparisxl.nl/rabanne/phantom-parfum/parfum/p/BP_1257290');
+  await panel.getByRole('button', { name: 'Read page' }).click();
+  await expect(panel.getByLabel('Name')).toHaveValue('Phantom Parfum');
+  await expect(panel).toContainText('Bergamote, Citron');
+  await expect(panel).toContainText('3349668614585');
+  await panel.getByLabel('Name').fill('Phantom Parfum');
+  await panel.getByRole('button', { name: 'Confirm and add' }).click();
+  await expect(panel.getByRole('status')).toContainText('Added as “Confirmed by you”, with the notes from the page.');
+  await expect(panel.getByRole('link', { name: /Open the fragrance/ })).toHaveAttribute('href', '/fragrances/00000000-0000-4000-8000-0000000000bb');
+  expect(confirmBody).toEqual({ brand: 'Rabanne', name: 'Phantom Parfum', keepNotes: true });
+  await axe(page, 'discover shop evidence');
+  await noPageOverflow(page);
+});

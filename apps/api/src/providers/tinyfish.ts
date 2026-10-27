@@ -110,6 +110,14 @@ export class TinyFishClient {
     });
   }
 
+  /** Fetch one whole page as HTML (ADR-023 shop pages). One TinyFish fetch credit. */
+  async fetchPage(url: string): Promise<FetchedPage> {
+    const d = (await this.call(FETCH, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ urls: [url], format: 'html' }) }, 90_000)) as { results?: unknown };
+    const r = Array.isArray(d.results) ? ((d.results[0] ?? null) as Record<string, unknown> | null) : null;
+    if (!r || typeof r.text !== 'string' || !r.text) throw new TinyFishError('TINYFISH_UNAVAILABLE', 'The shop page could not be read');
+    return { url: str(r.url, 2048), finalUrl: str(r.final_url, 2048) || str(r.url, 2048), title: str(r.title, 300), html: r.text.slice(0, 600_000) };
+  }
+
   /** Fetch up to 10 pages as HTML scoped to the given CSS selectors (e.g. image metadata). */
   async fetchSelected(urls: string[], selectors: string[]): Promise<FetchedPage[]> {
     if (!urls.length) return [];

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CONCENTRATION_LABEL, sourceLabel, type Fragrance } from '~~/shared/types';
+import { CONCENTRATION_LABEL, isConfirmedIdentity, sourceLabel, type Fragrance } from '~~/shared/types';
 import type { Comparison } from '~~/shared/dna';
 usePageHeader({ title: 'Compare' });
 const route = useRoute(); const router = useRouter(); const selection = useCompare();
@@ -12,7 +12,7 @@ async function search() {
   const v = ++searchVersion;
   try {
     const result = await apiFetch<{ items: Fragrance[] }>(`/api/v1/fragrances?limit=100&query=${encodeURIComponent(q.value)}`);
-    if (v === searchVersion) options.value = result.items.filter(f => f.identity_status === 'verified');
+    if (v === searchVersion) options.value = result.items.filter(f => isConfirmedIdentity(f.identity_status));
   } catch { if (v === searchVersion) error.value = 'Could not search your library. Try again.'; }
 }
 watch(q, () => { clearTimeout(timer); timer = setTimeout(search, 250); });

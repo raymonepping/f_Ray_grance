@@ -7,6 +7,7 @@ import { effectiveProfile } from '../../repo/enrichment.js';
 import { contrast, deriveDna, TRAIT_METHOD } from '../../domain/dna.js';
 import type { RotatingPool } from '../../db/pool.js';
 import { SeasonSchema } from '../../domain/seasons.js';
+import { isConfirmedIdentity } from '../../domain/identity.js';
 
 export async function compareRoutes(base: FastifyInstance, deps: { pool: RotatingPool }) {
   const app = base.withTypeProvider<TypeBoxTypeProvider>();
@@ -32,7 +33,7 @@ export async function compareRoutes(base: FastifyInstance, deps: { pool: Rotatin
     }, { additionalProperties: false }) },
   }, async (req) => {
     const [a, b] = await Promise.all(req.body.fragranceIds.map((id) => profile(id, req.session!.owner.id, req.body.includePersonalSeasonContext,req.body.season)));
-    if (a!.fragrance.identity_status !== 'verified' || b!.fragrance.identity_status !== 'verified') throw new ApiError('CONFLICT', 'Select two verified fragrance identities; drafts require review');
+    if (!isConfirmedIdentity(a!.fragrance.identity_status) || !isConfirmedIdentity(b!.fragrance.identity_status)) throw new ApiError('CONFLICT', 'Select two verified fragrance identities; drafts require review');
     return { fragrances: [a!, b!], explanation: contrast(a!, b!), method: TRAIT_METHOD };
   });
 }

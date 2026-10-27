@@ -6,6 +6,7 @@ import { normalizeIdentity } from './identity.js';
 import { brandKey } from './brands.js';
 import { mapConcentration, type Concentration } from './concentration.js';
 import { SourceError, type ScentoClient, type SearchCandidate, type SourceProfile } from '../providers/scento.js';
+import { isConfirmedIdentity } from './identity.js';
 
 export type ResolutionState = 'exact' | 'candidate_needs_review' | 'unresolved' | 'conflict';
 
@@ -99,7 +100,7 @@ export interface ResolverDeps {
 
 export async function resolve(deps: ResolverDeps, input: ResolveInput): Promise<Resolution> {
   const local = await deps.findLocal(input);
-  if (local.length === 1 && local[0]!.identityStatus === 'verified') {
+  if (local.length === 1 && isConfirmedIdentity(local[0]!.identityStatus)) {
     return { state: 'exact', reason: 'verified local identity', local: local[0], candidates: [] };
   }
 

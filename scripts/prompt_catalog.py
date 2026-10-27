@@ -10,11 +10,12 @@ def expected_phases(agent):
     # Phases 11 (ADR-010), 12 (ADR-011), 13 (ADR-014, My Spectrum) and 14 (ADR-015, sidebar
     # order) are accepted add-ons for Claude and Codex; IBM Bob stays on 00-10. Phase 15
     # (ADR-016, evidence-backed revisions), 16 (ADR-017, clean slate), 17 (ADR-019, spectral colour), 18 (ADR-020, ScentRev) and 19 (ADR-021,
-    # NoteboxD and source order) and 20 (ADR-022, Fragella last resort)
+    # NoteboxD and source order) 20 (ADR-022, Fragella last resort) and 21
+    # (ADR-023, shop page evidence)
     # are accepted for Claude only.
     extra = {"11", "12", "13", "14"} if agent in {"Claude", "Codex"} else set()
     if agent == "Claude":
-        extra |= {"15", "16", "17", "18", "19", "20"}
+        extra |= {"15", "16", "17", "18", "19", "20", "21"}
     return PHASES | extra
 
 

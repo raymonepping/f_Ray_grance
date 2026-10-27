@@ -782,6 +782,25 @@
         "health": "PASS"
       },
       "next_phase": null
+    },
+    "21": {
+      "status": "completed",
+      "agent": "claude-opus-5-5",
+      "prompt_id": "FRAY-CLAUDE-21",
+      "started_at_utc": "2026-10-27T12:26:45Z",
+      "baseline_head": "1b74dcf884f00df154fb891347556c091aa98e86",
+      "report_path": "reports/21_shop_page_evidence.md",
+      "completed_at_utc": "2026-10-27T13:37:22Z",
+      "evidence": {
+        "make_test": "PASS",
+        "make_test_e2e": "58/58 PASS",
+        "migration": "0010 applied, schema 10",
+        "live_preview": "Phantom Parfum parsed in 2 s; nothing saved",
+        "backup": "fray-20261027T124426Z",
+        "impeccable_detect": "[]",
+        "health": "PASS"
+      },
+      "next_phase": null
     }
   },
   "accepted_adrs": [
@@ -806,10 +825,11 @@
     "ADR-019",
     "ADR-020",
     "ADR-021",
-    "ADR-022"
+    "ADR-022",
+    "ADR-023"
   ],
   "unresolved_blockers": [],
-  "updated_at_utc": "2026-10-27T11:14:34Z",
+  "updated_at_utc": "2026-10-27T13:37:22Z",
   "reviews": {
     "2026-10-26_prompts_01_14": {
       "status": "completed_with_findings",

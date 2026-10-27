@@ -8,6 +8,10 @@ Build phases follow [`spec/PHASE_MANIFEST.md`](spec/PHASE_MANIFEST.md); evidence
 
 ## [Unreleased]
 
+### Added (Phase 21, shop page evidence, [ADR-023](docs/adr/ADR-023-shop-page-evidence.md))
+
+- **Add from a shop page** on Discover: when Scento cannot verify a fragrance, paste its ICI PARIS XL product page. TinyFish reads it, you check the brand, name, concentration, notes per tier and EAN, and confirm. It is saved as "Confirmed by you" (never "Verified"), with the notes as your own entry citing the page, and your barcode is attached. Migration `0010` adds the `owner_confirmed` identity state.
+
 ### Fixed (barcode hints)
 
 - **"Search for …" under a barcode hint did nothing** when the hint came from a web search, because those titles carry no separate brand. Hints now recognise the app's own house aliases at the start of a title, longest first: "Paco Rabanne …" and "Rabanne …" give the house Rabanne. Line names that double as aliases stay in the fragrance name ("BOSS Bottled", "CK One"). When a hint still has no brand, the button searches by the hint's text instead and keeps the barcode for saving. Covered by parser tests for the reported titles and a browser test.

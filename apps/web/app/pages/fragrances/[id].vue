@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Fragrance detail (DESIGN §6.2): identity, note profile, character, provenance.
 // Trait DNA, seasons and compare arrive in later phases and are not faked here.
-import { CONCENTRATION_LABEL, sourceLabel, type CollectionEntry, type EffectiveField, type Fragrance, type Pyramid, type Variant } from '~~/shared/types';
+import { CONCENTRATION_LABEL, isConfirmedIdentity, sourceLabel, type CollectionEntry, type EffectiveField, type Fragrance, type Pyramid, type Variant } from '~~/shared/types';
 import type { DnaProfile } from '~~/shared/dna';
 
 const route = useRoute();
@@ -97,12 +97,13 @@ const subfamily = computed(() => data.value?.fields.subfamily?.value as string |
               <span>{{ conc ? conc.label : 'Concentration not recorded' }}<span v-if="conc?.origin" class="ml-1 text-[12px] text-ink-3">({{ conc.origin }})</span></span>
               <template v-if="year"><span aria-hidden="true" class="text-ink-3">/</span><span class="readout">{{ year.label }}</span><span v-if="year.origin" class="ml-1 text-[12px] text-ink-3">({{ year.origin }})</span></template>
             </p>
-            <p v-if="data.fragrance.identity_status !== 'verified'" class="m-0 mt-3 text-[13px] text-warn">Unverified draft. Facts below are only what you entered.</p>
+            <p v-if="data.fragrance.identity_status === 'owner_confirmed'" class="m-0 mt-3 text-[13px] text-ink-2">Confirmed by you from a shop page; Scento could not verify it. Facts below say where they come from.</p>
+            <p v-else-if="data.fragrance.identity_status !== 'verified'" class="m-0 mt-3 text-[13px] text-warn">Unverified draft. Facts below are only what you entered.</p>
           </div>
           </div>
           <div class="flex shrink-0 flex-wrap items-center gap-3 md:flex-col md:items-end">
             <FragranceIdentityMark :status="data.fragrance.identity_status" />
-            <NuxtLink v-if="data.fragrance.identity_status === 'verified'" :to="`/compare?a=${data.fragrance.id}`" class="btn btn-quiet" @click="compareSelection.set([data.fragrance.id])">
+            <NuxtLink v-if="isConfirmedIdentity(data.fragrance.identity_status)" :to="`/compare?a=${data.fragrance.id}`" class="btn btn-quiet" @click="compareSelection.set([data.fragrance.id])">
               <AppIcon name="columns" :size="16" /> Compare with another fragrance
             </NuxtLink>
           </div>
@@ -170,7 +171,7 @@ const subfamily = computed(() => data.value?.fields.subfamily?.value as string |
           </GlassPanel>
           <FragranceImageManager :fragrance-id="data.fragrance.id" :name="data.fragrance.canonical_name" @changed="(p) => (primaryImage = p)" />
           <FragranceSourceAttribution v-if="Object.keys(data.fields).length" :fields="data.fields" />
-          <FragranceLocalIndex v-if="data.fragrance.identity_status === 'verified'" :fragrance-id="data.fragrance.id" />
+          <FragranceLocalIndex v-if="isConfirmedIdentity(data.fragrance.identity_status)" :fragrance-id="data.fragrance.id" />
         </div>
       </div>
     </template>

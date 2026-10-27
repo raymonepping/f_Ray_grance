@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CONCENTRATION_LABEL, STATE_LABEL, type CollectionState, type Pyramid } from '~~/shared/types';
+import { CONCENTRATION_LABEL, STATE_LABEL, isConfirmedIdentity, type CollectionState, type Pyramid } from '~~/shared/types';
 
 usePageHeader({ title: 'My Collection', action: { label: 'Add fragrance', to: '/discover' } });
 interface Entry {
@@ -160,7 +160,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
             <div class="hidden md:block"><FragranceIdentityMark :status="e.identity_status" /></div>
             <div class="relative z-10 order-4 flex justify-end md:order-none">
               <button
-                v-if="e.identity_status === 'verified'"
+                v-if="isConfirmedIdentity(e.identity_status)"
                 type="button"
                 class="btn btn-ghost h-8 min-h-0 px-2.5 text-[13px]"
                 :aria-label="`Add ${e.canonical_name} to Compare`"

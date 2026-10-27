@@ -50,7 +50,7 @@ def validate(s: dict) -> None:
     assert s.get("project") == "F-Ray-grance", "project identity mismatch"
     assert s["repository"]["branch"] == "main"
     for k, p in s.get("phases", {}).items():
-        assert len(k) == 2 and k.isdigit() and 0 <= int(k) <= 20, k
+        assert len(k) == 2 and k.isdigit() and 0 <= int(k) <= 21, k
         assert p.get("status") in STATUSES, (k, p.get("status"))
     blob = json.dumps(s)
     for f in FORBIDDEN:

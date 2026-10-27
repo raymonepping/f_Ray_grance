@@ -20,3 +20,6 @@ export type Season = (typeof SEASONS)[number];
 
 export const TRAITS_CORE = ['sweet', 'fresh', 'spicy', 'woody', 'warm'] as const;
 export const TRAITS_EXTENDED = ['aromatic', 'fruity', 'gourmand', 'smoky', 'green', 'marine_mineral'] as const;
+
+/** Verified by an exact Scento match, or confirmed by the owner from shop evidence (ADR-023). */
+export const isConfirmedIdentity = (status: string | null | undefined): boolean => status === 'verified' || status === 'owner_confirmed';

@@ -22,7 +22,7 @@ export interface Fragrance {
   flanker: string | null;
   concentration: string | null;
   launch_year: number | null;
-  identity_status: 'verified' | 'draft' | 'needs_review';
+  identity_status: 'verified' | 'draft' | 'needs_review' | 'owner_confirmed';
 }
 
 export const STATE_LABEL: Record<CollectionState, string> = {
@@ -135,3 +135,6 @@ export const IMAGE_SOURCE_LABEL: Record<ImageSourceKind, string> = {
   manual_external: 'External URL',
   web_search: 'Web search',
 };
+
+/** Verified by an exact Scento match, or confirmed by the owner from shop evidence (ADR-023). */
+export const isConfirmedIdentity = (status: string | null | undefined): boolean => status === 'verified' || status === 'owner_confirmed';

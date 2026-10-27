@@ -325,8 +325,10 @@ export async function gapFields(
 
 /** Where owner-accepted gap-filling values come from (ADR-013 web research, ADR-021 NoteboxD). */
 export interface GapSource {
-  provider: 'tinyfish' | 'noteboxd' | 'fragella';
-  origin: 'research' | 'provider';
+  provider: 'tinyfish' | 'noteboxd' | 'fragella' | 'manual';
+  origin: 'research' | 'provider' | 'user';
+  /** For the owner's own claims (origin "user"): who confirmed them, so a purge removes them. */
+  ownerId?: string;
   attribution: string;
   /** Stable id at the source; defaults to a hash of the page URL. */
   externalId?: string;
@@ -379,12 +381,42 @@ export async function addGapClaims(
         [fragranceId, claim.field, source.origin, source.provider],
       );
       const { rows } = await c.query<{ id: string }>(
-        `INSERT INTO app.source_claims (fragrance_id, source_record_id, origin, field_name, value) VALUES ($1, $2, $5, $3, $4) RETURNING id`,
-        [fragranceId, sr, claim.field, JSON.stringify(claim.value), source.origin],
+        `INSERT INTO app.source_claims (fragrance_id, source_record_id, origin, field_name, value, corrected_by_owner) VALUES ($1, $2, $5, $3, $4, $6) RETURNING id`,
+        [fragranceId, sr, claim.field, JSON.stringify(claim.value), source.origin, source.origin === 'user' ? (source.ownerId ?? null) : null],
       );
       if (claim.field === 'pyramid') await writePyramid(c, fragranceId, rows[0]!.id, claim.value as SourceProfile['pyramid']);
     }
     return claims.length;
+  });
+}
+
+/**
+ * Create, or upgrade from a draft, an identity the owner confirmed from shop-page evidence (ADR-023).
+ * A Scento-verified identity is never changed: it is returned as it is.
+ */
+export async function confirmOwnerIdentity(db: Db, input: { brand: string; name: string; concentration: string | null }): Promise<{ fragranceId: string; created: boolean; status: 'owner_confirmed' | 'verified' }> {
+  return tx(db, async (c) => {
+    const b = await c.query<{ id: string }>(
+      `INSERT INTO app.brands (canonical_name) VALUES ($1)
+       ON CONFLICT (normalized_name) DO UPDATE SET canonical_name = app.brands.canonical_name RETURNING id`,
+      [canonicalBrand(input.brand)],
+    );
+    const existing = await c.query<{ id: string; identity_status: string }>(
+      `SELECT id, identity_status FROM app.fragrances WHERE brand_id = $1 AND normalized_name = app.normalize_identity($2)
+         AND flanker IS NULL AND concentration IS NOT DISTINCT FROM $3 AND formulation_revision IS NULL`,
+      [b.rows[0]!.id, input.name, input.concentration],
+    );
+    const e = existing.rows[0];
+    if (e?.identity_status === 'verified') return { fragranceId: e.id, created: false, status: 'verified' };
+    if (e) {
+      await c.query(`UPDATE app.fragrances SET identity_status = 'owner_confirmed' WHERE id = $1`, [e.id]);
+      return { fragranceId: e.id, created: false, status: 'owner_confirmed' };
+    }
+    const f = await c.query<{ id: string }>(
+      `INSERT INTO app.fragrances (brand_id, canonical_name, concentration, identity_status) VALUES ($1, $2, $3, 'owner_confirmed') RETURNING id`,
+      [b.rows[0]!.id, input.name, input.concentration],
+    );
+    return { fragranceId: f.rows[0]!.id, created: true, status: 'owner_confirmed' };
   });
 }
 
